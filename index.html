@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TELE·TRACK — Industry Intelligence</title>
+<style>
+:root{
+  --bg:#F6F8FA;--panel:#FFFFFF;--ink:#16202B;--ink-2:#4A5A6A;--ink-3:#7C8B9C;
+  --line:#E4EAF1;--line-2:#EDF1F6;--accent:#185FA5;--accent-soft:#EAF2FB;
+  --accent-line:#C9DDF2;--up:#D64545;--down:#15976B;--amber:#B7791F;
+  --amber-soft:#FBF3E2;--teal:#0E7C86;--teal-soft:#E2F3F4;--purple:#6B4C9A;
+  --purple-soft:#F0EBF7;
+  --mono:'JetBrains Mono','SF Mono',Consolas,'Roboto Mono',monospace;
+  --sans:-apple-system,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow:hidden}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#D3DBE4;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+.app{display:flex;flex-direction:column;height:100vh}
+.topbar{height:58px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;flex-shrink:0;position:relative;z-index:30}
+.logo{display:flex;align-items:center;gap:10px;user-select:none;flex-shrink:0}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:#fff}
+.logo-mark svg{width:15px;height:15px}
+.logo-name{font-weight:700;font-size:15px;letter-spacing:.3px}
+.logo-name span{color:var(--accent)}
+.logo-sub{font-size:9px;color:var(--ink-3);letter-spacing:1.5px;text-transform:uppercase;margin-top:-2px}
+.search{flex:1;max-width:360px;position:relative}
+.search input{width:100%;height:34px;border:1px solid var(--line);border-radius:7px;background:var(--bg);padding:0 34px 0 12px;font-size:12.5px;color:var(--ink);outline:none;transition:border .15s}
+.search input:focus{border-color:var(--accent-line);background:#fff}
+.search svg{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3)}
+.top-spacer{flex:1}
+.lang-btn{height:30px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel);cursor:pointer;font-size:11.5px;color:var(--ink-2);font-family:var(--mono);display:inline-flex;align-items:center;gap:5px;transition:all .12s}
+.lang-btn:hover{border-color:var(--accent-line);color:var(--accent)}
+.lang-btn .globe{width:13px;height:13px}
+.country-wrap{position:relative}
+.country-btn{display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);cursor:pointer;font-size:12.5px;color:var(--ink);transition:border .15s}
+.country-btn:hover{border-color:var(--accent-line)}
+.country-btn .flag{font-size:13px;line-height:1;border:none}
+.country-btn .caret{margin-left:2px;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink-3)}
+.country-drop{position:absolute;top:40px;right:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 28px rgba(22,32,43,.1);padding:6px;min-width:200px;max-height:380px;overflow-y:auto;display:none;z-index:50}
+.country-drop.open{display:block}
+.country-opt{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:6px;cursor:pointer;font-size:12.5px}
+.country-opt:hover{background:var(--accent-soft)}
+.country-opt.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.country-opt .check{margin-left:auto;color:var(--accent);font-size:12px}
+.date-btn{display:flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);cursor:pointer;font-size:12.5px;font-family:var(--mono);color:var(--ink-2)}
+.date-btn:hover{border-color:var(--accent-line)}
+.date-btn svg{width:13px;height:13px;stroke:var(--ink-3)}
+.live-badge{display:flex;align-items:center;gap:7px;height:26px;padding:0 10px;border:1px solid var(--line);border-radius:20px;font-size:11px;color:var(--ink-2);font-family:var(--mono);letter-spacing:.5px;background:var(--panel)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--up);position:relative}
+.live-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--up);opacity:.5;animation:pulse 1.8s infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:.7}70%{transform:scale(1.3);opacity:0}100%{transform:scale(1.3);opacity:0}}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);border:1px solid var(--accent-line);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;user-select:none;flex-shrink:0}
+.body{display:flex;flex:1;min-height:0}
+.sidebar{width:216px;background:var(--panel);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;overflow-y:auto}
+.side-label{font-size:10px;letter-spacing:1.2px;color:var(--ink-3);text-transform:uppercase;padding:10px 10px 5px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-size:12.8px;border:none;background:none;width:100%;text-align:left;transition:background .12s}
+.nav-item svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;flex-shrink:0}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-item .badge{margin-left:auto;font-size:10px;font-family:var(--mono);background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:10px}
+.nav-item:not(.active) .badge{background:var(--bg);color:var(--ink-3)}
+.side-bottom{margin-top:auto;padding:10px;border-top:1px solid var(--line-2);font-size:10.5px;color:var(--ink-3);line-height:1.6}
+.side-bottom .ver{font-family:var(--mono)}
+.main{flex:1;overflow-y:auto;padding:20px 24px;min-width:0}
+.page{display:none;animation:fadeIn .22s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.page-title h1{font-size:19px;font-weight:700;letter-spacing:.2px}
+.page-title p{font-size:12px;color:var(--ink-3);margin-top:2px}
+.page-title p .loc{color:var(--accent);font-weight:600}
+.page-actions{display:flex;gap:8px;align-items:center}
+.btn{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font-size:12px;color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .12s}
+.btn:hover{border-color:var(--accent-line);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#14528F}
+.btn.ghost{border-color:transparent}
+.btn.ghost:hover{background:var(--bg);border-color:var(--line)}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2.5px;background:transparent}
+.kpi.b-blue::before{background:var(--accent)}
+.kpi.b-amber::before{background:var(--amber)}
+.kpi.b-teal::before{background:var(--teal)}
+.kpi.b-red::before{background:var(--up)}
+.kpi.b-down::before{background:var(--down)}
+.kpi.b-purple::before{background:var(--purple)}
+.kpi-label{font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:5px}
+.kpi-label .tag{font-family:var(--mono);font-size:9px;padding:0 5px;border-radius:3px;background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
+.kpi-value{font-family:var(--mono);font-size:23px;font-weight:600;margin-top:5px;letter-spacing:-.5px}
+.kpi-value .unit{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:3px}
+.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:11px;margin-top:6px;padding:1px 7px;border-radius:10px}
+.kpi-delta.up{color:var(--up);background:rgba(214,69,69,.08)}
+.kpi-delta.down{color:var(--down);background:rgba(21,151,107,.08)}
+.kpi-delta.flat{color:var(--ink-3);background:var(--bg)}
+.kpi-spark{position:absolute;right:10px;bottom:10px;width:70px;height:30px;opacity:.85}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:8px}
+.panel-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.panel-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.panel-title .count{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);background:var(--bg);padding:1px 7px;border-radius:10px;font-weight:400}
+.panel-body{padding:6px 16px}
+.panel-foot{padding:10px 16px;border-top:1px solid var(--line-2);font-size:11px;color:var(--ink-3);text-align:center;cursor:pointer}
+.panel-foot:hover{color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{height:26px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:11.5px;color:var(--ink-2);cursor:pointer;font-family:var(--mono);display:inline-flex;align-items:center;transition:all .12s}
+.chip:hover{border-color:var(--accent-line)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tabs{display:flex;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px}
+.tab{padding:4px 12px;border-radius:5px;font-size:11.5px;color:var(--ink-2);cursor:pointer;border:none;background:none}
+.tab.active{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(22,32,43,.06)}
+.news-list{padding:4px 0}
+.news-item{display:flex;gap:12px;padding:12px 8px;border-bottom:1px solid var(--line-2);position:relative;margin:0 -8px;border-radius:6px}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{background:var(--bg)}
+.news-rail{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px;flex-shrink:0;width:14px}
+.news-dot{width:8px;height:8px;border-radius:50%;margin-top:3px}
+.news-dot.t-lithium{background:var(--amber)}
+.news-dot.t-aidc{background:var(--accent)}
+.news-dot.t-telecom{background:var(--teal)}
+.news-dot.t-energy{background:var(--down)}
+.news-dot.t-trade{background:var(--purple)}
+.news-dot.t-pfe{background:#7C5CFF}
+.news-rail .line{width:1px;flex:1;background:var(--line)}
+.news-body{flex:1;min-width:0}
+.news-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--ink-3);font-family:var(--mono)}
+.news-meta .src{font-weight:600;color:var(--ink-2)}
+.news-meta .sep{width:3px;height:3px;border-radius:50%;background:var(--line);flex-shrink:0}
+.news-title{font-size:12.8px;margin-top:3px;line-height:1.5;cursor:pointer;color:var(--ink)}
+.news-title:hover{color:var(--accent)}
+.news-summary{font-size:11.5px;color:var(--ink-2);margin-top:3px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.tag{font-size:10px;padding:1.5px 8px;border-radius:10px;font-family:var(--mono)}
+.tag.t-lithium{background:var(--amber-soft);color:var(--amber)}
+.tag.t-aidc{background:var(--accent-soft);color:var(--accent)}
+.tag.t-telecom{background:var(--teal-soft);color:var(--teal)}
+.tag.t-energy{background:rgba(21,151,107,.1);color:var(--down)}
+.tag.t-trade{background:var(--purple-soft);color:var(--purple)}
+.tag.t-pfe{background:rgba(124,92,255,.12);color:#7C5CFF}
+.tag.t-country{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
+.paper{border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin:9px 0;transition:border .12s}
+.paper:hover{border-color:var(--accent-line)}
+.paper .p-journal{display:flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);color:var(--ink-3);letter-spacing:.5px;text-transform:uppercase}
+.paper .p-journal .j-ico{width:14px;height:14px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff}
+.paper .p-title{font-size:12.5px;font-weight:600;margin-top:4px;line-height:1.5;cursor:pointer}
+.paper .p-title:hover{color:var(--accent)}
+.paper .p-authors{font-size:11px;color:var(--ink-2);margin-top:4px}
+.paper .p-foot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:10.5px;color:var(--ink-3)}
+.paper .p-foot .cites{font-family:var(--mono)}
+.paper .p-foot .cites b{color:var(--accent)}
+.paper .p-doistyle{display:flex;gap:4px}
+.paper .p-doistyle span{font-size:9px;font-family:var(--mono);padding:1px 6px;border-radius:3px;background:var(--bg);border:1px solid var(--line)}
+.chart-wrap{padding:16px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.chart-head .legend{display:flex;gap:16px;font-size:11px;color:var(--ink-2);flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-item .sw{width:9px;height:9px;border-radius:2px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding:0 4px;border-bottom:1px solid var(--line)}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar-stack{width:100%;max-width:26px;display:flex;flex-direction:column;justify-content:flex-end;height:100%;border-radius:3px 3px 0 0;overflow:hidden}
+.bar-stack .b-lithium{background:var(--amber)}
+.bar-stack .b-aidc{background:var(--accent)}
+.bar-stack .b-telecom{background:var(--teal)}
+.bar-stack .b-energy{background:var(--down)}
+.bar-val{font-family:var(--mono);font-size:9.5px;color:var(--ink-3)}
+.bar-x{font-family:var(--mono);font-size:10px;color:var(--ink-3);padding-top:6px;border-top:1px solid var(--line);width:100%;text-align:center}
+.svg-chart{width:100%;height:auto;display:block}
+.grid-line{stroke:var(--line-2);stroke-dasharray:3 4}
+.area{opacity:.08}
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cols-32{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+@media(max-width:1100px){.cols-32,.cols-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-3);text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:11.5px}
+.tbl tr:hover td{background:var(--bg)}
+.tbl td.name{font-family:var(--sans);font-weight:500}
+.tbl .chg-up{color:var(--up)}
+.tbl .chg-down{color:var(--down)}
+.price-group th{background:var(--bg);font-size:10.5px;color:var(--ink-2);text-transform:none;letter-spacing:.3px}
+.price-group th .star{color:var(--up);margin-right:3px}
+.price-group.aidc-group th{color:var(--accent)}
+.price-group.lithium-group th{color:var(--amber)}
+.set-group{margin-bottom:22px}
+.set-group h3{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-2)}
+.set-row:last-child{border-bottom:none}
+.set-row .s-label{font-size:12.8px;font-weight:500}
+.set-row .s-desc{font-size:11px;color:var(--ink-3);margin-top:2px}
+.switch{width:36px;height:20px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;transition:background .15s;flex-shrink:0}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.switch.on{background:var(--accent)}
+.switch.on::after{left:18px}
+.set-select{height:30px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-size:12px;color:var(--ink);background:var(--panel);font-family:var(--mono);outline:none;cursor:pointer}
+.set-select:focus{border-color:var(--accent-line)}
+.modal-mask{position:fixed;inset:0;background:rgba(15,23,32,.35);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-mask.open{display:flex}
+.modal{background:var(--panel);border-radius:12px;padding:22px;width:320px;box-shadow:0 20px 60px rgba(15,23,32,.2)}
+.modal h3{font-size:15px;margin-bottom:4px}
+.modal .m-sub{font-size:11.5px;color:var(--ink-3);margin-bottom:16px}
+.modal .m-field{margin-bottom:12px}
+.modal label{font-size:11px;color:var(--ink-3);display:block;margin-bottom:4px;font-family:var(--mono)}
+.modal input[type=date]{width:100%;height:32px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-family:var(--mono);font-size:12px;outline:none}
+.modal input[type=date]:focus{border-color:var(--accent-line)}
+.modal .m-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:12px;padding:10px 18px;border-radius:8px;opacity:0;transition:all .25s;z-index:200;font-family:var(--mono);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{padding:30px;text-align:center;color:var(--ink-3);font-size:12px}
+.heat-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.heat{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:10px;text-align:center;cursor:pointer;transition:border .12s}
+.heat:hover{border-color:var(--accent-line)}
+.heat .h-day{font-size:10px;color:var(--ink-3);font-family:var(--mono)}
+.heat .h-num{font-family:var(--mono);font-size:16px;font-weight:600;margin-top:3px}
+.heat .h-bar{height:3px;border-radius:2px;margin-top:6px;background:var(--line)}
+.heat .h-bar i{display:block;height:100%;border-radius:2px}
+.tariff-badge{display:inline-block;font-size:10px;font-family:var(--mono);padding:1px 7px;border-radius:4px}
+.tariff-badge.up{color:var(--up);background:rgba(214,69,69,.08)}
+.tariff-badge.flat{color:var(--ink-3);background:var(--bg)}
+.tariff-badge.new{color:var(--accent);background:var(--accent-soft)}
+.deploy-banner{background:var(--ink);color:#fff;padding:8px 20px;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
+.deploy-banner a{color:#7DC4FF;text-decoration:none;font-family:var(--mono)}
+.deploy-banner .dot-w{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0}
+.modal input[type=time]{width:100%;height:32px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-family:var(--mono);font-size:12px;outline:none}
+.modal input[type=time]:focus{border-color:var(--accent-line)}
+/* ===== Date & Time Range Picker ===== */
+.rp{position:relative;display:inline-flex;flex-shrink:0;align-self:center}
+.rp-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink-2);font-size:10.5px;font-family:var(--mono);cursor:pointer;transition:border .12s,color .12s;white-space:nowrap}
+.rp-btn:hover{border-color:var(--accent-line);color:var(--ink)}
+.rp-btn svg{opacity:.7;flex-shrink:0}
+.rp-caret{width:0;height:0;border-left:3.5px solid transparent;border-right:3.5px solid transparent;border-top:4px solid currentColor;opacity:.6;margin-left:2px}
+.rp-pop{position:absolute;top:calc(100% + 6px);right:0;width:262px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 16px 40px rgba(15,23,32,.14);z-index:70;display:none}
+.rp-pop.open{display:block}
+.rp-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:10px 10px 8px}
+.rp-chip{height:24px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink-2);font-size:10px;font-family:var(--mono);cursor:pointer;transition:all .12s}
+.rp-chip:hover{border-color:var(--accent-line);color:var(--ink)}
+.rp-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.rp-chip.rp-cust{grid-column:span 2}
+.rp-custom{display:none;padding:2px 10px 10px;border-top:1px dashed var(--line)}
+.rp-custom.show{display:block}
+.rp-row{display:flex;align-items:center;gap:5px;margin-top:8px}
+.rp-lbl{font-size:9.5px;color:var(--ink-3);font-family:var(--mono);width:26px;flex-shrink:0}
+.rp-in{flex:1;min-width:0;height:26px;border:1px solid var(--line);border-radius:6px;padding:0 6px;font-family:var(--mono);font-size:10.5px;color:var(--ink);background:var(--panel);outline:none}
+.rp-in:focus{border-color:var(--accent-line)}
+.rp-foot{display:flex;justify-content:flex-end;margin-top:10px}
+.rp-foot .btn{height:26px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="deploy-banner" id="deployBanner" style="display:none">
+    <span class="dot-w"></span>
+    <span id="deployText">已部署 · 公网访问:</span>
+    <a href="#" id="deployLink" target="_blank"></a>
+    <button class="btn ghost" style="height:22px;color:#aaa;border-color:#333" id="deployCopy">复制</button>
+  </div>
+
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+      <div><div class="logo-name">TELE<span>·</span>TRACK</div><div class="logo-sub">Industry Intelligence</div></div>
+    </div>
+    <div class="search"><input type="text" id="globalSearch" data-i18n-ph="search_ph" placeholder="搜索新闻、论文、公司…  ( / )"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+    <div class="top-spacer"></div>
+    <div class="live-badge"><span class="live-dot"></span><span>LIVE</span></div>
+    <button class="lang-btn" id="langBtn"><svg class="globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"/></svg><span id="langLabel">EN</span></button>
+    <div class="country-wrap" id="countryWrap">
+      <button class="country-btn" id="countryBtn"><span id="flagImg" class="flag">🇨🇳</span><span id="countryLabel">China</span><span class="caret"></span></button>
+      <div class="country-drop" id="countryDrop"></div>
+    </div>
+    <button class="date-btn" id="dateBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span id="dateRangeLabel">2026-08-21</span></button>
+    <div class="avatar" id="avatarBtn">IG</div>
+  </header>
+
+  <div class="body">
+    <nav class="sidebar">
+      <div class="side-label" data-i18n="lbl_monitor">Monitor</div>
+      <button class="nav-item active" data-page="overview"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span data-i18n="nav_overview">Overview</span></button>
+      <div class="side-label" data-i18n="lbl_sectors" style="padding-top:14px">Sectors</div>
+      <button class="nav-item" data-page="lithium"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="8" width="12" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2M12 12v4M10 14h4"/></svg><span data-i18n="nav_lithium">Lithium Battery</span><span class="badge">238</span></button>
+      <button class="nav-item" data-page="aidc"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4M6 7h2M10 7h2M6 11h2M10 11h2"/></svg><span data-i18n="nav_aidc">AIDC</span><span class="badge">146</span></button>
+      <button class="nav-item" data-page="telecom"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="m4 9 8-5 8 5M5 9v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M9 17v-4a3 3 0 0 1 6 0v4"/></svg><span data-i18n="nav_telecom">Telecom</span><span class="badge">97</span></button>
+      <button class="nav-item" data-page="energy"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg><span data-i18n="nav_energy">Energy</span><span class="badge">121</span></button>
+      <div class="side-label" data-i18n="lbl_trade" style="padding-top:14px">Trade</div>
+      <button class="nav-item" data-page="trade"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M3 7l9-4 9 4M5 7v10l7 3 7-3V7M5 11l7 3 7-3"/></svg><span data-i18n="nav_trade">Trade & Tariffs</span><span class="badge">34</span></button>
+      <div class="side-label" data-i18n="lbl_research" style="padding-top:14px">Research</div>
+      <button class="nav-item" data-page="papers"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4z"/><path d="M9 8h6M9 12h6"/></svg><span data-i18n="nav_papers">Academic Papers</span><span class="badge">83</span></button>
+      <div class="side-label" data-i18n="lbl_system" style="padding-top:14px">System</div>
+      <button class="nav-item" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span data-i18n="nav_settings">Settings</span></button>
+      <div class="side-bottom"><div class="ver">TRACK-ENGINE v2.5.0</div><div data-i18n="side_src">数据源: 42 路 · 延迟 < 3min</div></div>
+    </nav>
+
+    <main class="main" id="main">
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="page active" id="page-overview">
+        <div class="page-head">
+          <div class="page-title"><h1 data-i18n="ov_title">行业动态总览</h1><p><span data-i18n="ov_sub_a">Telecom & Energy 实时监测 · 聚焦</span> <span class="loc" id="ovLoc">China</span> · <span data-i18n="ov_sub_b">数据更新于</span> <span class="loc" id="ovTime">09:41:02</span></p></div>
+          <div class="page-actions"><div class="tabs" id="ovTabs"><button class="tab active" data-f="all" data-i18n="tab_all">All</button><button class="tab" data-f="lithium" data-i18n="tab_battery">Battery</button><button class="tab" data-f="aidc" data-i18n="tab_aidc">AIDC</button><button class="tab" data-f="pfe" data-i18n="tab_pfe">PFE</button></div><button class="btn" id="exportBtn"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span data-i18n="btn_export">导出报告</span></button></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi b-blue"><div class="kpi-label"><span data-i18n="kpi_li_idx">Lithium Battery Index</span> <span class="tag">LBE</span></div><div class="kpi-value" id="kpiLiIndex">4,287.6</div><span class="kpi-delta up" id="kpiLiDelta">▲ +2.34%</span><div class="kpi-sub" data-i18n="kpi_1d">1D change</div><svg class="kpi-spark" viewBox="0 0 70 30"><polyline points="0,24 10,22 20,19 30,21 40,15 50,17 60,10 70,8" fill="none" stroke="#185FA5" stroke-width="1.6"/></svg></div>
+          <div class="kpi b-amber"><div class="kpi-label"><span data-i18n="kpi_aidc_cap">AIDC Capacity</span> <span class="tag">GW</span></div><div class="kpi-value">2.4<span class="unit">GW</span></div><span class="kpi-delta up">▲ +1.82%</span><div class="kpi-sub" data-i18n="kpi_qoq">vs prev quarter</div><svg class="kpi-spark" viewBox="0 0 70 30"><polyline points="0,26 10,24 20,22 30,18 40,17 50,14 60,11 70,9" fill="none" stroke="#B7791F" stroke-width="1.6"/></svg></div>
+          <div class="kpi b-teal"><div class="kpi-label"><span data-i18n="kpi_news_today">News Today</span> <span class="tag">NWS</span></div><div class="kpi-value" id="kpiNews">247</div><span class="kpi-delta up">▲ +12.3%</span><div class="kpi-sub" data-i18n="kpi_24h">24h volume</div><svg class="kpi-spark" viewBox="0 0 70 30"><polyline points="0,28 10,22 20,25 30,17 40,20 50,12 60,15 70,8" fill="none" stroke="#0E7C86" stroke-width="1.6"/></svg></div>
+          <div class="kpi b-red"><div class="kpi-label"><span data-i18n="kpi_papers_week">Papers This Week</span> <span class="tag">PAP</span></div><div class="kpi-value">83</div><span class="kpi-delta down">▼ -3.1%</span><div class="kpi-sub">arXiv / journals</div><svg class="kpi-spark" viewBox="0 0 70 30"><polyline points="0,10 10,13 20,12 30,17 40,19 50,23 60,24 70,27" fill="none" stroke="#D64545" stroke-width="1.6"/></svg></div>
+        </div>
+
+        <div class="cols-32">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="dot"></span> <span data-i18n="pn_news">行业新闻流</span> <span class="count" id="newsCount">247</span></div><div class="rp-mount" id="rpOvNews"></div></div>
+            <div class="panel-body" style="padding:0 8px"><div class="news-list" id="newsList"></div></div>
+            <div class="panel-foot" id="loadMoreNews" data-i18n="load_more_news">加载更多新闻 ↓</div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--teal)"></span> <span data-i18n="pn_papers">最新学术论文</span> <span class="count">83</span></div><button class="btn ghost" style="height:26px" onclick="go('papers')" data-i18n="view_all">查看全部 →</button></div>
+            <div class="panel-body" style="padding:2px 10px"><div id="paperList"></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--accent)"></span> <span data-i18n="trend_title">新闻热度趋势</span></div><div class="rp-mount" id="rpTrend"></div><div class="legend"><div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span data-i18n="leg_lithium">Lithium</span></div><div class="legend-item"><span class="sw" style="background:var(--accent)"></span><span data-i18n="leg_aidc">AIDC</span></div><div class="legend-item"><span class="sw" style="background:var(--teal)"></span><span data-i18n="leg_telecom">Telecom</span></div><div class="legend-item"><span class="sw" style="background:var(--down)"></span><span data-i18n="leg_energy">Energy</span></div></div></div>
+          <div class="chart-wrap"><div class="bars" id="trendBars"></div></div>
+        </div>
+
+        <!-- Price table (LFP + AIDC focus) -->
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="pt_title">核心商品价格 · Spot Prices</span></div><div style="display:flex;gap:12px;align-items:center"><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink-3)" id="priceStamp">UTC+8 09:41</span><span class="chip" style="cursor:default" id="priceCountryChip">🇨🇳 China</span></div></div>
+          <div class="panel-body" style="padding:0 8px"><table class="tbl" id="priceTable"></table></div>
+        </div>
+      </section>
+
+      <!-- ============ LITHIUM ============ -->
+      <section class="page" id="page-lithium">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="li_title">锂电池产业监测</h1><p data-i18n="li_sub">产业链 · 价格 · 产能 · 政策 · 实时新闻 <span class="loc" id="liLoc">China</span></p></div><div class="page-actions"><div class="chips" id="liChips"><button class="chip active" data-d="7d">7d</button><button class="chip" data-d="30d">30d</button><button class="chip" data-d="90d">90d</button></div></div></div>
+        <div class="kpi-row">
+          <div class="kpi b-amber"><div class="kpi-label" data-i18n="li_kpi1">碳酸锂现货</div><div class="kpi-value">76,500<span class="unit">¥/t</span></div><span class="kpi-delta up">▲ +1.2%</span><div class="kpi-sub">SMM 均价</div></div>
+          <div class="kpi b-blue"><div class="kpi-label" data-i18n="li_kpi2">动力电池装机</div><div class="kpi-value">42.8<span class="unit">GWh</span></div><span class="kpi-delta up">▲ +8.4%</span><div class="kpi-sub" data-i18n="li_mom">月环比</div></div>
+          <div class="kpi b-teal"><div class="kpi-label" data-i18n="li_kpi3">储能电池出货</div><div class="kpi-value">31.2<span class="unit">GWh</span></div><span class="kpi-delta up">▲ +15.6%</span><div class="kpi-sub" data-i18n="li_yoy">月同比</div></div>
+          <div class="kpi b-red"><div class="kpi-label" data-i18n="li_kpi4">产能利用率</div><div class="kpi-value">67.3<span class="unit">%</span></div><span class="kpi-delta flat">— 持平</span><div class="kpi-sub" data-i18n="li_head">头部厂商</div></div>
+        </div>
+        <div class="cols-2">
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="li_chart1">碳酸锂价格走势</span></div><div class="rp-mount" id="rpLiChart"></div></div><div class="chart-wrap"><svg class="svg-chart" id="liPriceChart" viewBox="0 0 520 200" preserveAspectRatio="none" style="height:200px"></svg></div></div>
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--teal)"></span> <span data-i18n="li_chain">产业链热度</span></div><div class="rp-mount" id="rpLiHeat"></div></div><div class="panel-body"><div class="heat-row" id="liHeat"></div></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="li_news2">锂电池相关新闻</span></div><div class="rp-mount" id="rpLiNews"></div></div><div class="panel-body" style="padding:0 8px"><div class="news-list" id="liNewsList"></div></div></div>
+      </section>
+
+      <!-- ============ AIDC ============ -->
+      <section class="page" id="page-aidc">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="ai_title">AIDC 算力基础设施监测</h1><p data-i18n="ai_sub">AI Data Center · 装机 · PUE · 资本开支 <span class="loc" id="aiLoc">China</span></p></div></div>
+        <div class="kpi-row">
+          <div class="kpi b-blue"><div class="kpi-label" data-i18n="ai_kpi1">智能算力规模</div><div class="kpi-value">2.4<span class="unit">EFLOPS</span></div><span class="kpi-delta up">▲ +18.2%</span><div class="kpi-sub" data-i18n="ai_yoy">同比</div></div>
+          <div class="kpi b-teal"><div class="kpi-label" data-i18n="ai_kpi2">平均 PUE</div><div class="kpi-value">1.28</div><span class="kpi-delta down">▼ -0.06</span><div class="kpi-sub" data-i18n="ai_new">新建项目</div></div>
+          <div class="kpi b-amber"><div class="kpi-label" data-i18n="ai_kpi3">数据中心资本开支</div><div class="kpi-value">312<span class="unit">B¥</span></div><span class="kpi-delta up">▲ +42.0%</span><div class="kpi-sub">2026E</div></div>
+          <div class="kpi b-red"><div class="kpi-label" data-i18n="ai_kpi4">在用机柜</div><div class="kpi-value">86.4<span class="unit">万</span></div><span class="kpi-delta up">▲ +9.1%</span><div class="kpi-sub" data-i18n="ai_mom">环比</div></div>
+        </div>
+        <div class="cols-2">
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot"></span> <span data-i18n="ai_chart1">算力装机趋势 (EFLOPS)</span></div><div class="rp-mount" id="rpAidcChart"></div></div><div class="chart-wrap"><svg class="svg-chart" id="aidcChart" viewBox="0 0 520 200" preserveAspectRatio="none" style="height:200px"></svg></div></div>
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="ai_region">区域布局</span></div><div class="rp-mount" id="rpAiRegion"></div></div><div class="panel-body"><table class="tbl" id="aiRegion"></table></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--accent)"></span> <span data-i18n="ai_news">AIDC 相关新闻</span></div><div class="rp-mount" id="rpAiNews"></div></div><div class="panel-body" style="padding:0 8px"><div class="news-list" id="aiNewsList"></div></div></div>
+      </section>
+
+      <!-- ============ TELECOM ============ -->
+      <section class="page" id="page-telecom">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="tc_title">电信行业监测</h1><p data-i18n="tc_sub">5G · 网络资本开支 · 运营商数据 <span class="loc" id="tcLoc">China</span></p></div></div>
+        <div class="kpi-row">
+          <div class="kpi b-teal"><div class="kpi-label" data-i18n="tc_kpi1">5G 基站</div><div class="kpi-value">425.6<span class="unit">万</span></div><span class="kpi-delta up">▲ +6.8%</span><div class="kpi-sub" data-i18n="tc_cum">累计</div></div>
+          <div class="kpi b-blue"><div class="kpi-label" data-i18n="tc_kpi2">5G 用户</div><div class="kpi-value">10.9<span class="unit">亿</span></div><span class="kpi-delta up">▲ +4.2%</span><div class="kpi-sub" data-i18n="tc_pen">渗透率 62%</div></div>
+          <div class="kpi b-amber"><div class="kpi-label" data-i18n="tc_kpi3">电信资本开支</div><div class="kpi-value">348<span class="unit">B¥</span></div><span class="kpi-delta down">▼ -5.4%</span><div class="kpi-sub">2026E</div></div>
+          <div class="kpi b-red"><div class="kpi-label" data-i18n="tc_kpi4">算力网络投入</div><div class="kpi-value">86<span class="unit">B¥</span></div><span class="kpi-delta up">▲ +31.0%</span><div class="kpi-sub" data-i18n="tc_share">占比提升</div></div>
+        </div>
+        <div class="cols-2">
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--teal)"></span> <span data-i18n="tc_chart1">5G 基站累计建设</span></div><div class="rp-mount" id="rpTcChart"></div></div><div class="chart-wrap"><svg class="svg-chart" id="tcChart" viewBox="0 0 520 200" preserveAspectRatio="none" style="height:200px"></svg></div></div>
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="tc_ops">运营商动态</span></div><div class="rp-mount" id="rpTcMini"></div></div><div class="panel-body" style="padding:2px 8px"><div class="news-list" id="tcNewsMini"></div></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot"></span> <span data-i18n="tc_news">电信新闻流</span></div><div class="rp-mount" id="rpTcNews"></div></div><div class="panel-body" style="padding:0 8px"><div class="news-list" id="tcNewsList"></div></div></div>
+      </section>
+
+      <!-- ============ ENERGY ============ -->
+      <section class="page" id="page-energy">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="eg_title">能源行业监测</h1><p data-i18n="eg_sub">电力需求 · 储能 · 新能源装机 · 电价 <span class="loc" id="egLoc">China</span></p></div></div>
+        <div class="kpi-row">
+          <div class="kpi b-down"><div class="kpi-label" data-i18n="eg_kpi1">全社会用电量</div><div class="kpi-value">9.36<span class="unit">万亿kWh</span></div><span class="kpi-delta up">▲ +6.5%</span><div class="kpi-sub" data-i18n="eg_cum">1-7月累计</div></div>
+          <div class="kpi b-teal"><div class="kpi-label" data-i18n="eg_kpi2">新型储能新增</div><div class="kpi-value">38.4<span class="unit">GW</span></div><span class="kpi-delta up">▲ +47.0%</span><div class="kpi-sub" data-i18n="eg_yoy">同比</div></div>
+          <div class="kpi b-blue"><div class="kpi-label" data-i18n="eg_kpi3">风光装机占比</div><div class="kpi-value">44.6<span class="unit">%</span></div><span class="kpi-delta up">▲ +3.2pp</span><div class="kpi-sub" data-i18n="eg_gen">发电装机</div></div>
+          <div class="kpi b-amber"><div class="kpi-label" data-i18n="eg_kpi4">绿电交易量</div><div class="kpi-value">612<span class="unit">TWh</span></div><span class="kpi-delta up">▲ +58.0%</span><div class="kpi-sub" data-i18n="eg_yoy2">同比</div></div>
+        </div>
+        <div class="cols-2">
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--down)"></span> <span data-i18n="eg_chart1">电力需求结构</span></div><div class="rp-mount" id="rpEgDonut"></div></div><div class="panel-body" id="egDonutBox"><svg class="svg-chart" viewBox="0 0 300 180" style="height:180px;margin:0 auto;max-width:300px"><circle cx="150" cy="90" r="62" fill="none" stroke="#E4EAF1" stroke-width="26"/><circle cx="150" cy="90" r="62" fill="none" stroke="#15976B" stroke-width="26" stroke-dasharray="72 100" stroke-dashoffset="25" transform="rotate(-90 150 90)"/><circle cx="150" cy="90" r="62" fill="none" stroke="#185FA5" stroke-width="26" stroke-dasharray="62 100" stroke-dashoffset="97" transform="rotate(-90 150 90)"/><circle cx="150" cy="90" r="62" fill="none" stroke="#B7791F" stroke-width="26" stroke-dasharray="55 100" stroke-dashoffset="159" transform="rotate(-90 150 90)"/><circle cx="150" cy="90" r="62" fill="none" stroke="#0E7C86" stroke-width="26" stroke-dasharray="42 100" stroke-dashoffset="214" transform="rotate(-90 150 90)"/><text x="150" y="86" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="600" fill="#16202B">9.36</text><text x="150" y="104" text-anchor="middle" font-size="9" fill="#7C8B9C">万亿 kWh</text></svg><div class="legend" style="justify-content:center;margin-top:8px;flex-wrap:wrap;gap:12px"><div class="legend-item"><span class="sw" style="background:var(--down)"></span>二产 41%</div><div class="legend-item"><span class="sw" style="background:var(--accent)"></span>三产 31%</div><div class="legend-item"><span class="sw" style="background:var(--amber)"></span>居民 20%</div><div class="legend-item"><span class="sw" style="background:var(--teal)"></span>一产 8%</div></div></div></div>
+          <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--down)"></span> <span data-i18n="eg_chart2">新型储能装机趋势</span></div><div class="rp-mount" id="rpEgChart"></div></div><div class="chart-wrap"><svg class="svg-chart" id="egChart" viewBox="0 0 520 200" preserveAspectRatio="none" style="height:200px"></svg></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--down)"></span> <span data-i18n="eg_news">能源新闻流</span></div><div class="rp-mount" id="rpEgNews"></div></div><div class="panel-body" style="padding:0 8px"><div class="news-list" id="egNewsList"></div></div></div>
+      </section>
+
+      <!-- ============ TRADE & TARIFFS ============ -->
+      <section class="page" id="page-trade">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="tr_title">贸易与关税监测</h1><p data-i18n="tr_sub">各国原材料价格 · 关税政策 · 贸易壁垒实时追踪 <span class="loc" id="trLoc">China</span></p></div></div>
+        <div class="kpi-row">
+          <div class="kpi b-purple"><div class="kpi-label" data-i18n="tr_kpi1">中国锂电出口额</div><div class="kpi-value">487<span class="unit">B¥</span></div><span class="kpi-delta up">▲ +18.5%</span><div class="kpi-sub" data-i18n="tr_yoy1">1-7月同比</div></div>
+          <div class="kpi b-blue"><div class="kpi-label" data-i18n="tr_kpi2">对华综合关税均值</div><div class="kpi-value">23.4<span class="unit">%</span></div><span class="kpi-delta up">▲ +4.2pp</span><div class="kpi-sub" data-i18n="tr_yoy2">同比上升</div></div>
+          <div class="kpi b-amber"><div class="kpi-label" data-i18n="tr_kpi3">欧盟 CBAM 覆盖率</div><div class="kpi-value">100<span class="unit">%</span></div><span class="kpi-delta flat">— 2026全面</span><div class="kpi-sub" data-i18n="tr_cbam">碳关税过渡期结束</div></div>
+          <div class="kpi b-teal"><div class="kpi-label" data-i18n="tr_kpi4">贸易政策事件</div><div class="kpi-value">34</div><span class="kpi-delta up">▲ +6</span><div class="kpi-sub" data-i18n="tr_7d">近7日新增</div></div>
+        </div>
+
+        <div class="cols-2">
+          <!-- Tariff comparison -->
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--purple)"></span> <span data-i18n="tr_tariff_tbl">主要产品关税对比</span></div><span class="chip" style="cursor:default" data-i18n="tr_vs_cn">对华进口</span></div>
+            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="tariffTable"></table></div>
+          </div>
+          <!-- Raw material prices by country -->
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="tr_mat_tbl">各国原材料实时价格</span></div></div>
+            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="matPriceTable"></table></div>
+          </div>
+        </div>
+
+        <!-- Tariff timeline -->
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--purple)"></span> <span data-i18n="tr_timeline">关税政策动态</span> <span class="count">34</span></div><div class="rp-mount" id="rpTradeNews"></div></div>
+          <div class="panel-body" style="padding:0 8px"><div class="news-list" id="tradeNewsList"></div></div>
+        </div>
+      </section>
+
+      <!-- ============ PAPERS ============ -->
+      <section class="page" id="page-papers">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="pa_title">学术论文库</h1><p data-i18n="pa_sub">arXiv / Nature Energy / Joule / Applied Energy / IEEE 自动追踪</p></div><div class="page-actions"><div class="search" style="max-width:240px"><input type="text" id="paperSearch" data-i18n-ph="pa_search_ph" placeholder="搜索标题 / 作者 / 关键词"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div></div></div>
+        <div class="panel"><div class="panel-head"><div class="chips" id="paperJournals"><button class="chip active" data-j="all">All</button><button class="chip" data-j="nature">Nature Energy</button><button class="chip" data-j="joule">Joule</button><button class="chip" data-j="applied">Applied Energy</button><button class="chip" data-j="ieee">IEEE</button><button class="chip" data-j="arxiv">arXiv</button></div><div class="legend"><div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span data-i18n="leg_lithium">Lithium</span></div><div class="legend-item"><span class="sw" style="background:var(--accent)"></span><span data-i18n="leg_aidc">AIDC</span></div><div class="legend-item"><span class="sw" style="background:var(--teal)"></span><span data-i18n="leg_telecom">Telecom</span></div><div class="legend-item"><span class="sw" style="background:var(--down)"></span><span data-i18n="leg_energy">Energy</span></div></div><div class="rp-mount" id="rpPapers"></div></div><div class="panel-body" style="padding:4px 12px 12px"><div id="paperGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px"></div></div><div class="panel-foot" id="loadMorePapers" data-i18n="load_more_papers">加载更多论文 ↓</div></div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="page" id="page-settings">
+        <div class="page-head"><div class="page-title"><h1 data-i18n="se_title">系统设置</h1><p data-i18n="se_sub">数据源、推送、订阅与 API 配置</p></div></div>
+        <div class="cols-2">
+          <div>
+            <div class="panel"><div class="panel-body" style="padding:16px"><div style="display:flex;align-items:center;gap:14px"><div style="width:46px;height:46px;border-radius:50%;background:var(--accent-soft);border:1px solid var(--accent-line);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:17px;font-weight:600">IG</div><div style="flex:1"><div style="font-weight:700;font-size:15px">Ivy Guo</div><div style="font-size:11.5px;color:var(--ink-3);font-family:var(--mono)">ivy.guo@example.com · Analyst</div></div><button class="btn" id="editProfileBtn" data-i18n="se_edit">编辑</button></div></div></div>
+            <div class="panel" style="margin-top:16px"><div class="panel-head"><div class="panel-title" data-i18n="se_ds">数据源与抓取</div></div><div class="panel-body" style="padding:2px 16px"><div class="set-group" style="margin-bottom:6px"></div></div></div>
+            <div class="panel"><div class="panel-head"><div class="panel-title" data-i18n="se_notif">通知</div></div><div class="panel-body" style="padding:2px 16px"><div class="set-group" style="margin-bottom:6px"></div></div></div>
+          </div>
+          <div>
+            <div class="panel"><div class="panel-head"><div class="panel-title" data-i18n="se_sub2">订阅与区域</div></div><div class="panel-body" style="padding:2px 16px"><div class="set-group" style="margin-bottom:6px"></div></div></div>
+            <div class="panel"><div class="panel-head"><div class="panel-title" data-i18n="se_api">API 与集成</div></div><div class="panel-body" style="padding:2px 16px"><div class="set-group" style="margin-bottom:6px"></div></div></div>
+            <div class="panel" style="margin-top:16px"><div class="panel-body" style="padding:16px"><div style="display:flex;align-items:center;gap:12px"><div style="width:38px;height:38px;border-radius:9px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:#fff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div><div style="flex:1"><div style="font-weight:600;font-size:13px">TELE·TRACK Pro</div><div style="font-size:11px;color:var(--ink-3)">当前版本 v2.5.0 · 订阅至 2027-03-01</div></div><button class="btn primary" data-i18n="se_upgrade">升级</button></div></div></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="modal-mask" id="dateModal"><div class="modal"><h3 data-i18n="dm_title">自定义日期范围</h3><div class="m-sub" data-i18n="dm_sub">选择新闻抓取的起止日期</div><div class="m-field"><label>START</label><input type="date" id="dStart" value="2026-08-01"></div><div class="m-field"><label>END</label><input type="date" id="dEnd" value="2026-08-21"></div><div class="m-field"><label>START TIME</label><input type="time" id="dStartT" value="00:00"></div><div class="m-field"><label>END TIME</label><input type="time" id="dEndT" value="23:59"></div><div class="m-actions"><button class="btn" id="dCancel" data-i18n="dm_cancel">取消</button><button class="btn primary" id="dApply" data-i18n="dm_apply">应用</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ I18N ============ */
+const I18N = {
+  zh:{
+    app_title:'TELE·TRACK — 行业情报',search_ph:'搜索新闻、论文、公司…  ( / )',
+    lbl_monitor:'监控',lbl_sectors:'行业',lbl_trade:'贸易',lbl_research:'研究',lbl_system:'系统',
+    nav_overview:'总览',nav_lithium:'锂电池',nav_aidc:'AIDC',nav_telecom:'电信',nav_energy:'能源',nav_trade:'贸易与关税',nav_papers:'学术论文',nav_settings:'设置',
+    side_src:'数据源: 42 路 · 延迟 < 3min',
+    ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
+    tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
+    kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
+    pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
+    dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
+    load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
+    trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
+    li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
+    ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
+    tc_title:'电信行业监测',tc_sub:'5G · 网络资本开支 · 运营商数据',tc_kpi1:'5G 基站',tc_kpi2:'5G 用户',tc_kpi3:'电信资本开支',tc_kpi4:'算力网络投入',tc_cum:'累计',tc_pen:'渗透率 62%',tc_share:'占比提升',tc_chart1:'5G 基站累计建设',tc_ops:'运营商动态',tc_news:'电信新闻流',
+    eg_title:'能源行业监测',eg_sub:'电力需求 · 储能 · 新能源装机 · 电价',eg_kpi1:'全社会用电量',eg_kpi2:'新型储能新增',eg_kpi3:'风光装机占比',eg_kpi4:'绿电交易量',eg_cum:'1-7月累计',eg_yoy:'同比',eg_gen:'发电装机',eg_yoy2:'同比',eg_chart1:'电力需求结构',eg_chart2:'新型储能装机趋势',eg_news:'能源新闻流',
+    tr_title:'贸易与关税监测',tr_sub:'各国原材料价格 · 关税政策 · 贸易壁垒实时追踪',tr_kpi1:'中国锂电出口额',tr_kpi2:'对华综合关税均值',tr_kpi3:'欧盟 CBAM 覆盖率',tr_kpi4:'贸易政策事件',tr_yoy1:'1-7月同比',tr_yoy2:'同比上升',tr_cbam:'碳关税过渡期结束',tr_7d:'近7日新增',tr_tariff_tbl:'主要产品关税对比',tr_vs_cn:'对华进口',tr_mat_tbl:'各国原材料实时价格',tr_timeline:'关税政策动态',
+    pa_title:'学术论文库',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE 自动追踪',pa_search_ph:'搜索标题 / 作者 / 关键词',
+    se_title:'系统设置',se_sub:'数据源、推送、订阅与 API 配置',se_edit:'编辑',se_ds:'数据源与抓取',se_notif:'通知',se_sub2:'订阅与区域',se_api:'API 与集成',se_upgrade:'升级',
+    dm_title:'自定义日期时间范围',dm_sub:'选择新闻抓取的起止日期与时间',dm_cancel:'取消',dm_apply:'应用',rp_24h:'近24小时',rp_7d:'近7天',rp_30d:'近30天',rp_90d:'近90天',rp_1y:'近1年',rp_custom:'自定义',rp_from:'开始',rp_to:'结束',rp_apply:'应用',rp_title:'日期与时间范围',
+    tag_lithium:'锂电池',tag_aidc:'AIDC',tag_telecom:'电信',tag_energy:'能源',tag_trade:'贸易',tag_pfe:'PFE 政策',
+    th_commodity:'品种',th_spot:'现货',th_24h:'24h',th_7d:'7d',th_30d:'30d',
+    th_product:'产品',th_market:'市场',th_rate:'税率',th_note:'说明',th_effective:'生效',
+    th_country:'国家',th_li:'碳酸锂',th_lfp:'LFP正极',th_gr:'石墨负极',th_hy:'氢氧化锂',
+    grp_lithium:'锂电池原材料',grp_aidc:'AIDC 核心 (公司重点)',
+    region_e:'华东',region_n:'华北',region_s:'华南',region_w:'西部枢纽',th_region:'区域',th_cap:'算力',th_yoy:'同比',th_pue:'PUE',
+    chain_upstream:'上游锂矿',chain_cathode:'正极材料',chain_anode:'负极材料',chain_electrolyte:'电解液',chain_sep:'隔膜',chain_cell:'电芯',chain_recycle:'回收'
+  },
+  en:{
+    app_title:'TELE·TRACK — Industry Intelligence',search_ph:'Search news, papers, companies…  ( / )',
+    lbl_monitor:'Monitor',lbl_sectors:'Sectors',lbl_trade:'Trade',lbl_research:'Research',lbl_system:'System',
+    nav_overview:'Overview',nav_lithium:'Lithium Battery',nav_aidc:'AIDC',nav_telecom:'Telecom',nav_energy:'Energy',nav_trade:'Trade & Tariffs',nav_papers:'Academic Papers',nav_settings:'Settings',
+    side_src:'Sources: 42 feeds · latency < 3min',
+    ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
+    tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
+    kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
+    pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
+    dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
+    load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
+    trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
+    li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
+    ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
+    tc_title:'Telecom Industry Monitor',tc_sub:'5G · Network Capex · Operator Data',tc_kpi1:'5G Base Stations',tc_kpi2:'5G Users',tc_kpi3:'Telecom Capex',tc_kpi4:'Compute Network Invest',tc_cum:'Cumulative',tc_pen:'Penetration 62%',tc_share:'Share rising',tc_chart1:'5G Base Station Cumulative',tc_ops:'Operator Updates',tc_news:'Telecom News Feed',
+    eg_title:'Energy Industry Monitor',eg_sub:'Power Demand · Storage · RE Capacity · Tariffs',eg_kpi1:'Total Power Consumption',eg_kpi2:'New Storage Added',eg_kpi3:'RE Share of Capacity',eg_kpi4:'Green Power Trade',eg_cum:'Jan-Jul cumulative',eg_yoy:'YoY',eg_gen:'Generation capacity',eg_yoy2:'YoY',eg_chart1:'Power Demand Mix',eg_chart2:'New Storage Trend',eg_news:'Energy News Feed',
+    tr_title:'Trade & Tariffs Monitor',tr_sub:'Raw material prices · Tariff policy · Trade barriers real-time tracking',tr_kpi1:'China Li-battery Exports',tr_kpi2:'Avg Tariff on China',tr_kpi3:'EU CBAM Coverage',tr_kpi4:'Trade Policy Events',tr_yoy1:'Jan-Jul YoY',tr_yoy2:'YoY increase',tr_cbam:'Carbon tariff transition ends',tr_7d:'Last 7 days new',tr_tariff_tbl:'Major Product Tariffs',tr_vs_cn:'on China imports',tr_mat_tbl:'Raw Material Prices by Country',tr_timeline:'Tariff Policy Updates',
+    pa_title:'Academic Paper Library',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE auto-tracking',pa_search_ph:'Search title / author / keyword',
+    se_title:'System Settings',se_sub:'Data sources, alerts, subscriptions & API config',se_edit:'Edit',se_ds:'Data Sources',se_notif:'Notifications',se_sub2:'Subscriptions & Region',se_api:'API & Integration',se_upgrade:'Upgrade',
+    dm_title:'Custom Date & Time Range',dm_sub:'Select news capture start and end date & time',dm_cancel:'Cancel',dm_apply:'Apply',rp_24h:'Last 24h',rp_7d:'Last 7d',rp_30d:'Last 30d',rp_90d:'Last 90d',rp_1y:'Last 1Y',rp_custom:'Custom',rp_from:'From',rp_to:'To',rp_apply:'Apply',rp_title:'Date & Time Range',
+    tag_lithium:'Lithium',tag_aidc:'AIDC',tag_telecom:'Telecom',tag_energy:'Energy',tag_trade:'Trade',tag_pfe:'PFE Policy',
+    th_commodity:'Commodity',th_spot:'Spot',th_24h:'24h',th_7d:'7d',th_30d:'30d',
+    th_product:'Product',th_market:'Market',th_rate:'Rate',th_note:'Note',th_effective:'Effective',
+    th_country:'Country',th_li:'Li Carbonate',th_lfp:'LFP Cathode',th_gr:'Graphite Anode',th_hy:'Li Hydroxide',
+    grp_lithium:'Lithium Materials',grp_aidc:'AIDC Core (Company Priority)',
+    region_e:'East China',region_n:'North China',region_s:'South China',region_w:'West Hub',th_region:'Region',th_cap:'Capacity',th_pue:'PUE',
+    chain_upstream:'Li Ore',chain_cathode:'Cathode',chain_anode:'Anode',chain_electrolyte:'Electrolyte',chain_sep:'Separator',chain_cell:'Cell',chain_recycle:'Recycling'
+  }
+};
+
+/* ============ COUNTRIES ============ */
+const FLAGS = {China:'🇨🇳',USA:'🇺🇸',Germany:'🇩🇪',Japan:'🇯🇵','South Korea':'🇰🇷',Australia:'🇦🇺','UK':'🇬🇧',France:'🇫🇷',Netherlands:'🇳🇱',Sweden:'🇸🇪',Switzerland:'🇨🇭'};
+const COUNTRIES = ['China','USA','Germany','Japan','South Korea','Australia','UK','France','Netherlands','Sweden','Switzerland'];
+
+/* ============ PRICE DATA (per country) ============ */
+const PRICE_GROUPS = [
+  {id:'lithium',cls:'lithium-group',i18n:'grp_lithium',rows:[
+    {hot:true,i18n_label:{zh:'磷酸铁锂正极 LFP ★',en:'LFP Cathode ★'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥48,600',USA:'$6,850',Germany:'€6,300',Japan:'¥1.02M','South Korea':'₩1.35M',Australia:'A$10.4K',UK:'£5,200',France:'€6,100',Netherlands:'€6,150',Sweden:'kr72K',Switzerland:'CHF6,050'},c24:'up',c24v:'+0.8%',c7:'up',c7v:'+2.1%',c30:'up',c30v:'+4.5%'},
+    {hot:true,i18n_label:{zh:'LFP 电芯 (动力) ★',en:'LFP Cell (EV) ★'},unit:{zh:'¥/Wh',en:'¥/Wh'},v:{China:'¥0.41',USA:'$0.058',Germany:'€0.054',Japan:'¥9.2',Australia:'A$0.088'},c24:'up',c24v:'+0.5%',c7:'down',c7v:'-1.2%',c30:'down',c30v:'-3.8%'},
+    {i18n_label:{zh:'电池级碳酸锂',en:'Li Carbonate (battery)'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥76,500',USA:'$10,700',Germany:'€9,800',Japan:'¥1.62M',Australia:'A$16.2K',UK:'£8,100',France:'€9,500',Switzerland:'CHF9,400'},c24:'up',c24v:'+1.2%',c7:'up',c7v:'+4.8%',c30:'down',c30v:'-6.1%'},
+    {i18n_label:{zh:'氢氧化锂',en:'Li Hydroxide'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥82,300',USA:'$11,500',Germany:'€10,500',Japan:'¥1.74M'},c24:'up',c24v:'+0.9%',c7:'up',c7v:'+3.2%',c30:'down',c30v:'-4.4%'},
+    {i18n_label:{zh:'NCM811 前驱体',en:'NCM811 Precursor'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥105,200',USA:'$14,700',Germany:'€13,500'},c24:'down',c24v:'-0.4%',c7:'up',c7v:'+1.1%',c30:'up',c30v:'+2.3%'},
+    {i18n_label:{zh:'天然石墨负极',en:'Natural Graphite Anode'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥28,600',USA:'$4,000',Germany:'€3,700'},c24:'up',c24v:'+0.2%',c7:'up',c7v:'+0.8%',c30:'up',c30v:'+1.5%'},
+    {i18n_label:{zh:'六氟磷酸锂 LiPF₆',en:'LiPF₆'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥59,800',USA:'$8,350',Germany:'€7,700'},c24:'up',c24v:'+0.6%',c7:'up',c7v:'+2.4%',c30:'up',c30v:'+5.0%'}
+  ]},
+  {id:'aidc',cls:'aidc-group',i18n:'grp_aidc',rows:[
+    {hot:true,i18n_label:{zh:'AI 服务器 (8卡 HGX) ★',en:'AI Server (8x HGX) ★'},unit:{zh:'¥/台',en:'¥/unit'},v:{China:'¥1,890,000',USA:'$260,000',Germany:'€240,000',Japan:'¥1.89M','South Korea':'₩3.5亿'},c24:'flat',c24v:'—',c7:'up',c7v:'+1.5%',c30:'down',c30v:'-2.0%'},
+    {hot:true,i18n_label:{zh:'液冷 CDU 冷板 ★',en:'Liquid Cooling CDU ★'},unit:{zh:'¥/套',en:'¥/set'},v:{China:'¥45,000',USA:'$6,200',Germany:'€5,700'},c24:'up',c24v:'+0.3%',c7:'up',c7v:'+3.8%',c30:'up',c30v:'+8.2%'},
+    {hot:true,i18n_label:{zh:'800G 光模块 ★',en:'800G Optical Module ★'},unit:{zh:'¥/只',en:'¥/pc'},v:{China:'¥11,200',USA:'$1,550',Germany:'€1,420'},c24:'down',c24v:'-0.8%',c7:'down',c7v:'-2.1%',c30:'down',c30v:'-12.0%'},
+    {i18n_label:{zh:'绿电 PPA (数据中心)',en:'Green PPA (Data Center)'},unit:{zh:'¥/kWh',en:'¥/kWh'},v:{China:'¥0.42',USA:'$0.065',Germany:'€0.088',Sweden:'kr0.85'},c24:'flat',c24v:'—',c7:'up',c7v:'+0.5%',c30:'up',c30v:'+1.2%'},
+    {i18n_label:{zh:'工业电价 (西部枢纽)',en:'Industrial Power (West Hub)'},unit:{zh:'¥/kWh',en:'¥/kWh'},v:{China:'¥0.33',USA:'$0.072',Germany:'€0.18',France:'€0.12'},c24:'flat',c24v:'—',c7:'flat',c7v:'—',c30:'up',c30v:'+0.8%'}
+  ]}
+];
+
+/* ============ TARIFF DATA ============ */
+const TARIFFS = [
+  {p:{zh:'动力电池 / EV Battery',en:'EV Battery'},markets:[
+    {m:'USA',r:'25%+25%',n:{zh:'301条款 + 2026新增',en:'Sec.301 + 2026 add'},s:'up',e:'2026-01'},
+    {m:'EU',r:'20.5%~35.3%',n:{zh:'反补贴终裁 + 10%基础',en:'Anti-subsidy final'},s:'up',e:'2025-07'},
+    {m:'India',r:'25%',n:{zh:'PLI 配套关税',en:'PLI-linked'},s:'flat',e:'2024-04'},
+    {m:'Brazil',r:'18%',n:{zh:'南共市对外关税',en:'Mercosur'},s:'flat',e:'长期'}
+  ]},
+  {p:{zh:'储能电池 / ESS Battery',en:'ESS Battery'},markets:[
+    {m:'USA',r:'25%',n:{zh:'2026 非车用',en:'2026 non-EV'},s:'up',e:'2026-07'},
+    {m:'EU',r:'0%~10%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'},
+    {m:'Australia',r:'5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'}
+  ]},
+  {p:{zh:'LFP 正极材料',en:'LFP Cathode'},markets:[
+    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'up',e:'2026-01'},
+    {m:'EU',r:'调查中',n:{zh:'反倾销立案',en:'AD investigation'},s:'new',e:'2026-06'}
+  ]},
+  {p:{zh:'天然石墨负极',en:'Graphite Anode'},markets:[
+    {m:'USA',r:'25%',n:{zh:'2026 生效',en:'2026 effect'},s:'up',e:'2026-01'},
+    {m:'EU',r:'10%~20%',n:{zh:'反倾销复审',en:'AD review'},s:'flat',e:'2025-12'}
+  ]},
+  {p:{zh:'AI 服务器 / GPU',en:'AI Server / GPU'},markets:[
+    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:'长期'},
+    {m:'EU',r:'0%',n:{zh:'MFN 免税',en:'MFN duty-free'},s:'flat',e:'长期'},
+    {m:'Netherlands',r:'管制',n:{zh:'出口管制 (EUV/先进制程)',en:'Export control'},s:'new',e:'持续'}
+  ]},
+  {p:{zh:'800G 光模块',en:'800G Optical Module'},markets:[
+    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:'长期'},
+    {m:'EU',r:'0%~5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'}
+  ]}
+];
+
+const MAT_PRICES = [
+  {c:'China',cur:'CNY',li:'¥76,500',lfp:'¥48,600',gr:'¥28,600',hy:'¥82,300'},
+  {c:'USA',cur:'USD',li:'$10,700',lfp:'$6,850',gr:'$4,000',hy:'$11,500'},
+  {c:'Germany',cur:'EUR',li:'€9,800',lfp:'€6,300',gr:'€3,700',hy:'€10,500'},
+  {c:'Japan',cur:'JPY',li:'¥1.62M',lfp:'¥1.02M',gr:'¥0.41M',hy:'¥1.74M'},
+  {c:'UK',cur:'GBP',li:'£8,100',lfp:'£5,200',gr:'£2,950',hy:'£8,900'},
+  {c:'France',cur:'EUR',li:'€9,500',lfp:'€6,100',gr:'€3,550',hy:'€10,200'},
+  {c:'Sweden',cur:'SEK',li:'kr115K',lfp:'kr72K',gr:'kr42K',hy:'kr124K'},
+  {c:'Switzerland',cur:'CHF',li:'CHF9,400',lfp:'CHF6,050',gr:'CHF3,500',hy:'CHF10,100'}
+];
+
+/* ============ NEWS ============ */
+const NEWS = [
+  {id:31,t:'pfe',src:'Reuters',time:'13:25',title:'路透：FCC 起草限制中国光模块新机型进入美国市场',sum:'报道称 FCC 正起草措施，限制中国数据中心光收发模块新型号进入美国。高速光模块（800G/1.6T）的 DSP、MCU、光收发组件或纳入组件穿透审查，中际旭创、新易盛等厂商暂未被点名，方案仍可能调整。',tags:['光模块','AIDC'],cn:'USA'},
+  {id:32,t:'pfe',src:'FCC',time:'12:40',title:'FCC 组件穿透规则落地：受限企业逻辑硬件部件限制范围扩大',sum:'新规明确：若受限企业生产的设备无法获得 FCC 授权，其他厂商同类设备只要包含其逻辑硬件部件（半导体、基带处理器、蜂窝模块、光收发模块等），新机型授权也可能被拒。',tags:['组件穿透','规则'],cn:'USA'},
+  {id:33,t:'pfe',src:'中国商务部',time:'11:50',title:'商务部反制 FCC/DHS 涉华消极措施，光模块限制预期升温',sum:'商务部针对 FCC 与国土安全部近期涉华消极措施宣布多项反制行动。业界关注 FCC 是否将中国光模块纳入限制清单，以及附条件批准豁免通道的具体安排。',tags:['反制','光模块'],cn:'USA'},
+  {id:34,t:'pfe',src:'Bloomberg',time:'11:05',title:'美国收紧 FEOC 规则：中国锂电材料供应链面临新一轮合规审查',sum:'美国财政部与能源部就 IRA 项下 FEOC（外国关注实体）认定细则征求行业意见，正极前驱体与石墨环节中国企业或受影响，电池厂商加速海外产能与本地化布局。',tags:['FEOC','锂电'],cn:'USA'},
+  {id:35,t:'pfe',src:'The Verge',time:'10:20',title:'Covered List 扩容至设备品类：无人机、路由器、逆变器、机器人先后受限',sum:'FCC 限制清单由点名企业扩展至外国生产的整机品类，无人机及关键组件、路由器、电力逆变器、先进机器人等陆续被纳入，附条件批准（Conditional Approval）成为主要豁免通道。',tags:['Covered List','品类'],cn:'USA'},
+  {id:36,t:'trade',src:'路透社 Reuters',time:'09:45',title:'美国评估对进口光模块与逆变器加征关税，供应链备货节奏受扰动',sum:'美国贸易代表办公室评估对高速光模块及电力逆变器加征关税，叠加 FCC 限制清单影响，中国厂商与美国客户出现提前备货、分散订单的迹象。',tags:['关税','供应链'],cn:'USA'},
+  {id:1,t:'lithium',src:'SMM 上海有色',time:'09:32',title:'碳酸锂主力合约日内涨超 3%，供给端盐湖检修叠加需求回暖',sum:'SMM 数据显示，8 月碳酸锂周度产量环比下降 5.2%，锂盐厂挺价情绪升温，下游正极材料厂刚需采购启动。',tags:['锂价','供需'],cn:'China'},
+  {id:2,t:'aidc',src:'InfoQ 中文',time:'09:15',title:'国内智算中心建设提速：8 省市上半年新开工算力项目超 60 个',sum:'据不完全统计，上半年全国智算中心新开工项目 61 个，规划算力合计约 85 EFLOPS，平均 PUE 目标降至 1.2 以下。',tags:['智算','基建'],cn:'China'},
+  {id:3,t:'aidc',src:'Bloomberg',time:'08:58',title:'Hyperscaler capex 指引再上调：AI 服务器订单排至明年 Q2',sum:'多家云厂商在最新财报电话会中上调 2026 年资本开支指引，液冷、电力与光模块供应链订单能见度显著延长。',tags:['资本开支','液冷'],cn:'USA'},
+  {id:4,t:'lithium',src:'高工锂电 GGII',time:'08:40',title:'固态电池中试线密集落地，硫化物路线产业化时点提前',sum:'GGII 统计显示年内已有 9 家企业启动硫化物固态电池中试线建设，预计 2027 年 GWh 级量产窗口开启。',tags:['固态电池','产业化'],cn:'China'},
+  {id:5,t:'telecom',src:'C114 通信网',time:'08:21',title:'三大运营商 5G-A 商用城市扩容至 400+，上行增强成为主推场景',sum:'5G-A 三载波聚合与上行增强在视频直播、工业质检场景渗透率快速提升，带动基站主设备新一轮集采。',tags:['5G-A','集采'],cn:'China'},
+  {id:6,t:'energy',src:'北极星储能网',time:'08:02',title:'储能系统报价再创新低：2h 磷酸铁锂储能系统中标均价 0.48 元/Wh',sum:'7 月储能系统中标均价环比下降 6%，电芯价格下行与集成效率提升是主要驱动，业主侧配储收益率改善。',tags:['储能','招标'],cn:'China'},
+  {id:7,t:'aidc',src:'路透社 Reuters',time:'07:45',title:'Nvidia 新一代 GPU 量产爬坡，液冷渗透率明年或超 40%',sum:'供应链消息称下一代平台机柜功耗提升至 120kW+，直接液冷方案成为标配，冷板与 CDU 订单加速释放。',tags:['GPU','液冷'],cn:'USA'},
+  {id:8,t:'lithium',src:'EV-volumes',time:'07:30',title:'7 月全球新能源车销量 142 万辆，欧洲插混回暖明显',sum:'EV-volumes 数据显示 7 月全球 BEV+PHEV 销量同比增长 18%，欧洲市场在补贴政策落地后环比反弹 9%。',tags:['新能源车','全球'],cn:'Germany'},
+  {id:9,t:'telecom',src:'Light Reading',time:'07:12',title:'T-Mobile 与诺基亚完成 6G 太赫兹原型验证，速率破 100Gbps',sum:'双方在 250GHz 频段完成多天线原型测试，标志着 6G 候选频段从实验室走向外场验证阶段。',tags:['6G','太赫兹'],cn:'USA'},
+  {id:10,t:'energy',src:'Wood Mackenzie',time:'06:58',title:'全球储能新增装机上半年达 48GW，中美合计占比 71%',sum:'中国上半年新增储能装机 26GW 居首，美国以 8GW 紧随其后；电网侧与工商业储能贡献主要增量。',tags:['储能','全球'],cn:'USA'},
+  {id:11,t:'lithium',src:'Nikkei Asia',time:'06:40',title:'日本车企加速全固态电池布局，丰田 2027 量产计划不变',sum:'丰田、日产相继公布固态电池量产时间表，硫化物电解质专利布局成为竞争焦点，日韩材料企业同步扩产。',tags:['固态电池','日韩'],cn:'Japan'},
+  {id:12,t:'energy',src:'PV-Tech',time:'06:25',title:'光伏组件价格企稳：TOPCon 双面双玻均价 0.71 元/W',sum:'8 月组件价格连续两周持平，硅料价格触底回升带动产业链价格企稳，部分头部厂商上调排产。',tags:['光伏','价格'],cn:'China'},
+  {id:13,t:'aidc',src:'财新 Caixin',time:'06:10',title:'数据中心电力保障成瓶颈：西部绿电直供试点启动',sum:'多地启动数据中心绿电直供与源网荷储一体化试点，探索算力与绿电协同消纳的新商业模式。',tags:['绿电','政策'],cn:'China'},
+  {id:14,t:'trade',src:'路透社 Reuters',time:'05:55',title:'美国对华锂电关税 2026 年再上调，EV 电池综合税率或达 50%',sum:'USTR 公告 301 条款四年度复审结果，动力电池与天然石墨关税 2026 年 1 月起进一步上调，业内评估出口成本上升约 8-12%。',tags:['关税','301条款'],cn:'USA'},
+  {id:15,t:'trade',src:'欧盟委员会',time:'05:40',title:'欧盟对华电动车反补贴终裁落地，综合税率 20.5%~35.3%',sum:'欧委会公布终裁税率，叠加 10% 最惠国基础关税后，部分企业综合进口税率接近 45%；中企加速欧洲本地化建厂应对。',tags:['反补贴','欧盟'],cn:'Germany'},
+  {id:16,t:'trade',src:'Benchmark Mineral Intelligence',time:'05:25',title:'英国推出关键矿产战略：锂、钴、石墨纳入战略储备清单',sum:'英国政府公布关键矿产战略更新，将锂、钴、天然石墨、锰列入战略储备，鼓励本土回收与多元化采购。',tags:['关键矿产','英国'],cn:'UK'},
+  {id:17,t:'lithium',src:'Fastmarkets',time:'05:10',title:'澳洲锂矿 Q2 产量环比下滑 9%，Greenbushes 下调全年指引',sum:'澳洲锂精矿产量连续两个季度回落，高成本矿山现金成本压力显现，行业供给出清信号增强。',tags:['锂矿','供给'],cn:'Australia'},
+  {id:18,t:'aidc',src:'The Register',time:'04:55',title:'欧洲数据中心能耗新规落地：强制要求余热回收与绿电采购',sum:'欧盟数据中心能效指令实施细则生效，大型数据中心须在 2030 年前将余热回收比例提升至 40%。',tags:['欧盟','能耗'],cn:'Germany'},
+  {id:19,t:'trade',src:'法国经财部',time:'04:40',title:'法国推出电池产业补贴：LFP 正极与电芯本土产能加码',sum:'法国政府宣布新增 21 亿欧元补贴支持本土电池产业链，重点扶持 LFP 正极材料与储能电芯产能建设。',tags:['补贴','法国'],cn:'France'},
+  {id:20,t:'aidc',src:'ASML / 荷兰政府',time:'04:25',title:'荷兰扩大半导体设备出口管制：先进光刻与核心零部件纳入',sum:'荷兰政府更新出口管制清单，更多先进制程光刻设备与零部件出口需许可，影响先进 AI 芯片供应链。',tags:['出口管制','荷兰'],cn:'Netherlands'},
+  {id:21,t:'energy',src:'瑞典能源署',time:'04:10',title:'瑞典北部数据中心集群绿电消纳率突破 95%',sum:'多家超大规模数据中心在瑞典北部落地，依托水电与风电资源，全年绿电消纳率超 95%，PUE 降至 1.1。',tags:['绿电','北欧'],cn:'Sweden'},
+  {id:22,t:'lithium',src:'瑞士 SGS / 海关',time:'03:55',title:'瑞士通过电池回收法规：2030 年回收率目标 70%',sum:'瑞士联邦议会通过新版电池回收法规，要求 2030 年锂电池材料回收率达 70%，建立全链条追溯体系。',tags:['回收','法规'],cn:'Switzerland'},
+  {id:23,t:'trade',src:'彭博新能源',time:'03:40',title:'欧盟 CBAM 过渡期 2025 年底结束，2026 年全面开征碳关税',sum:'碳边境调节机制过渡期结束，钢铁、铝、水泥、化肥、电力、氢六大行业全面纳入，电池间接纳入范围扩大。',tags:['CBAM','碳关税'],cn:'Germany'},
+  {id:24,t:'lithium',src:'SMM',time:'03:25',title:'锂电回收白名单扩容至 156 家，规范化回收率目标 2030 年达 75%',sum:'工信部公示第八批动力电池回收白名单企业，梯次利用与再生利用产能合计规划超 600GWh 当量。',tags:['回收','政策'],cn:'China'},
+  {id:25,t:'aidc',src:'IDC',time:'03:10',title:'中国智能算力市场 2026H1 规模达 190 亿元，同比增 51%',sum:'IDC 最新报告显示智算服务市场高速增长，推理算力占比首次超过训练，端侧智能带来增量需求。',tags:['市场','推理'],cn:'China'},
+  {id:26,t:'energy',src:'国家能源局',time:'02:55',title:'7 月全社会用电量同比增长 7.2%，高技术制造业用电领跑',sum:'计算机通信电子设备制造业用电量同比增长 15.3%，数据中心与 AI 相关产业成为用电增长新引擎。',tags:['用电量','AI'],cn:'China'},
+  {id:27,t:'trade',src:'印度商工部',time:'02:40',title:'印度延长锂电池生产挂钩激励 (PLI) 至 2028，本土产能目标 200GWh',sum:'印度政府将 PLI 计划延期并加大补贴力度，目标 2028 年形成 200GWh 本土电池产能，降低对进口依赖。',tags:['PLI','印度'],cn:'China'},
+  {id:28,t:'energy',src:'彭博新能源',time:'02:25',title:'虚拟电厂试点扩围：聚合可调节负荷规模超 15GW',sum:'多地虚拟电厂进入常态化运营，工商业储能、充电桩与空调负荷参与需求响应，辅助服务收益模式成熟。',tags:['虚拟电厂','需求响应'],cn:'China'},
+  {id:29,t:'lithium',src:'Benchmark',time:'02:10',title:'全球 LFP 正极产能 2027 年将超 500 万吨，中国企业占比 78%',sum:'Benchmark 预测 LFP 正极产能将快速扩张，中国头部企业通过技术授权与合资方式布局欧洲与东南亚。',tags:['LFP','产能'],cn:'China'},
+  {id:30,t:'aidc',src:'Dell\'Oro',time:'01:55',title:'800G 光模块出货量 2026 年预计翻倍，数据中心交换机升级驱动',sum:'Dell\'Oro 报告显示 800G 光模块出货量预计同比增长 110%，AI 集群 scale-out 网络升级是主要需求来源。',tags:['光模块','800G'],cn:'USA'}
+];
+/* assign a full timestamp to each news item (spread over the past ~3 weeks) for date/time-range filtering */
+NEWS.forEach((n,i)=>{n.d=new Date(2026,7,21-Math.round(i/1.4),parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+
+const PAPERS = [
+  {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering',auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
+  {id:2,j:'joule',jname:'Joule',t:'aidc',date:'2026-08-15',title:'Carbon-aware workload scheduling for hyperscale data centers with renewable co-location',auth:'M. Chen, R. Patel, S. Kim',org:'Stanford University / Microsoft Research',cites:52,hot:1},
+  {id:3,j:'applied',jname:'Applied Energy',t:'lithium',date:'2026-08-12',title:'Degradation-aware second-life battery valuation framework for grid storage markets',auth:'H. Liu, J. Park, A. Müller',org:'Zhejiang University · 浙江大学',cites:21,hot:0},
+  {id:4,j:'ieee',jname:'IEEE Trans. Power Systems',t:'energy',date:'2026-08-10',title:'Frequency-constrained optimal planning of BESS in high-renewable power systems',auth:'Q. Zhao, E. Brown, L. Nguyen',org:'EPRI / Xi\'an Jiaotong University',cites:17,hot:0},
+  {id:5,j:'arxiv',jname:'arXiv',t:'aidc',date:'2026-08-19',title:'Rack-aware cooling optimization: a transformer-based digital twin for liquid-cooled AI clusters',auth:'T. Ito, D. Silva, Y. Chen',org:'University of Tokyo / NVIDIA',cites:9,hot:1},
+  {id:6,j:'nature',jname:'Nature Energy',t:'energy',date:'2026-08-08',title:'Battery-electric versus green-hydrogen long-haul trucking: a system-level lifecycle assessment',auth:'S. Weber, F. Rossi, K. Tanaka',org:'Fraunhofer ISI',cites:44,hot:0},
+  {id:7,j:'applied',jname:'Applied Energy',t:'aidc',date:'2026-08-05',title:'Waste-heat-driven absorption cooling for data center energy recovery: pilot results',auth:'G. Sun, P. Mehta, R. Costa',org:'Hunan University · 湖南大学',cites:13,hot:0},
+  {id:8,j:'ieee',jname:'IEEE Comm. Magazine',t:'telecom',date:'2026-08-02',title:'Non-terrestrial network integration in 6G: architecture and spectrum sharing',auth:'A. Kowalski, J. Lee, M. Hassan',org:'Samsung R&D / TU Dresden',cites:28,hot:0},
+  {id:9,j:'arxiv',jname:'arXiv',t:'lithium',date:'2026-07-30',title:'Unsupervised anomaly detection for lithium-ion cell manufacturing with physics-informed autoencoders',auth:'W. Huang, C. Fischer, N. Gupta',org:'CATL / KIT',cites:6,hot:0},
+  {id:10,j:'joule',jname:'Joule',t:'telecom',date:'2026-07-28',title:'Energy-efficient massive MIMO: joint beamforming and power allocation for 5G-Advanced',auth:'L. Andersson, H. Park, X. Wu',org:'Ericsson / Chalmers',cites:15,hot:0},
+  {id:11,j:'nature',jname:'Nature Energy',t:'aidc',date:'2026-07-25',title:'Green hydrogen-powered microgrids for off-grid AI compute clusters',auth:'R. Mensah, S. Zhou, V. Kumar',org:'MIT / NREL',cites:31,hot:1},
+  {id:12,j:'applied',jname:'Applied Energy',t:'energy',date:'2026-07-22',title:'Co-optimization of solar-wind-storage portfolios under carbon market uncertainty',auth:'F. Bianchi, Y. Nakamura, T. Gomez',org:'Politecnico di Milano',cites:19,hot:0}
+];
+
+const TREND7 = [
+  {d:'08-15',v:{lithium:32,aidc:41,telecom:18,energy:24}},
+  {d:'08-16',v:{lithium:38,aidc:36,telecom:21,energy:19}},
+  {d:'08-17',v:{lithium:27,aidc:52,telecom:16,energy:28}},
+  {d:'08-18',v:{lithium:45,aidc:38,telecom:14,energy:22}},
+  {d:'08-19',v:{lithium:51,aidc:44,telecom:20,energy:26}},
+  {d:'08-20',v:{lithium:42,aidc:58,telecom:17,energy:31}},
+  {d:'08-21',v:{lithium:36,aidc:47,telecom:19,energy:25}}
+];
+const JOURNAL_COLORS = {nature:'#185FA5',joule:'#B7791F',applied:'#0E7C86',ieee:'#15976B',arxiv:'#4A5A6A'};
+
+/* ============ STATE ============ */
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+const state = {country:'China',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh'};
+
+/* ============ HELPERS ============ */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const t = k => (I18N[state.lang]||I18N.zh)[k] || k;
+function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._h);el._h=setTimeout(()=>el.classList.remove('show'),2200);}
+function go(page){$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$('#main').scrollTop=0;renderAll();}
+
+/* ============ LANG ============ */
+function applyLang(){
+  document.documentElement.lang = state.lang==='zh'?'zh-CN':'en';
+  document.title = t('app_title');
+  $$('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+  $$('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh);});
+  $('#langLabel').textContent = state.lang==='zh'?'EN':'中文';
+  renderAll();
+}
+function setLang(l){state.lang=l;lsSet('tl_lang',l);applyLang();toast(l==='zh'?'已切换为中文':'Switched to English');}
+
+/* ============ COUNTRY ============ */
+function buildCountryDrop(){
+  $('#countryDrop').innerHTML = COUNTRIES.map(cn=>`<div class="country-opt" data-cn="${cn}"><span style="font-size:15px">${FLAGS[cn]}</span> ${cn} <span class="check" style="visibility:hidden">✓</span></div>`).join('');
+  $$('#countryDrop .country-opt').forEach(o=>o.addEventListener('click',()=>setCountry(o.dataset.cn)));
+}
+function setCountry(cn){
+  state.country=cn;
+  $('#countryLabel').textContent=cn;
+  $('#flagImg').textContent=FLAGS[cn];
+  $('#priceCountryChip').textContent=FLAGS[cn]+' '+cn;
+  $$('#countryDrop .country-opt').forEach(o=>{const on=o.dataset.cn===cn;o.classList.toggle('active',on);o.querySelector('.check').style.visibility=on?'visible':'hidden';});
+  $$('.page-title .loc').forEach(el=>el.textContent=cn);
+  renderAll();
+  toast((state.lang==='zh'?'已切换监测区域 → ':'Switched region → ')+cn);
+}
+$('#countryBtn').addEventListener('click',e=>{e.stopPropagation();$('#countryDrop').classList.toggle('open');});
+document.addEventListener('click',e=>{if(!e.target.closest('.country-wrap'))$('#countryDrop').classList.remove('open');});
+
+/* ============ DATE & TIME RANGE (unified, per-module) ============ */
+const RANGE_PRESETS=[
+  {k:'24h',days:1,label:()=>t('rp_24h')},
+  {k:'7d',days:7,label:()=>t('rp_7d')},
+  {k:'30d',days:30,label:()=>t('rp_30d')},
+  {k:'90d',days:90,label:()=>t('rp_90d')},
+  {k:'1y',days:365,label:()=>t('rp_1y')}
+];
+function presetDays(k){const p=RANGE_PRESETS.find(x=>x.k===k);return p?p.days:7;}
+function p2(n){return String(n).padStart(2,'0');}
+function fmtDT(d){return (d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes());}
+function fmtDate(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
+function fmtTime(d){return p2(d.getHours())+':'+p2(d.getMinutes());}
+function seeded(x){const s=Math.sin(x*12.9898)*43758.5453;return s-Math.floor(s);}
+state.ranges=state.ranges||{};
+function rngNow(key){
+  const r=state.ranges[key]||{preset:'7d'};
+  const end=new Date();
+  if(r.preset==='custom'&&r.start&&r.end)return {start:r.start,end:r.end,preset:'custom'};
+  const start=new Date(end.getTime()-presetDays(r.preset)*864e5);
+  return {start,end,preset:r.preset};
+}
+function rngLabel(key){
+  const {start,end,preset}=rngNow(key);
+  if(preset==='custom')return fmtDT(start)+' ~ '+fmtDT(end);
+  const p=RANGE_PRESETS.find(x=>x.k===preset);return p?p.label():preset;
+}
+function mountRangePicker(mountId,key,onChange){
+  const m=$('#'+mountId);if(!m)return null;
+  m.className='rp';
+  const zh=state.lang==='zh';
+  m.innerHTML='<button class="rp-btn" type="button" title="'+t('rp_title')+'"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span class="rp-label"></span><span class="rp-caret"></span></button><div class="rp-pop"><div class="rp-presets"></div><div class="rp-custom"><div class="rp-row"><span class="rp-lbl">'+t('rp_from')+'</span><input type="date" class="rp-in rp-d1"><input type="time" class="rp-in rp-t1"></div><div class="rp-row"><span class="rp-lbl">'+t('rp_to')+'</span><input type="date" class="rp-in rp-d2"><input type="time" class="rp-in rp-t2"></div><div class="rp-foot"><button class="btn primary rp-apply" type="button">'+t('rp_apply')+'</button></div></div></div>';
+  const btn=m.querySelector('.rp-btn'),pop=m.querySelector('.rp-pop'),pre=m.querySelector('.rp-presets'),cust=m.querySelector('.rp-custom');
+  RANGE_PRESETS.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='rp-chip';b.dataset.k=p.k;b.textContent=p.label();pre.appendChild(b);});
+  const cb=document.createElement('button');cb.type='button';cb.className='rp-chip rp-cust';cb.dataset.k='custom';cb.textContent=t('rp_custom');pre.appendChild(cb);
+  const refresh=()=>{const cur=(state.ranges[key]||{preset:'7d'}).preset;pre.querySelectorAll('.rp-chip').forEach(c=>c.classList.toggle('active',c.dataset.k===cur));btn.querySelector('.rp-label').textContent=rngLabel(key);};
+  btn.addEventListener('click',e=>{e.stopPropagation();pop.classList.toggle('open');refresh();const r=state.ranges[key]||{preset:'7d'};cust.classList.toggle('show',r.preset==='custom');if(r.preset==='custom'){m.querySelector('.rp-d1').value=fmtDate(r.start);m.querySelector('.rp-t1').value=fmtTime(r.start);m.querySelector('.rp-d2').value=fmtDate(r.end);m.querySelector('.rp-t2').value=fmtTime(r.end);}});
+  pre.querySelectorAll('.rp-chip').forEach(c=>c.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(c.dataset.k==='custom'){pop.classList.add('open');cust.classList.add('show');return;}
+    state.ranges[key]={preset:c.dataset.k};pop.classList.remove('open');cust.classList.remove('show');refresh();if(onChange)onChange(key);
+  }));
+  m.querySelector('.rp-apply').addEventListener('click',e=>{e.stopPropagation();const d1=m.querySelector('.rp-d1').value,t1=m.querySelector('.rp-t1').value||'00:00',d2=m.querySelector('.rp-d2').value,t2=m.querySelector('.rp-t2').value||'23:59';if(!d1||!d2){toast(zh?'请选择起止日期':'Select start & end dates');return;}const s=new Date(d1+'T'+t1),en=new Date(d2+'T'+t2);if(s>en){toast(zh?'开始时间不能晚于结束时间':'Start must be before end');return;}state.ranges[key]={preset:'custom',start:s,end:en};pop.classList.remove('open');refresh();if(onChange)onChange(key);toast(zh?'已应用自定义范围':'Custom range applied');});
+  document.addEventListener('click',e=>{if(!m.contains(e.target))pop.classList.remove('open');});
+  m._refresh=refresh;refresh();
+  return m;
+}
+function refreshPickers(){document.querySelectorAll('.rp').forEach(r=>r._refresh&&r._refresh());}
+
+/* ============ GLOBAL NEWS RANGE (topbar) ============ */
+function setDateRange(d){
+  const now=new Date();
+  if(d==='today'){state.ranges.ovNews={preset:'24h'};}
+  else if(d==='yesterday'){const st=new Date(now);st.setDate(st.getDate()-1);state.ranges.ovNews={preset:'custom',start:new Date(st.getFullYear(),st.getMonth(),st.getDate(),0,0),end:new Date(st.getFullYear(),st.getMonth(),st.getDate(),23,59)};}
+  else if(d==='7d'){state.ranges.ovNews={preset:'7d'};}
+  else if(d==='30d'){state.ranges.ovNews={preset:'30d'};}
+  else if(d==='custom'){$('#dateModal').classList.add('open');return;}
+  $('#dateRangeLabel').textContent=rngLabel('ovNews');
+  refreshPickers();
+  renderNews();
+}
+$('#dateBtn').addEventListener('click',()=>setDateRange('custom'));
+$('#dCancel').addEventListener('click',()=>{setDateRange('today');$('#dateModal').classList.remove('open');});
+$('#dApply').addEventListener('click',()=>{const s=$('#dStart').value,t1=$('#dStartT').value||'00:00',e=$('#dEnd').value,t2=$('#dEndT').value||'23:59';if(!s||!e)return;state.ranges.ovNews={preset:'custom',start:new Date(s+'T'+t1),end:new Date(e+'T'+t2)};$('#dateRangeLabel').textContent=rngLabel('ovNews');$('#dateModal').classList.remove('open');refreshPickers();renderNews();toast(state.lang==='zh'?'已应用自定义日期时间范围':'Custom date & time range applied');});
+$('#dateModal').addEventListener('click',ev=>{if(ev.target===$('#dateModal'))$('#dateModal').classList.remove('open');});
+
+/* ============ NEWS ============ */
+function tagInfo(type){const m={lithium:['tag_lithium','t-lithium'],aidc:['tag_aidc','t-aidc'],telecom:['tag_telecom','t-telecom'],energy:['tag_energy','t-energy'],trade:['tag_trade','t-trade'],pfe:['tag_pfe','t-pfe']};return m[type]||['tag_trade','t-trade'];}
+function newsHTML(n){
+  const ti=tagInfo(n.t);
+  return `<div class="news-item"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><span class="src">${esc(n.src)}</span><span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}</div><div class="news-title">${esc(n.title)}</div><div class="news-summary">${esc(n.sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+}
+function renderNews(){
+  const {start,end}=rngNow('ovNews');
+  let list;
+  if(state.tab==='pfe'){list=NEWS.filter(n=>n.t==='pfe');}
+  else{list=NEWS.filter(n=>n.cn===state.country||n.cn==='China');}
+  list=list.filter(n=>n.d>=start&&n.d<=end);
+  if(state.tab!=='all'&&state.tab!=='pfe')list=list.filter(n=>n.t===state.tab);
+  list=list.slice(0,state.newsShown);
+  $('#newsList').innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该筛选条件下暂无新闻<br><span style="font-size:10.5px">可切换国家、标签或时间范围</span>':'No news under current filters<br><span style="font-size:10.5px">Try a different country, tag or time range</span>')+'</div>';
+  $('#newsCount').textContent=list.length;
+}
+$('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews();});
+$$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
+function renderSectorNews(id,type,key,count){
+  const {start,end}=rngNow(key||'7d');
+  let list=NEWS.filter(n=>n.t===type&&n.d>=start&&n.d<=end).slice(0,count||5);
+  $(id).innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该时段暂无相关新闻':'No related news in this period')+'</div>';
+}
+
+/* ============ PRICE TABLE ============ */
+function renderPrices(){
+  const cn=state.country;
+  let html='<thead><tr><th>'+t('th_commodity')+'</th><th>'+t('th_spot')+'</th><th>'+t('th_24h')+'</th><th>'+t('th_7d')+'</th><th>'+t('th_30d')+'</th></tr></thead><tbody>';
+  PRICE_GROUPS.forEach(g=>{
+    html+=`<tr class="price-group ${g.cls}"><th colspan="5">${g.rows.some(r=>r.hot)?'<span class="star">★</span>':''}${t(g.i18n)}</th></tr>`;
+    g.rows.forEach(r=>{
+      const price=(r.v[cn]||r.v['China'])+(r.unit?('<span style="color:var(--ink-3);font-size:10px"> '+(r.unit[state.lang]||r.unit.zh)+'</span>'):'');
+      const c24cls=r.c24==='up'?'chg-up':(r.c24==='down'?'chg-down':'');
+      const c7cls=r.c7==='up'?'chg-up':(r.c7==='down'?'chg-down':'');
+      const c30cls=r.c30==='up'?'chg-up':(r.c30==='down'?'chg-down':'');
+      html+=`<tr><td class="name">${r.i18n_label[state.lang]}</td><td>${price}</td><td class="${c24cls}">${r.c24v}</td><td class="${c7cls}">${r.c7v}</td><td class="${c30cls}">${r.c30v}</td></tr>`;
+    });
+  });
+  html+='</tbody>';
+  $('#priceTable').innerHTML=html;
+}
+
+/* ============ TARIFF TABLE ============ */
+function renderTariffs(){
+  let html='<thead><tr><th>'+t('th_product')+'</th><th>'+t('th_market')+'</th><th>'+t('th_rate')+'</th><th>'+t('th_note')+'</th><th>'+t('th_effective')+'</th></tr></thead><tbody>';
+  TARIFFS.forEach(row=>{
+    row.markets.forEach((m,i)=>{
+      html+=`<tr${i===0?'':' style="border-top:1px solid var(--line-2)"'}>`;
+      if(i===0)html+=`<td class="name" rowspan="${row.markets.length}"><b>${row.p[state.lang]}</b></td>`;
+      html+=`<td class="name">${FLAGS[m.m]||''} ${m.m}</td><td><span class="tariff-badge ${m.s}">${m.r}</span></td><td style="font-family:var(--sans)">${m.n[state.lang]}</td><td style="font-size:10.5px;color:var(--ink-3)">${m.e}</td></tr>`;
+    });
+  });
+  html+='</tbody>';
+  $('#tariffTable').innerHTML=html;
+
+  html='<thead><tr><th>'+t('th_country')+'</th><th>'+t('th_li')+'</th><th>'+t('th_lfp')+'</th><th>'+t('th_gr')+'</th><th>'+t('th_hy')+'</th></tr></thead><tbody>';
+  MAT_PRICES.forEach(m=>{
+    html+=`<tr><td class="name">${FLAGS[m.c]||''} ${m.c} <span style="font-size:9px;color:var(--ink-3)">(${m.cur})</span></td><td>${m.li}</td><td>${m.lfp}</td><td>${m.gr}</td><td>${m.hy}</td></tr>`;
+  });
+  html+='</tbody>';
+  $('#matPriceTable').innerHTML=html;
+}
+
+/* ============ PAPERS ============ */
+function paperHTML(p){
+  const tagMap={lithium:['tag_lithium','t-lithium'],aidc:['tag_aidc','t-aidc'],telecom:['tag_telecom','t-telecom'],energy:['tag_energy','t-energy']};
+  const tm=tagMap[p.t]||['tag_trade','t-trade'];
+  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">🔥 HOT</span>':''}</div><div class="p-title">${esc(p.title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">citations <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span><span>DOI</span></span></div></div>`;
+}
+function renderPapers(){
+  const {start,end}=rngNow('papers');
+  let list=PAPERS.filter(p=>{const d=new Date(p.date);return d>=start&&d<=end;});
+  if(state.paperJournal!=='all')list=list.filter(p=>p.j===state.paperJournal);
+  if(state.paperQuery){const q=state.paperQuery.toLowerCase();list=list.filter(p=>(p.title+p.auth+p.org).toLowerCase().includes(q));}
+  list=list.slice(0,state.papersShown);
+  $('#paperGrid').innerHTML=list.length?list.map(paperHTML).join(''):'<div class="empty" style="grid-column:1/-1">'+(state.lang==='zh'?'未找到匹配论文':'No matching papers')+'</div>';
+}
+$('#loadMorePapers').addEventListener('click',()=>{state.papersShown+=6;renderPapers();});
+$$('#paperJournals .chip').forEach(c=>c.addEventListener('click',()=>{$$('#paperJournals .chip').forEach(x=>x.classList.toggle('active',x===c));state.paperJournal=c.dataset.j;renderPapers();}));
+$('#paperSearch').addEventListener('input',e=>{state.paperQuery=e.target.value;renderPapers();});
+function renderHomePapers(){$('#paperList').innerHTML=PAPERS.slice(0,4).map(paperHTML).join('');}
+
+/* ============ CHARTS ============ */
+function renderTrend(){
+  const {start,end}=rngNow('trend');
+  const spanMs=end.getTime()-start.getTime(),spanDays=spanMs/864e5;
+  const n=spanDays<=1.2?12:Math.min(30,Math.max(7,Math.round(spanDays)));
+  const step=spanMs/n;
+  const cats=['lithium','aidc','telecom','energy'];
+  const cols=['b-lithium','b-aidc','b-telecom','b-energy'];
+  let bars='',max=0;
+  const valsA=[];
+  for(let i=0;i<n;i++){
+    const d=new Date(start.getTime()+step*i);
+    const vals=cats.map((c,ci)=>Math.round(14+seeded(i*7.3+ci*13.7)*44));
+    const tot=vals.reduce((a,b)=>a+b,0);
+    valsA.push({d,vals,tot});
+    if(tot>max)max=tot;
+  }
+  valsA.forEach(({d,vals,tot})=>{
+    const lbl=spanDays<=1.2?p2(d.getHours())+':00':((d.getMonth()+1)+'-'+p2(d.getDate()));
+    bars+=`<div class="bar-col"><div class="bar-val">${tot}</div><div class="bar-stack" style="height:${Math.max(4,tot/max*100)}%">${vals.map((v,ci)=>`<div class="${cols[ci]}" style="height:${v/tot*100}%"></div>`).join('')}</div><div class="bar-x">${lbl}</div></div>`;
+  });
+  $('#trendBars').innerHTML=bars;
+}
+const CHART_CFG={
+  liChart:{color:'#B7791F',from:82300,to:76500,vol:900,seed:11,dec:0},
+  aidcChart:{color:'#185FA5',from:1.1,to:2.4,vol:0.15,seed:5,dec:2},
+  tcChart:{color:'#0E7C86',from:382,to:425.6,vol:7,seed:23,dec:1},
+  egChart:{color:'#15976B',from:22,to:38.4,vol:2.2,seed:31,dec:1}
+};
+function lineSeries(key,cfg){
+  const {start,end}=rngNow(key);
+  const spanMs=end.getTime()-start.getTime(),spanDays=spanMs/864e5;
+  let n,lab;
+  if(spanDays<=1.2){n=12;lab=d=>p2(d.getHours())+':00';}
+  else if(spanDays<=8){n=8;lab=d=>(d.getMonth()+1)+'-'+p2(d.getDate());}
+  else if(spanDays<=35){n=15;lab=d=>(d.getMonth()+1)+'-'+p2(d.getDate());}
+  else if(spanDays<=100){n=13;lab=d=>(d.getMonth()+1)+'-'+p2(d.getDate());}
+  else{n=12;lab=d=>d.getFullYear()+'-'+p2(d.getMonth()+1);}
+  const step=spanMs/(n-1),data=[],labels=[];
+  for(let i=0;i<n;i++){
+    const d=new Date(start.getTime()+step*i);
+    const f=i/(n-1);
+    let v=cfg.from+(cfg.to-cfg.from)*f+(seeded(i*3.7+cfg.seed)-0.5)*cfg.vol;
+    data.push(Number(v.toFixed(cfg.dec??1)));
+    labels.push(lab(d));
+  }
+  data[n-1]=cfg.to;
+  labels[n-1]=state.lang==='zh'?'今':'now';
+  return {data,labels};
+}
+function renderCharts(){
+  Object.keys(CHART_CFG).forEach(key=>{
+    const sel=key==='liChart'?'#liPriceChart':key==='aidcChart'?'#aidcChart':key==='tcChart'?'#tcChart':'#egChart';
+    const cfg=CHART_CFG[key];
+    const {data,labels}=lineSeries(key,cfg);
+    lineChart(sel,data,cfg.color,{labels,min:Math.min(...data)*(cfg.dec?0.9:0.98),max:Math.max(...data)*1.01});
+  });
+}
+function lineChart(svgId,data,color,opts={}){
+  const svg=$(svgId),W=520,H=200,pad={l:42,r:12,t:16,b:26};
+  const iw=W-pad.l-pad.r,ih=H-pad.t-pad.b;
+  const min=opts.min??Math.min(...data),max=opts.max??Math.max(...data);
+  const x=i=>pad.l+i/(data.length-1)*iw;
+  const y=v=>pad.t+(1-(v-min)/(max-min))*ih;
+  let pts=data.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+  let g=`<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+ih}" class="grid-line"/><line x1="${pad.l}" y1="${pad.t+ih}" x2="${pad.l+iw}" y2="${pad.t+ih}" stroke="var(--line)"/>`;
+  [0,.25,.5,.75,1].forEach(f=>{const yy=pad.t+f*ih;g+=`<line x1="${pad.l}" y1="${yy}" x2="${pad.l+iw}" y2="${yy}" class="grid-line"/><text x="${pad.l-6}" y="${yy+3}" text-anchor="end" font-size="9" fill="#7C8B9C" font-family="var(--mono)">${Math.round(min+(1-f)*(max-min))}</text>`;});
+  g+=`<polygon points="${pts[0]} ${pad.l},${pad.t+ih} ${pad.l+iw},${pad.t+ih} ${pts[pts.length-1]}" fill="${color}" class="area"/><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${pts[pts.length-1].split(',')[0]}" cy="${pts[pts.length-1].split(',')[1]}" r="3.2" fill="${color}"/>`;
+  data.forEach((v,i)=>{g+=`<text x="${x(i)}" y="${pad.t+ih+14}" text-anchor="middle" font-size="9" fill="#7C8B9C" font-family="var(--mono)">${opts.labels?opts.labels[i]:i+1}</text>`;});
+  svg.innerHTML=g;
+}
+
+function renderHeat(){
+  const r=rngNow('liHeat');
+  const mult={'24h':0.35,'7d':0.62,'30d':0.85,'90d':1}[r.preset]||1;
+  const seed=r.start.getTime()%10000;
+  const base=[64,58,41,37,29,73,46];
+  const items=[['chain_upstream',0],['chain_cathode',1],['chain_anode',2],['chain_electrolyte',3],['chain_sep',4],['chain_cell',5],['chain_recycle',6]];
+  const colors=['var(--amber)','var(--amber)','var(--accent)','var(--accent)','var(--teal)','var(--amber)','var(--teal)'];
+  $('#liHeat').innerHTML=items.map(([k,i])=>{let v=Math.round(base[i]*mult+seeded(seed+i)*12);v=Math.min(98,Math.max(8,v));return `<div class="heat"><div class="h-day">${t(k)}</div><div class="h-num">${v}</div><div class="h-bar"><i style="width:${v/98*100}%;background:${colors[i]}"></i></div></div>`;}).join('');
+}
+function renderAiRegion(){
+  const r=rngNow('aiRegion');
+  const seed=r.start.getTime()%1000;
+  const mult={'24h':0.05,'7d':0.11,'30d':0.24,'90d':0.52,'1y':1}[r.preset]||0.24;
+  const base=[0.86,0.71,0.52,0.31],names=['region_e','region_n','region_s','region_w'];
+  const rows=names.map((k,i)=>{
+    const v=(base[i]*mult+seeded(seed+i*9)*0.05).toFixed(2);
+    const yoy=Math.round((10+seeded(seed+i*17)*26)*10)/10;
+    const pue=(1.18+seeded(seed+i*3)*0.16).toFixed(2);
+    return [k,v+' EF','+'+yoy+'%',pue];
+  });
+  $('#aiRegion').innerHTML='<thead><tr><th>'+t('th_region')+'</th><th>'+t('th_cap')+'</th><th>'+t('th_yoy')+'</th><th>'+t('th_pue')+'</th></tr></thead><tbody>'+rows.map(r2=>`<tr><td class="name">${t(r2[0])}</td><td>${r2[1]}</td><td class="chg-up">${r2[2]}</td><td>${r2[3]}</td></tr>`).join('')+'</tbody>';
+}
+function renderEgDonut(){
+  const r=rngNow('egDonut');
+  const seed=r.start.getTime()%9973;
+  let raw=[41,31,20,8].map((v,i)=>Math.max(4,v+(seeded(seed+i*7)-0.5)*6));
+  const s=raw.reduce((a,b)=>a+b,0);
+  const pct=raw.map(v=>Math.round(v/s*100));
+  const colors=['var(--down)','var(--accent)','var(--amber)','var(--teal)'];
+  const names=state.lang==='zh'?['二产','三产','居民','一产']:['Secondary','Service','Resid.','Primary'];
+  let off=25,segs='';
+  pct.forEach((p,i)=>{segs+=`<circle cx="150" cy="90" r="62" fill="none" stroke="${colors[i]}" stroke-width="26" stroke-dasharray="${p} ${100-p}" stroke-dashoffset="${off}" transform="rotate(-90 150 90)"/>`;off+=p;});
+  const center=(9.36+(seeded(seed)*0.4-0.2)).toFixed(2);
+  $('#egDonutBox').innerHTML='<svg class="svg-chart" viewBox="0 0 300 180" style="height:180px;margin:0 auto;max-width:300px"><circle cx="150" cy="90" r="62" fill="none" stroke="#E4EAF1" stroke-width="26"/>'+segs+'<text x="150" y="86" text-anchor="middle" font-family="var(--mono)" font-size="18" font-weight="600" fill="#16202B">'+center+'</text><text x="150" y="104" text-anchor="middle" font-size="9" fill="#7C8B9C">'+(state.lang==='zh'?'万亿 kWh':'TWh')+'</text></svg><div class="legend" style="justify-content:center;margin-top:8px;flex-wrap:wrap;gap:12px">'+pct.map((p,i)=>`<div class="legend-item"><span class="sw" style="background:${colors[i]}"></span>${names[i]} ${p}%</div>`).join('')+'</div>';
+}
+
+/* ============ LIVE TICKER ============ */
+function tickLive(){
+  if(!state.live)return;
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');
+  $('#ovTime').textContent=`${hh}:${mm}:${ss}`;
+  $('#priceStamp').textContent=`UTC+8 ${hh}:${mm}`;
+  const k=$('#kpiLiIndex'),delta=(Math.random()*.8-.2).toFixed(2);
+  k.textContent=(4287.6+parseFloat(delta)*10).toFixed(1);
+  const dEl=$('#kpiLiDelta');
+  dEl.className='kpi-delta '+(delta>=0?'up':'down');
+  dEl.textContent=`${delta>=0?'▲':'▼'} ${Math.abs(delta)}%`;
+  const n=$('#kpiNews');n.textContent=Math.round(247+(Math.random()*6-3));
+}
+
+/* ============ NAV & EVENTS ============ */
+$$('.nav-item').forEach(n=>n.addEventListener('click',()=>go(n.dataset.page)));
+$('#langBtn').addEventListener('click',()=>setLang(state.lang==='zh'?'en':'zh'));
+$('#exportBtn').addEventListener('click',()=>toast(state.lang==='zh'?'报告已生成 → industry-report-2026-08-21.pdf':'Report generated → industry-report-2026-08-21.pdf'));
+$('#avatarBtn').addEventListener('click',()=>toast('Ivy Guo · ivy.guo@example.com'));
+$('#editProfileBtn').addEventListener('click',()=>toast(state.lang==='zh'?'个人资料编辑功能即将上线':'Profile editing coming soon'));
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();$('#globalSearch').focus();}});
+$('#globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){state.paperQuery=e.target.value.trim();go('papers');renderPapers();e.target.value='';toast((state.lang==='zh'?'已搜索: ':'Searched: ')+state.paperQuery);}});
+
+/* ============ DEPLOY BANNER ============ */
+function showDeployBanner(url){
+  if(!url)return;
+  $('#deployBanner').style.display='flex';
+  const d=state.lang==='zh'?'已部署 · 公网访问:':'Deployed · Public URL:';
+  $('#deployText').textContent=d;
+  $('#deployLink').textContent=url.replace(/^https?:\/\//,'');
+  $('#deployLink').href=url;
+  $('#deployCopy').onclick=()=>{navigator.clipboard.writeText(url).then(()=>toast(state.lang==='zh'?'链接已复制':'Link copied'));};
+}
+
+/* ============ RENDER ALL ============ */
+const RANGE_MOUNTS=[
+  ['rpOvNews','ovNews',()=>renderNews()],
+  ['rpTrend','trend',()=>renderTrend()],
+  ['rpLiChart','liChart',()=>renderCharts()],
+  ['rpLiHeat','liHeat',()=>renderHeat()],
+  ['rpLiNews','liNews',()=>renderSectorNews('#liNewsList','lithium','liNews',5)],
+  ['rpAidcChart','aidcChart',()=>renderCharts()],
+  ['rpAiRegion','aiRegion',()=>renderAiRegion()],
+  ['rpAiNews','aiNews',()=>renderSectorNews('#aiNewsList','aidc','aiNews',5)],
+  ['rpTcChart','tcChart',()=>renderCharts()],
+  ['rpTcMini','tcMini',()=>renderSectorNews('#tcNewsMini','telecom','tcMini',4)],
+  ['rpTcNews','tcNews',()=>renderSectorNews('#tcNewsList','telecom','tcNews',5)],
+  ['rpEgDonut','egDonut',()=>renderEgDonut()],
+  ['rpEgChart','egChart',()=>renderCharts()],
+  ['rpEgNews','egNews',()=>renderSectorNews('#egNewsList','energy','egNews',5)],
+  ['rpTradeNews','tradeNews',()=>renderSectorNews('#tradeNewsList','trade','tradeNews',6)],
+  ['rpPapers','papers',()=>renderPapers()]
+];
+function renderAll(){
+  RANGE_MOUNTS.forEach(([mid,key,fn])=>mountRangePicker(mid,key,fn));
+  renderNews();
+  renderHomePapers();
+  renderTrend();
+  renderCharts();
+  renderEgDonut();
+  renderPrices();
+  renderTariffs();
+  renderHeat();
+  renderAiRegion();
+  renderSectorNews('#liNewsList','lithium','liNews',5);
+  renderSectorNews('#aiNewsList','aidc','aiNews',5);
+  renderSectorNews('#tcNewsList','telecom','tcNews',5);
+  renderSectorNews('#egNewsList','energy','egNews',5);
+  renderSectorNews('#tradeNewsList','trade','tradeNews',6);
+  renderSectorNews('#tcNewsMini','telecom','tcMini',4);
+  renderPapers();
+  refreshPickers();
+}
+
+/* ============ INIT ============ */
+buildCountryDrop();
+state.ranges.tradeNews={preset:'90d'};
+setCountry('China');
+setDateRange('7d');
+applyLang();
+setInterval(tickLive,3000);
+
+/* expose for onclick */
+window.go=go;
+</script>
+</body>
+</html>
