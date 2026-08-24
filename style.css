@@ -294,6 +294,3 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tag.t-open{background:rgba(14,124,134,.1);color:var(--teal)}
 .tag.t-closed{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
 @media (max-width:1100px){.tender-item{flex-wrap:wrap}.tender-right{flex-direction:row;align-items:center;min-width:0;gap:10px}}
-/* country filter chips — flag + name spacing */
-#tnCountryChips .chip{gap:5px;padding:0 10px}
-#tnCountryChips .chip:first-child{margin-left:2px}
