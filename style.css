@@ -137,6 +137,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .tag.t-energy{background:rgba(21,151,107,.1);color:var(--down)}
 .tag.t-trade{background:var(--purple-soft);color:var(--purple)}
 .tag.t-pfe{background:rgba(124,92,255,.12);color:#7C5CFF}
+.tag.t-gov{background:rgba(74,90,106,.14);color:#4A5A6A;letter-spacing:.4px;text-transform:uppercase}
 .tag.t-country{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
 .paper{border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin:9px 0;transition:border .12s}
 .paper:hover{border-color:var(--accent-line)}
