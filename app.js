@@ -8,6 +8,7 @@ const I18N = {
     side_src:'数据源: 47 路 · 延迟 < 3min',
     ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
     tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
+    pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',
     kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
@@ -39,6 +40,7 @@ const I18N = {
     side_src:'Sources: 47 feeds · latency < 3min',
     ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
     tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
+    pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',
     kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
@@ -472,11 +474,11 @@ function expandLabel(days){
   return zh?'全部':'all time';
 }
 function renderNews(){
+  if(state.tab==='pfe'){renderPFE();return;}
   const {start,end}=rngNow('ovNews');
   let list;
-  if(state.tab==='pfe'){list=NEWS.filter(n=>n.t==='pfe');}
-  else{list=NEWS.filter(n=>n.cn===state.country);} /* strictly the selected country's own news */
-  if(state.tab!=='all'&&state.tab!=='pfe')list=list.filter(n=>n.t===state.tab);
+  list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
+  if(state.tab!=='all')list=list.filter(n=>n.t===state.tab);
   // Auto-expand if no results in current range
   const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
   list=filteredList;
@@ -491,6 +493,48 @@ function renderNews(){
   html+=list.length?list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'<br><span style="font-size:10.5px">'+t('news_empty_hint')+'</span></div>';
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=list.length;
+  if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pn_news');
+  $('#loadMoreNews').style.display='';
+  // Attach click-to-open on news items
+  $$('#newsList .news-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const href=item.dataset.href;
+      if(href&&href!=='#')window.open(href,'_blank','noopener');
+    });
+  });
+}
+/* Is this news item sourced from an official government site (gov:true)? */
+function isGovNews(n){
+  const s=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
+  return !!(s&&s.gov);
+}
+/* PFE view — kept deliberately simple: only two sections.
+   1) Industry News  (non-gov PFE items)
+   2) Government Policy (gov-sourced items + official site quick links) */
+function renderPFE(){
+  const {start,end}=rngNow('ovNews');
+  const gov=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort((a,b)=>b.d-a.d);
+  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort((a,b)=>b.d-a.d);
+  const indRes=filterAutoExpand(ind,start,end);
+  const govRes=filterAutoExpand(gov,start,end);
+  let html='';
+  /* Section 1 — industry news */
+  html+='<div class="news-sec-title"><span class="bar"></span>'+t('pfe_industry')+'<span class="cnt">'+indRes.list.length+'</span></div>';
+  if(indRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(indRes.expDays))+'</div>';
+  html+=indRes.list.length?indRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
+  /* Section 2 — government policy + official site quick links */
+  html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govRes.list.length+'</span></div>';
+  /* Official gov-site quick links — the PFE watch targets US government sites regardless of selected country */
+  const govSrc=(NEWS_MEDIA.USA||[]).filter(m=>m.gov);
+  if(govSrc.length){
+    html+='<div class="gov-src-row">'+govSrc.map(m=>'<a href="'+esc(m.url)+'" target="_blank" rel="noopener">'+esc(m.name)+' ↗</a>').join('')+'</div>';
+  }
+  if(govRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(govRes.expDays))+'</div>';
+  html+=govRes.list.length?govRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
+  $('#newsList').innerHTML=html;
+  $('#newsCount').textContent=indRes.list.length+govRes.list.length;
+  if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pfe_title');
+  $('#loadMoreNews').style.display='none';
   // Attach click-to-open on news items
   $$('#newsList .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
