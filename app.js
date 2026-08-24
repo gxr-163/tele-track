@@ -4,11 +4,12 @@ const I18N = {
   zh:{
     app_title:'TELE·TRACK — 行业情报',search_ph:'搜索新闻、论文、公司…  ( / )',
     lbl_monitor:'监控',lbl_sectors:'行业',lbl_trade:'贸易',lbl_research:'研究',lbl_system:'系统',
-    nav_overview:'总览',nav_lithium:'锂电池',nav_aidc:'AIDC',nav_telecom:'电信',nav_energy:'能源',nav_trade:'贸易与关税',nav_papers:'学术论文',nav_settings:'设置',
+    nav_overview:'总览',nav_tender:'公开招标',nav_lithium:'锂电池',nav_aidc:'AIDC',nav_telecom:'电信',nav_energy:'能源',nav_trade:'贸易与关税',nav_papers:'学术论文',nav_settings:'设置',
     side_src:'数据源: 47 路 · 延迟 < 3min',
     ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
     tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
     pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',
+    tn_title:'公开招标监测',tn_sub:'各国官方采购平台招标信息 · 一键直达官网',tn_portals:'官方招标平台直连',tn_portals_sub:'政府采购官方平台 · 点击直达',tn_list:'招标项目列表',tn_stat_open:'进行中招标',tn_stat_exp:'7天内截止',tn_stat_mkt:'覆盖市场',tn_stat_new:'本周新增',tn_due7_sub:'临近截止',tn_mkt_sub:'覆盖国家/地区',tn_new_sub:'近7日发布',tn_f_all:'全部',tn_open:'进行中',tn_closed:'已截止',tn_days:'{n} 天后截止',tn_today:'今天截止',tn_view:'去官网查看',tn_ph:'搜索招标项目 / 机构 / 平台…',tn_empty:'暂无匹配的招标信息',tn_empty_hint:'可切换国家、行业或清除搜索关键词',tn_live:'● 实时',tn_soon:'⏳ 抓紧',tn_mkt_d:'🌐 全球',tn_new_d:'🆕 新增',
     kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
@@ -36,11 +37,12 @@ const I18N = {
   en:{
     app_title:'TELE·TRACK — Industry Intelligence',search_ph:'Search news, papers, companies…  ( / )',
     lbl_monitor:'Monitor',lbl_sectors:'Sectors',lbl_trade:'Trade',lbl_research:'Research',lbl_system:'System',
-    nav_overview:'Overview',nav_lithium:'Lithium Battery',nav_aidc:'AIDC',nav_telecom:'Telecom',nav_energy:'Energy',nav_trade:'Trade & Tariffs',nav_papers:'Academic Papers',nav_settings:'Settings',
+    nav_overview:'Overview',nav_tender:'Tenders',nav_lithium:'Lithium Battery',nav_aidc:'AIDC',nav_telecom:'Telecom',nav_energy:'Energy',nav_trade:'Trade & Tariffs',nav_papers:'Academic Papers',nav_settings:'Settings',
     side_src:'Sources: 47 feeds · latency < 3min',
     ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
     tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
     pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',
+    tn_title:'Public Tender Monitor',tn_sub:'Public procurement tenders from official platforms · one-click to source',tn_portals:'Official Tender Portals',tn_portals_sub:'Government platforms · click to open',tn_list:'Tender List',tn_stat_open:'Open Tenders',tn_stat_exp:'Due in 7 Days',tn_stat_mkt:'Markets',tn_stat_new:'New This Week',tn_due7_sub:'deadline approaching',tn_mkt_sub:'countries covered',tn_new_sub:'published in 7d',tn_f_all:'All',tn_open:'Open',tn_closed:'Closed',tn_days:'{n} days left',tn_today:'Due today',tn_view:'View portal',tn_ph:'Search tenders / agency / platform…',tn_empty:'No matching tenders',tn_empty_hint:'Try a different country, sector or clear the search',tn_live:'● LIVE',tn_soon:'⏳ Urgent',tn_mkt_d:'🌐 Global',tn_new_d:'🆕 New',
     kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
@@ -332,10 +334,45 @@ const TREND7 = [
 ];
 const JOURNAL_COLORS = {nature:'#185FA5',joule:'#B7791F',applied:'#0E7C86',ieee:'#15976B',arxiv:'#4A5A6A'};
 
+/* ============ TENDERS (public procurement monitor) ============ */
+/* Official government procurement platforms — one-click to source. gov:true = official site */
+const TENDER_PORTALS=[
+  {cn:'USA',name:'SAM.gov',url:'https://sam.gov',gov:true},
+  {cn:'USA',name:'Federal Register',url:'https://www.federalregister.gov',gov:true},
+  {cn:'China',name:'中国政府采购网',url:'https://www.ccgp.gov.cn',gov:true},
+  {cn:'China',name:'招标投标公共服务平台',url:'http://www.cebpubservice.com',gov:true},
+  {cn:'Germany',name:'TED (EU)',url:'https://ted.europa.eu',gov:true},
+  {cn:'UK',name:'Contracts Finder',url:'https://www.gov.uk/contracts-finder',gov:true},
+  {cn:'Japan',name:'政府調達 (PPI)',url:'https://www.ppi.go.jp',gov:true},
+  {cn:'South Korea',name:'나라장터',url:'https://www.g2b.go.kr',gov:true},
+  {cn:'France',name:'BOAMP',url:'https://www.boamp.fr',gov:true},
+  {cn:'Netherlands',name:'TenderNed',url:'https://www.tenderned.nl',gov:true},
+  {cn:'Australia',name:'AusTender',url:'https://www.tenders.gov.au',gov:true},
+  {cn:'Sweden',name:'Upphandling',url:'https://www.upphandlingsmyndigheten.se',gov:true}
+];
+const _T=Date.now(),_DH=864e5;
+/* d = publish ts, ddl = deadline ts (open = ddl >= now) */
+const TENDERS=[
+  {id:1,t:'energy',cn:'USA',agency:'U.S. DOE',title:{zh:'DOE 电网侧储能系统集采 · 2 GWh',en:'DOE grid-scale BESS procurement · 2 GWh'},budget:'$210M',d:_T-1*_DH,ddl:_T+12*_DH,url:'https://sam.gov',src:'SAM.gov'},
+  {id:2,t:'aidc',cn:'USA',agency:'DHS / CBP',title:{zh:'CBP 边境智能查验设备采购（AI 光学检测）',en:'CBP border inspection systems procurement (AI optical)'},budget:'$85M',d:_T-2*_DH,ddl:_T+6*_DH,url:'https://sam.gov',src:'SAM.gov'},
+  {id:3,t:'telecom',cn:'USA',agency:'NTIA',title:{zh:'NTIA 5G-A Open RAN 测试与测量设备',en:'NTIA 5G-A Open RAN test & measurement equipment'},budget:'$40M',d:_T-3*_DH,ddl:_T+5*_DH,url:'https://sam.gov',src:'SAM.gov'},
+  {id:4,t:'lithium',cn:'USA',agency:'U.S. DOE',title:{zh:'DOE 国内锂精炼产能扩建招标',en:'DOE domestic lithium refining capacity build-out'},budget:'$150M',d:_T-4*_DH,ddl:_T+20*_DH,url:'https://sam.gov',src:'SAM.gov'},
+  {id:5,t:'aidc',cn:'USA',agency:'GSA',title:{zh:'GSA 联邦数据中心容量采购（上轮已截止）',en:'GSA federal data center capacity (previous round closed)'},budget:'$150M',d:_T-9*_DH,ddl:_T-3*_DH,url:'https://sam.gov',src:'SAM.gov'},
+  {id:6,t:'telecom',cn:'China',agency:'中国移动',title:{zh:'中国移动 2026 年 5G 基站主设备集采',en:'China Mobile 2026 5G base station equipment tender'},budget:'¥386亿',d:_T-1*_DH,ddl:_T+15*_DH,url:'https://www.ccgp.gov.cn',src:'中国政府采购网'},
+  {id:7,t:'energy',cn:'China',agency:'国家电网',title:{zh:'国家电网新型储能电站设备框架采购',en:'SGCC new-type ESS equipment framework tender'},budget:'¥520亿',d:_T-2*_DH,ddl:_T+21*_DH,url:'http://www.cebpubservice.com',src:'招标投标公共服务平台'},
+  {id:8,t:'aidc',cn:'China',agency:'工信部',title:{zh:'全国算力枢纽节点国产服务器采购',en:'National compute hub domestic server procurement'},budget:'¥120亿',d:_T-3*_DH,ddl:_T+8*_DH,url:'https://www.ccgp.gov.cn',src:'中国政府采购网'},
+  {id:9,t:'lithium',cn:'China',agency:'中国铁塔',title:{zh:'中国铁塔备电电池集采（上轮已截止）',en:'China Tower backup battery tender (previous round closed)'},budget:'¥48亿',d:_T-8*_DH,ddl:_T-2*_DH,url:'http://www.cebpubservice.com',src:'招标投标公共服务平台'},
+  {id:10,t:'energy',cn:'Germany',agency:'Deutsche Bahn',title:{zh:'德铁铁路侧储能系统 (ESS) 采购',en:'Deutsche Bahn trackside energy storage (ESS) tender'},budget:'€28M',d:_T-2*_DH,ddl:_T+7*_DH,url:'https://ted.europa.eu',src:'TED'},
+  {id:11,t:'telecom',cn:'Germany',agency:'BNetzA',title:{zh:'BNetzA 5G 频谱测量与监测设备',en:'BNetzA 5G spectrum measurement & monitoring equipment'},budget:'€6.5M',d:_T-4*_DH,ddl:_T+18*_DH,url:'https://ted.europa.eu',src:'TED'},
+  {id:12,t:'energy',cn:'UK',agency:'Ofgem',title:{zh:'Ofgem 储能灵活性采购',en:'Ofgem battery storage flexibility tender'},budget:'£45M',d:_T-3*_DH,ddl:_T+6*_DH,url:'https://www.gov.uk/contracts-finder',src:'Contracts Finder'},
+  {id:13,t:'energy',cn:'Japan',agency:'NEDO',title:{zh:'NEDO 储能系统导入补贴项目征集',en:'NEDO ESS deployment subsidy program call'},budget:'¥1800亿',d:_T-5*_DH,ddl:_T+30*_DH,url:'https://www.ppi.go.jp',src:'政府調達 (PPI)'},
+  {id:14,t:'energy',cn:'South Korea',agency:'KEPCO',title:{zh:'韩国电力 KEPCO 电网储能 (BESS) 采购',en:'KEPCO grid battery energy storage (BESS) procurement'},budget:'₩1200亿',d:_T-2*_DH,ddl:_T+11*_DH,url:'https://www.g2b.go.kr',src:'나라장터'}
+];
+
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh'};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:''};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -571,6 +608,42 @@ function renderSectorNews(id,type,key,count){
       if(href&&href!=='#')window.open(href,'_blank','noopener');
     });
   });
+}
+
+/* ============ TENDER MONITOR ============ */
+/* Official platform quick links — highlighted for the currently selected country */
+function renderTenderPortals(){
+  const el=$('#tenderPortals');if(!el)return;
+  const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
+  const ordered=[...TENDER_PORTALS].sort((a,b)=>rank(a.cn)-rank(b.cn));
+  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===state.country?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
+}
+function tenderHTML(x){
+  const ti=tagInfo(x.t),zh=state.lang==='zh',now=Date.now();
+  const title=zh?(x.title.zh||x.title):(x.title.en||x.title.zh||x.title);
+  const open=x.ddl>=now,days=Math.ceil((x.ddl-now)/864e5);
+  const ddlTxt=open?(days<=0?t('tn_today'):t('tn_days').replace('{n}',days)):t('tn_closed');
+  const ddlCls=open?(days<=7?'due':'open'):'closed';
+  return `<div class="tender-item" data-href="${esc(x.url)}"><div class="tender-left"><div class="tender-top"><span class="tag ${ti[1]}">${t(ti[0])}</span><span class="tag t-status t-${ddlCls}">${open?t('tn_open'):t('tn_closed')}</span></div><div class="tender-title"><a href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="tender-meta"><span class="tend-agency">${esc(x.agency)}</span><span class="sep"></span><span>${FLAGS[x.cn]||''} ${x.cn}</span><span class="sep"></span><span>📅 ${fmtDate(new Date(x.d))}</span><span class="sep"></span><span class="tend-src">${esc(x.src)}</span></div></div><div class="tender-right"><div class="tender-budget">${esc(x.budget)}</div><div class="tender-ddl ${ddlCls}">${ddlTxt}</div><a class="btn ghost tender-go" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t('tn_view')} ↗</a></div></div>`;
+}
+function renderTenders(){
+  const now=Date.now(),zh=state.lang==='zh';
+  let list=TENDERS.filter(x=>state.tenderSector==='all'||x.t===state.tenderSector)
+    .filter(x=>state.tenderStatus==='all'||(state.tenderStatus==='open'?x.ddl>=now:x.ddl<now));
+  const q=(state.tenderQ||'').trim().toLowerCase();
+  if(q)list=list.filter(x=>(zh?(x.title.zh||''):(x.title.en||x.title.zh||'')).toLowerCase().indexOf(q)>=0||x.agency.toLowerCase().indexOf(q)>=0||x.src.toLowerCase().indexOf(q)>=0||x.cn.toLowerCase().indexOf(q)>=0);
+  const open=list.filter(x=>x.ddl>=now).length;
+  const due=list.filter(x=>x.ddl>=now&&x.ddl-now<=7*864e5).length;
+  const mk=new Set(list.map(x=>x.cn)).size;
+  const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=v;};
+  setTxt('#tnStatOpen',open);setTxt('#tnStatExp',due);setTxt('#tnStatMkt',mk);
+  setTxt('#tnStatNew',TENDERS.filter(x=>now-x.d<=7*864e5).length);
+  setTxt('#tnCount',list.length);
+  const nb=$('#tnBadge');if(nb)nb.textContent=TENDERS.filter(x=>x.ddl>=now).length;
+  /* open tenders first, soonest deadline on top; closed at the bottom */
+  list.sort((a,b)=>(a.ddl>=now?0:1)-(b.ddl>=now?0:1)||a.ddl-b.ddl);
+  $('#tenderList').innerHTML=list.length?list.map(tenderHTML).join(''):'<div class="empty">'+t('tn_empty')+'<br><span style="font-size:10.5px">'+t('tn_empty_hint')+'</span></div>';
+  $$('#tenderList .tender-item').forEach(it=>{it.addEventListener('click',()=>{const h=it.dataset.href;if(h&&h!=='#')window.open(h,'_blank','noopener');});});
 }
 
 /* ============ PRICE TABLE ============ */
@@ -811,8 +884,16 @@ function renderAll(){
   renderSectorNews('#tradeNewsList','trade','tradeNews',6);
   renderSectorNews('#tcNewsMini','telecom','tcMini',4);
   renderPapers();
+  renderTenderPortals();
+  renderTenders();
   refreshPickers();
 }
+
+/* ============ TENDER EVENTS ============ */
+$$('#tnStatusChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnStatusChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderStatus=c.dataset.s;renderTenders();}));
+$$('#tnSectorChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnSectorChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderSector=c.dataset.f;renderTenders();}));
+const tnSearch=$('#tenderSearch');
+if(tnSearch)tnSearch.addEventListener('input',()=>{state.tenderQ=tnSearch.value;renderTenders();});
 
 /* ============ INIT ============ */
 buildCountryDrop();
