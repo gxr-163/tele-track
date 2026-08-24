@@ -12,6 +12,9 @@ const I18N = {
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
+    news_auto_expand:'当前时段无新闻，已自动扩大至 {range}',
+    news_empty:'该筛选条件下暂无新闻',news_empty_hint:'可切换国家、标签或时间范围',
+    news_sector_empty:'该时段暂无相关新闻',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
@@ -40,6 +43,10 @@ const I18N = {
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
+    news_auto_expand:'No news in current period; auto-expanded to {range}',
+    news_empty:'No news under current filters',
+    news_empty_hint:'Try a different country, tag or time range',
+    news_sector_empty:'No related news in this period',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
@@ -278,8 +285,8 @@ const NEWS = [
   {id:51,t:'aidc',src:'NZZ Neue Zürcher Zeitung',url:'https://www.nzz.ch/switzerland-data-center-alps-2026',time:'09:00',title:{zh:'瑞士阿尔卑斯山区数据中心崛起：自然冷却与绿电驱动优势',en:'Swiss Alps data centers rise: natural cooling and green power drive advantage'},sum:{zh:'瑞士利用阿尔卑斯山区低温与丰富水电资源，吸引 Equinix、Microsoft 等运营商建设数据中心，全年自然冷却天数超 300 天，PUE 低至 1.08。',en:"Switzerland is leveraging Alpine low temperatures and abundant hydro power to attract operators like Equinix and Microsoft. Natural cooling days exceed 300/year, with PUE as low as 1.08."},tags:['Data Center','Natural Cooling'],cn:'Switzerland'},
   {id:52,t:'trade',src:'Le Temps',url:'https://www.letemps.ch/economie/swiss-trade-policy-cbam-2026',time:'15:20',title:{zh:'瑞士调整贸易政策应对 CBAM：碳定价机制与欧盟接轨',en:'Switzerland adjusts trade policy for CBAM: carbon pricing mechanism aligns with EU'},sum:{zh:'瑞士联邦委员会宣布将国内碳定价机制与欧盟 CBAM 对接，避免双重征税，同时保障出口企业竞争力。钢铁、铝、水泥行业率先纳入。',en:"The Swiss Federal Council announced alignment of its domestic carbon pricing mechanism with the EU CBAM to avoid double taxation while protecting export competitiveness. Steel, aluminum, and cement are first to be included."},tags:['CBAM','Trade Policy'],cn:'Switzerland'}
 ];
-/* assign a full timestamp to each news item (spread over the past ~3 weeks) for date/time-range filtering */
-NEWS.forEach((n,i)=>{n.d=new Date(2026,7,21-Math.round(i/1.8),parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+/* assign a full timestamp to each news item — dates are relative to today so they always appear recent */
+NEWS.forEach((n,i)=>{const now=new Date();const offset=Math.round(i/1.8);n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
 
 const PAPERS = [
   {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering',auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
@@ -427,17 +434,45 @@ function newsHTML(n){
   const srcUrl=srcLink?srcLink.url:'#';
   return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a><span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
+/* Auto-expand helper: if no news in the given [start,end] range, progressively widen until results found */
+const EXPAND_STEPS=[14,30,90,365,0]; // 0 = all available
+function filterAutoExpand(list,start,end){
+  let filtered=list.filter(n=>n.d>=start&&n.d<=end);
+  if(filtered.length>0||list.length===0)return {list:filtered,expanded:false,expDays:null};
+  for(const days of EXPAND_STEPS){
+    const s=days===0?new Date(0):new Date(end.getTime()-days*864e5);
+    filtered=list.filter(n=>n.d>=s&&n.d<=end);
+    if(filtered.length>0)return {list:filtered,expanded:true,expDays:days};
+  }
+  return {list:[],expanded:false,expDays:null};
+}
+function expandLabel(days){
+  const zh=state.lang==='zh';
+  if(days>=365)return zh?'近1年':'past 1 year';
+  if(days>=90)return zh?'近90天':'past 90 days';
+  if(days>=30)return zh?'近30天':'past 30 days';
+  if(days>=14)return zh?'近14天':'past 14 days';
+  return zh?'全部':'all time';
+}
 function renderNews(){
   const {start,end}=rngNow('ovNews');
   let list;
   if(state.tab==='pfe'){list=NEWS.filter(n=>n.t==='pfe');}
   else{list=NEWS.filter(n=>n.cn===state.country||n.cn==='China');}
-  list=list.filter(n=>n.d>=start&&n.d<=end);
   if(state.tab!=='all'&&state.tab!=='pfe')list=list.filter(n=>n.t===state.tab);
+  // Auto-expand if no results in current range
+  const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
+  list=filteredList;
   // Sort by timestamp descending (most recent first)
   list.sort((a,b)=>b.d-a.d);
   list=list.slice(0,state.newsShown);
-  $('#newsList').innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该筛选条件下暂无新闻<br><span style="font-size:10.5px">可切换国家、标签或时间范围</span>':'No news under current filters<br><span style="font-size:10.5px">Try a different country, tag or time range</span>')+'</div>';
+  const zh=state.lang==='zh';
+  let html='';
+  if(expanded){
+    html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(expDays))+'</div>';
+  }
+  html+=list.length?list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'<br><span style="font-size:10.5px">'+t('news_empty_hint')+'</span></div>';
+  $('#newsList').innerHTML=html;
   $('#newsCount').textContent=list.length;
   // Attach click-to-open on news items
   $$('#newsList .news-item').forEach(item=>{
@@ -451,14 +486,22 @@ $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews()
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
-  let list=NEWS.filter(n=>n.t===type&&n.d>=start&&n.d<=end);
+  let list=NEWS.filter(n=>n.t===type);
+  // Auto-expand if no results in current range
+  const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
+  list=filteredList;
   // Sort by recency
   list.sort((a,b)=>b.d-a.d);
   // Prefer local country news, but include others if not enough
   const local=list.filter(n=>n.cn===state.country);
   const others=list.filter(n=>n.cn!==state.country);
   list=[...local,...others].slice(0,count||5);
-  $(id).innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该时段暂无相关新闻':'No related news in this period')+'</div>';
+  let html='';
+  if(expanded){
+    html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(expDays))+'</div>';
+  }
+  html+=list.length?list.map(newsHTML).join(''):'<div class="empty">'+t('news_sector_empty')+'</div>';
+  $(id).innerHTML=html;
   // Attach click-to-open
   $$(id+' .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
