@@ -372,7 +372,7 @@ const TENDERS=[
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:''};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',tenderCountry:'all'};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -611,12 +611,22 @@ function renderSectorNews(id,type,key,count){
 }
 
 /* ============ TENDER MONITOR ============ */
-/* Official platform quick links — highlighted for the currently selected country */
+/* Country filter chips — derived from TENDERS, ordered by COUNTRIES (USA first) */
+function renderTenderCountryChips(){
+  const el=$('#tnCountryChips');if(!el)return;
+  const seen=[];TENDERS.forEach(x=>{if(seen.indexOf(x.cn)<0)seen.push(x.cn);});
+  const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
+  seen.sort((a,b)=>rank(a)-rank(b));
+  const active=cn=>state.tenderCountry===cn?' active':'';
+  el.innerHTML='<button class="chip'+active('all')+'" data-c="all">'+t('tn_f_all')+'</button>'+seen.map(cn=>'<button class="chip'+active(cn)+'" data-c="'+cn+'">'+(FLAGS[cn]||'')+' '+cn+'</button>').join('');
+}
+/* Official platform quick links — highlighted for the active country filter (falls back to global region) */
 function renderTenderPortals(){
   const el=$('#tenderPortals');if(!el)return;
   const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
+  const cur=state.tenderCountry!=='all'?state.tenderCountry:state.country;
   const ordered=[...TENDER_PORTALS].sort((a,b)=>rank(a.cn)-rank(b.cn));
-  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===state.country?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
+  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===cur?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
 }
 function tenderHTML(x){
   const ti=tagInfo(x.t),zh=state.lang==='zh',now=Date.now();
@@ -629,7 +639,8 @@ function tenderHTML(x){
 function renderTenders(){
   const now=Date.now(),zh=state.lang==='zh';
   let list=TENDERS.filter(x=>state.tenderSector==='all'||x.t===state.tenderSector)
-    .filter(x=>state.tenderStatus==='all'||(state.tenderStatus==='open'?x.ddl>=now:x.ddl<now));
+    .filter(x=>state.tenderStatus==='all'||(state.tenderStatus==='open'?x.ddl>=now:x.ddl<now))
+    .filter(x=>state.tenderCountry==='all'||x.cn===state.tenderCountry);
   const q=(state.tenderQ||'').trim().toLowerCase();
   if(q)list=list.filter(x=>(zh?(x.title.zh||''):(x.title.en||x.title.zh||'')).toLowerCase().indexOf(q)>=0||x.agency.toLowerCase().indexOf(q)>=0||x.src.toLowerCase().indexOf(q)>=0||x.cn.toLowerCase().indexOf(q)>=0);
   const open=list.filter(x=>x.ddl>=now).length;
@@ -637,7 +648,7 @@ function renderTenders(){
   const mk=new Set(list.map(x=>x.cn)).size;
   const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=v;};
   setTxt('#tnStatOpen',open);setTxt('#tnStatExp',due);setTxt('#tnStatMkt',mk);
-  setTxt('#tnStatNew',TENDERS.filter(x=>now-x.d<=7*864e5).length);
+  setTxt('#tnStatNew',list.filter(x=>now-x.d<=7*864e5).length);
   setTxt('#tnCount',list.length);
   const nb=$('#tnBadge');if(nb)nb.textContent=TENDERS.filter(x=>x.ddl>=now).length;
   /* open tenders first, soonest deadline on top; closed at the bottom */
@@ -884,6 +895,7 @@ function renderAll(){
   renderSectorNews('#tradeNewsList','trade','tradeNews',6);
   renderSectorNews('#tcNewsMini','telecom','tcMini',4);
   renderPapers();
+  renderTenderCountryChips();
   renderTenderPortals();
   renderTenders();
   refreshPickers();
@@ -892,6 +904,9 @@ function renderAll(){
 /* ============ TENDER EVENTS ============ */
 $$('#tnStatusChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnStatusChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderStatus=c.dataset.s;renderTenders();}));
 $$('#tnSectorChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnSectorChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderSector=c.dataset.f;renderTenders();}));
+/* country chips are re-rendered on every renderAll — use container delegation */
+const tnCountryChips=$('#tnCountryChips');
+if(tnCountryChips)tnCountryChips.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;$$('#tnCountryChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderCountry=c.dataset.c;renderTenders();renderTenderPortals();});
 const tnSearch=$('#tenderSearch');
 if(tnSearch)tnSearch.addEventListener('input',()=>{state.tenderQ=tnSearch.value;renderTenders();});
 
