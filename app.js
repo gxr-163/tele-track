@@ -366,13 +366,18 @@ const TENDERS=[
   {id:11,t:'telecom',cn:'Germany',agency:'BNetzA',title:{zh:'BNetzA 5G 频谱测量与监测设备',en:'BNetzA 5G spectrum measurement & monitoring equipment'},budget:'€6.5M',d:_T-4*_DH,ddl:_T+18*_DH,url:'https://ted.europa.eu',src:'TED'},
   {id:12,t:'energy',cn:'UK',agency:'Ofgem',title:{zh:'Ofgem 储能灵活性采购',en:'Ofgem battery storage flexibility tender'},budget:'£45M',d:_T-3*_DH,ddl:_T+6*_DH,url:'https://www.gov.uk/contracts-finder',src:'Contracts Finder'},
   {id:13,t:'energy',cn:'Japan',agency:'NEDO',title:{zh:'NEDO 储能系统导入补贴项目征集',en:'NEDO ESS deployment subsidy program call'},budget:'¥1800亿',d:_T-5*_DH,ddl:_T+30*_DH,url:'https://www.ppi.go.jp',src:'政府調達 (PPI)'},
-  {id:14,t:'energy',cn:'South Korea',agency:'KEPCO',title:{zh:'韩国电力 KEPCO 电网储能 (BESS) 采购',en:'KEPCO grid battery energy storage (BESS) procurement'},budget:'₩1200亿',d:_T-2*_DH,ddl:_T+11*_DH,url:'https://www.g2b.go.kr',src:'나라장터'}
+  {id:14,t:'energy',cn:'South Korea',agency:'KEPCO',title:{zh:'韩国电力 KEPCO 电网储能 (BESS) 采购',en:'KEPCO grid battery energy storage (BESS) procurement'},budget:'₩1200亿',d:_T-2*_DH,ddl:_T+11*_DH,url:'https://www.g2b.go.kr',src:'나라장터'},
+  {id:15,t:'energy',cn:'France',agency:'EDF',title:{zh:'EDF 核电机组换料大修工程服务',en:'EDF nuclear refueling & overhaul services'},budget:'€120M',d:_T-1*_DH,ddl:_T+9*_DH,url:'https://www.boamp.fr',src:'BOAMP'},
+  {id:16,t:'energy',cn:'Netherlands',agency:'TenneT',title:{zh:'TenneT 北海海上风电并网换流站工程',en:'TenneT North Sea offshore grid converter station'},budget:'€85M',d:_T-2*_DH,ddl:_T+14*_DH,url:'https://www.tenderned.nl',src:'TenderNed'},
+  {id:17,t:'energy',cn:'Australia',agency:'ARENA',title:{zh:'ARENA 绿氢规模化示范项目资助',en:'ARENA green hydrogen scale-up demonstration funding'},budget:'AUD 300M',d:_T-3*_DH,ddl:_T+22*_DH,url:'https://www.tenders.gov.au',src:'AusTender'},
+  {id:18,t:'energy',cn:'Sweden',agency:'Svenska kraftnät',title:{zh:'瑞典国家电网 220kV 输电线路升级改造',en:'Svenska kraftnät 220kV transmission line upgrade'},budget:'SEK 750M',d:_T-1*_DH,ddl:_T+5*_DH,url:'https://www.upphandlingsmyndigheten.se',src:'Upphandling'},
+  {id:19,t:'telecom',cn:'Switzerland',agency:'SBB',title:{zh:'瑞士联邦铁路 SBB 信号系统现代化改造',en:'SBB railway signaling system modernization'},budget:'CHF 210M',d:_T-2*_DH,ddl:_T+28*_DH,url:'https://www.simap.ch',src:'simap.ch'}
 ];
 
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',tenderCountry:'all'};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:''};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -611,22 +616,12 @@ function renderSectorNews(id,type,key,count){
 }
 
 /* ============ TENDER MONITOR ============ */
-/* Country filter chips — derived from TENDERS, ordered by COUNTRIES (USA first) */
-function renderTenderCountryChips(){
-  const el=$('#tnCountryChips');if(!el)return;
-  const seen=[];TENDERS.forEach(x=>{if(seen.indexOf(x.cn)<0)seen.push(x.cn);});
-  const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
-  seen.sort((a,b)=>rank(a)-rank(b));
-  const active=cn=>state.tenderCountry===cn?' active':'';
-  el.innerHTML='<button class="chip'+active('all')+'" data-c="all">'+t('tn_f_all')+'</button>'+seen.map(cn=>'<button class="chip'+active(cn)+'" data-c="'+cn+'">'+(FLAGS[cn]||'')+' '+cn+'</button>').join('');
-}
-/* Official platform quick links — highlighted for the active country filter (falls back to global region) */
+/* Official platform quick links — highlighted for the currently selected country */
 function renderTenderPortals(){
   const el=$('#tenderPortals');if(!el)return;
   const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
-  const cur=state.tenderCountry!=='all'?state.tenderCountry:state.country;
   const ordered=[...TENDER_PORTALS].sort((a,b)=>rank(a.cn)-rank(b.cn));
-  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===cur?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
+  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===state.country?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
 }
 function tenderHTML(x){
   const ti=tagInfo(x.t),zh=state.lang==='zh',now=Date.now();
@@ -640,14 +635,14 @@ function renderTenders(){
   const now=Date.now(),zh=state.lang==='zh';
   let list=TENDERS.filter(x=>state.tenderSector==='all'||x.t===state.tenderSector)
     .filter(x=>state.tenderStatus==='all'||(state.tenderStatus==='open'?x.ddl>=now:x.ddl<now))
-    .filter(x=>state.tenderCountry==='all'||x.cn===state.tenderCountry);
+    .filter(x=>x.cn===state.country); /* linked to the global region selector */
   const q=(state.tenderQ||'').trim().toLowerCase();
   if(q)list=list.filter(x=>(zh?(x.title.zh||''):(x.title.en||x.title.zh||'')).toLowerCase().indexOf(q)>=0||x.agency.toLowerCase().indexOf(q)>=0||x.src.toLowerCase().indexOf(q)>=0||x.cn.toLowerCase().indexOf(q)>=0);
   const open=list.filter(x=>x.ddl>=now).length;
   const due=list.filter(x=>x.ddl>=now&&x.ddl-now<=7*864e5).length;
-  const mk=new Set(list.map(x=>x.cn)).size;
   const setTxt=(id,v)=>{const el=$(id);if(el)el.textContent=v;};
-  setTxt('#tnStatOpen',open);setTxt('#tnStatExp',due);setTxt('#tnStatMkt',mk);
+  setTxt('#tnStatOpen',open);setTxt('#tnStatExp',due);
+  setTxt('#tnStatMkt',new Set(TENDERS.map(x=>x.cn)).size); /* global coverage: all monitored markets */
   setTxt('#tnStatNew',list.filter(x=>now-x.d<=7*864e5).length);
   setTxt('#tnCount',list.length);
   const nb=$('#tnBadge');if(nb)nb.textContent=TENDERS.filter(x=>x.ddl>=now).length;
@@ -895,7 +890,6 @@ function renderAll(){
   renderSectorNews('#tradeNewsList','trade','tradeNews',6);
   renderSectorNews('#tcNewsMini','telecom','tcMini',4);
   renderPapers();
-  renderTenderCountryChips();
   renderTenderPortals();
   renderTenders();
   refreshPickers();
@@ -904,9 +898,6 @@ function renderAll(){
 /* ============ TENDER EVENTS ============ */
 $$('#tnStatusChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnStatusChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderStatus=c.dataset.s;renderTenders();}));
 $$('#tnSectorChips .chip').forEach(c=>c.addEventListener('click',()=>{$$('#tnSectorChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderSector=c.dataset.f;renderTenders();}));
-/* country chips are re-rendered on every renderAll — use container delegation */
-const tnCountryChips=$('#tnCountryChips');
-if(tnCountryChips)tnCountryChips.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;$$('#tnCountryChips .chip').forEach(x=>x.classList.toggle('active',x===c));state.tenderCountry=c.dataset.c;renderTenders();renderTenderPortals();});
 const tnSearch=$('#tenderSearch');
 if(tnSearch)tnSearch.addEventListener('input',()=>{state.tenderQ=tnSearch.value;renderTenders();});
 
