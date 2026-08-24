@@ -264,3 +264,33 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .news-item:hover .news-title a{color:var(--accent)}
 /* ===== End News links ===== */
 .rp-foot .btn{height:26px;font-size:11px}
+/* ===== Tender monitor ===== */
+.tender-portal-row{display:flex;flex-wrap:wrap;gap:7px;padding:2px 0}
+.tender-portal-row a{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-family:var(--mono);color:var(--ink-2);border:1px solid var(--line);border-radius:6px;padding:4px 9px;text-decoration:none;transition:all .12s}
+.tender-portal-row a .pf{font-size:12px;line-height:1}
+.tender-portal-row a:hover{border-color:var(--teal);color:var(--teal)}
+.tender-portal-row a.cur{border-color:var(--teal);background:rgba(14,124,134,.08);color:var(--teal);font-weight:600}
+.tender-list{padding:4px 0}
+.tender-item{display:flex;gap:14px;align-items:center;padding:13px 10px;border-bottom:1px solid var(--line-2);margin:0 -8px;border-radius:8px;cursor:pointer;transition:background .12s}
+.tender-item:last-child{border-bottom:none}
+.tender-item:hover{background:var(--bg)}
+.tender-left{flex:1;min-width:0}
+.tender-top{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+.tender-title{font-size:13px;font-weight:600;line-height:1.5}
+.tender-title a{color:var(--ink);text-decoration:none;transition:color .12s}
+.tender-title a:hover{color:var(--accent)}
+.tender-meta{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--ink-3);font-family:var(--mono);margin-top:5px;flex-wrap:wrap}
+.tender-meta .sep{width:3px;height:3px;border-radius:50%;background:var(--line);flex-shrink:0}
+.tender-meta .tend-agency{font-weight:500;color:var(--ink-2)}
+.tender-meta .tend-src{font-weight:600;color:var(--accent)}
+.tender-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;min-width:112px}
+.tender-budget{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.tender-ddl{font-size:10.5px;font-family:var(--mono);padding:1.5px 9px;border-radius:10px}
+.tender-ddl.open{color:var(--teal);background:rgba(14,124,134,.09)}
+.tender-ddl.due{color:var(--up);background:rgba(214,69,69,.09)}
+.tender-ddl.closed{color:var(--ink-3);background:var(--bg)}
+.tender-go{height:24px;font-size:10.5px;margin-top:1px}
+.tag.t-status{letter-spacing:.3px}
+.tag.t-open{background:rgba(14,124,134,.1);color:var(--teal)}
+.tag.t-closed{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
+@media (max-width:1100px){.tender-item{flex-wrap:wrap}.tender-right{flex-direction:row;align-items:center;min-width:0;gap:10px}}
