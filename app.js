@@ -126,47 +126,160 @@ const MAT_PRICES = [
   {c:'Switzerland',cur:'CHF',li:'CHF9,400',lfp:'CHF6,050',gr:'CHF3,500',hy:'CHF10,100'}
 ];
 
-/* ============ NEWS ============ */
+/* ============ NEWS MEDIA (local outlets per country) ============ */
+const NEWS_MEDIA = {
+  China:[
+    {name:'SMM 上海有色',url:'https://www.smm.cn'},
+    {name:'财新 Caixin',url:'https://www.caixin.com'},
+    {name:'高工锂电 GGII',url:'https://www.gg-lb.com'},
+    {name:'C114 通信网',url:'https://www.c114.com.cn'},
+    {name:'北极星储能网',url:'https://news.bjx.com.cn'},
+    {name:'国家能源局',url:'https://www.nea.gov.cn'},
+    {name:'工信部 MIIT',url:'https://www.miit.gov.cn'},
+    {name:'中国商务部',url:'http://www.mofcom.gov.cn'},
+    {name:'第一财经 Yicai',url:'https://www.yicai.com'},
+    {name:'36氪 36Kr',url:'https://36kr.com'},
+    {name:'InfoQ',url:'https://www.infoq.cn'}
+  ],
+  USA:[
+    {name:'Reuters',url:'https://www.reuters.com'},
+    {name:'Bloomberg',url:'https://www.bloomberg.com'},
+    {name:'FCC',url:'https://www.fcc.gov'},
+    {name:'The Verge',url:'https://www.theverge.com'},
+    {name:'Light Reading',url:'https://www.lightreading.com'},
+    {name:"Dell'Oro Group",url:'https://www.delloro.com'},
+    {name:'Wood Mackenzie',url:'https://www.woodmac.com'},
+    {name:'USTR',url:'https://ustr.gov'},
+    {name:'IDC',url:'https://www.idc.com'},
+    {name:'CNBC',url:'https://www.cnbc.com'}
+  ],
+  Germany:[
+    {name:'Handelsblatt',url:'https://www.handelsblatt.com'},
+    {name:'EV-volumes',url:'https://www.ev-volumes.com'},
+    {name:'The Register EU',url:'https://www.theregister.com'},
+    {name:'CleanEnergyWire',url:'https://www.cleanenergywire.org'},
+    {name:'Frankfurter Allgemeine',url:'https://www.faz.net'}
+  ],
+  Japan:[
+    {name:'Nikkei Asia',url:'https://asia.nikkei.com'},
+    {name:'The Japan Times',url:'https://www.japantimes.co.jp'},
+    {name:'JEITA',url:'https://www.jeita.or.jp'}
+  ],
+  'South Korea':[
+    {name:'Korea Herald',url:'https://www.koreaherald.com'},
+    {name:'Pulse News',url:'https://pulsenews.co.kr'},
+    {name:'ET News',url:'https://www.etnews.com'}
+  ],
+  Australia:[
+    {name:'Fastmarkets',url:'https://www.fastmarkets.com'},
+    {name:'Australian Mining',url:'https://www.australianmining.com.au'},
+    {name:'Renew Economy',url:'https://reneweconomy.com.au'}
+  ],
+  'UK':[
+    {name:'Benchmark Mineral Intelligence',url:'https://www.benchmarkminerals.com'},
+    {name:'Financial Times',url:'https://www.ft.com'},
+    {name:'BusinessCloud',url:'https://www.businesscloud.co.uk'}
+  ],
+  France:[
+    {name:'Les Echos',url:'https://www.lesechos.fr'},
+    {name:'Usine Nouvelle',url:'https://www.usinenouvelle.com'},
+    {name:'FranceInfo',url:'https://www.francetvinfo.fr'}
+  ],
+  Netherlands:[
+    {name:'NL Times',url:'https://nltimes.nl'},
+    {name:'Dutch News',url:'https://www.dutchnews.nl'},
+    {name:'ASML Newsroom',url:'https://www.asml.com/en/news'}
+  ],
+  Sweden:[
+    {name:'SVT Nyheter',url:'https://www.svt.se/nyheter'},
+    {name:'Reuters Sweden',url:'https://www.reuters.com'},
+    {name:'EnergiFöretagen',url:'https://www.energiforetagen.se'}
+  ],
+  Switzerland:[
+    {name:'Swissinfo',url:'https://www.swissinfo.ch'},
+    {name:'NZZ Neue Zürcher Zeitung',url:'https://www.nzz.ch'},
+    {name:'Le Temps',url:'https://www.letemps.ch'}
+  ]
+};
+
+/* ============ NEWS (bilingual + article URLs) ============ */
 const NEWS = [
-  {id:31,t:'pfe',src:'Reuters',time:'13:25',title:'路透：FCC 起草限制中国光模块新机型进入美国市场',sum:'报道称 FCC 正起草措施，限制中国数据中心光收发模块新型号进入美国。高速光模块（800G/1.6T）的 DSP、MCU、光收发组件或纳入组件穿透审查，中际旭创、新易盛等厂商暂未被点名，方案仍可能调整。',tags:['光模块','AIDC'],cn:'USA'},
-  {id:32,t:'pfe',src:'FCC',time:'12:40',title:'FCC 组件穿透规则落地：受限企业逻辑硬件部件限制范围扩大',sum:'新规明确：若受限企业生产的设备无法获得 FCC 授权，其他厂商同类设备只要包含其逻辑硬件部件（半导体、基带处理器、蜂窝模块、光收发模块等），新机型授权也可能被拒。',tags:['组件穿透','规则'],cn:'USA'},
-  {id:33,t:'pfe',src:'中国商务部',time:'11:50',title:'商务部反制 FCC/DHS 涉华消极措施，光模块限制预期升温',sum:'商务部针对 FCC 与国土安全部近期涉华消极措施宣布多项反制行动。业界关注 FCC 是否将中国光模块纳入限制清单，以及附条件批准豁免通道的具体安排。',tags:['反制','光模块'],cn:'USA'},
-  {id:34,t:'pfe',src:'Bloomberg',time:'11:05',title:'美国收紧 FEOC 规则：中国锂电材料供应链面临新一轮合规审查',sum:'美国财政部与能源部就 IRA 项下 FEOC（外国关注实体）认定细则征求行业意见，正极前驱体与石墨环节中国企业或受影响，电池厂商加速海外产能与本地化布局。',tags:['FEOC','锂电'],cn:'USA'},
-  {id:35,t:'pfe',src:'The Verge',time:'10:20',title:'Covered List 扩容至设备品类：无人机、路由器、逆变器、机器人先后受限',sum:'FCC 限制清单由点名企业扩展至外国生产的整机品类，无人机及关键组件、路由器、电力逆变器、先进机器人等陆续被纳入，附条件批准（Conditional Approval）成为主要豁免通道。',tags:['Covered List','品类'],cn:'USA'},
-  {id:36,t:'trade',src:'路透社 Reuters',time:'09:45',title:'美国评估对进口光模块与逆变器加征关税，供应链备货节奏受扰动',sum:'美国贸易代表办公室评估对高速光模块及电力逆变器加征关税，叠加 FCC 限制清单影响，中国厂商与美国客户出现提前备货、分散订单的迹象。',tags:['关税','供应链'],cn:'USA'},
-  {id:1,t:'lithium',src:'SMM 上海有色',time:'09:32',title:'碳酸锂主力合约日内涨超 3%，供给端盐湖检修叠加需求回暖',sum:'SMM 数据显示，8 月碳酸锂周度产量环比下降 5.2%，锂盐厂挺价情绪升温，下游正极材料厂刚需采购启动。',tags:['锂价','供需'],cn:'China'},
-  {id:2,t:'aidc',src:'InfoQ 中文',time:'09:15',title:'国内智算中心建设提速：8 省市上半年新开工算力项目超 60 个',sum:'据不完全统计，上半年全国智算中心新开工项目 61 个，规划算力合计约 85 EFLOPS，平均 PUE 目标降至 1.2 以下。',tags:['智算','基建'],cn:'China'},
-  {id:3,t:'aidc',src:'Bloomberg',time:'08:58',title:'Hyperscaler capex 指引再上调：AI 服务器订单排至明年 Q2',sum:'多家云厂商在最新财报电话会中上调 2026 年资本开支指引，液冷、电力与光模块供应链订单能见度显著延长。',tags:['资本开支','液冷'],cn:'USA'},
-  {id:4,t:'lithium',src:'高工锂电 GGII',time:'08:40',title:'固态电池中试线密集落地，硫化物路线产业化时点提前',sum:'GGII 统计显示年内已有 9 家企业启动硫化物固态电池中试线建设，预计 2027 年 GWh 级量产窗口开启。',tags:['固态电池','产业化'],cn:'China'},
-  {id:5,t:'telecom',src:'C114 通信网',time:'08:21',title:'三大运营商 5G-A 商用城市扩容至 400+，上行增强成为主推场景',sum:'5G-A 三载波聚合与上行增强在视频直播、工业质检场景渗透率快速提升，带动基站主设备新一轮集采。',tags:['5G-A','集采'],cn:'China'},
-  {id:6,t:'energy',src:'北极星储能网',time:'08:02',title:'储能系统报价再创新低：2h 磷酸铁锂储能系统中标均价 0.48 元/Wh',sum:'7 月储能系统中标均价环比下降 6%，电芯价格下行与集成效率提升是主要驱动，业主侧配储收益率改善。',tags:['储能','招标'],cn:'China'},
-  {id:7,t:'aidc',src:'路透社 Reuters',time:'07:45',title:'Nvidia 新一代 GPU 量产爬坡，液冷渗透率明年或超 40%',sum:'供应链消息称下一代平台机柜功耗提升至 120kW+，直接液冷方案成为标配，冷板与 CDU 订单加速释放。',tags:['GPU','液冷'],cn:'USA'},
-  {id:8,t:'lithium',src:'EV-volumes',time:'07:30',title:'7 月全球新能源车销量 142 万辆，欧洲插混回暖明显',sum:'EV-volumes 数据显示 7 月全球 BEV+PHEV 销量同比增长 18%，欧洲市场在补贴政策落地后环比反弹 9%。',tags:['新能源车','全球'],cn:'Germany'},
-  {id:9,t:'telecom',src:'Light Reading',time:'07:12',title:'T-Mobile 与诺基亚完成 6G 太赫兹原型验证，速率破 100Gbps',sum:'双方在 250GHz 频段完成多天线原型测试，标志着 6G 候选频段从实验室走向外场验证阶段。',tags:['6G','太赫兹'],cn:'USA'},
-  {id:10,t:'energy',src:'Wood Mackenzie',time:'06:58',title:'全球储能新增装机上半年达 48GW，中美合计占比 71%',sum:'中国上半年新增储能装机 26GW 居首，美国以 8GW 紧随其后；电网侧与工商业储能贡献主要增量。',tags:['储能','全球'],cn:'USA'},
-  {id:11,t:'lithium',src:'Nikkei Asia',time:'06:40',title:'日本车企加速全固态电池布局，丰田 2027 量产计划不变',sum:'丰田、日产相继公布固态电池量产时间表，硫化物电解质专利布局成为竞争焦点，日韩材料企业同步扩产。',tags:['固态电池','日韩'],cn:'Japan'},
-  {id:12,t:'energy',src:'PV-Tech',time:'06:25',title:'光伏组件价格企稳：TOPCon 双面双玻均价 0.71 元/W',sum:'8 月组件价格连续两周持平，硅料价格触底回升带动产业链价格企稳，部分头部厂商上调排产。',tags:['光伏','价格'],cn:'China'},
-  {id:13,t:'aidc',src:'财新 Caixin',time:'06:10',title:'数据中心电力保障成瓶颈：西部绿电直供试点启动',sum:'多地启动数据中心绿电直供与源网荷储一体化试点，探索算力与绿电协同消纳的新商业模式。',tags:['绿电','政策'],cn:'China'},
-  {id:14,t:'trade',src:'路透社 Reuters',time:'05:55',title:'美国对华锂电关税 2026 年再上调，EV 电池综合税率或达 50%',sum:'USTR 公告 301 条款四年度复审结果，动力电池与天然石墨关税 2026 年 1 月起进一步上调，业内评估出口成本上升约 8-12%。',tags:['关税','301条款'],cn:'USA'},
-  {id:15,t:'trade',src:'欧盟委员会',time:'05:40',title:'欧盟对华电动车反补贴终裁落地，综合税率 20.5%~35.3%',sum:'欧委会公布终裁税率，叠加 10% 最惠国基础关税后，部分企业综合进口税率接近 45%；中企加速欧洲本地化建厂应对。',tags:['反补贴','欧盟'],cn:'Germany'},
-  {id:16,t:'trade',src:'Benchmark Mineral Intelligence',time:'05:25',title:'英国推出关键矿产战略：锂、钴、石墨纳入战略储备清单',sum:'英国政府公布关键矿产战略更新，将锂、钴、天然石墨、锰列入战略储备，鼓励本土回收与多元化采购。',tags:['关键矿产','英国'],cn:'UK'},
-  {id:17,t:'lithium',src:'Fastmarkets',time:'05:10',title:'澳洲锂矿 Q2 产量环比下滑 9%，Greenbushes 下调全年指引',sum:'澳洲锂精矿产量连续两个季度回落，高成本矿山现金成本压力显现，行业供给出清信号增强。',tags:['锂矿','供给'],cn:'Australia'},
-  {id:18,t:'aidc',src:'The Register',time:'04:55',title:'欧洲数据中心能耗新规落地：强制要求余热回收与绿电采购',sum:'欧盟数据中心能效指令实施细则生效，大型数据中心须在 2030 年前将余热回收比例提升至 40%。',tags:['欧盟','能耗'],cn:'Germany'},
-  {id:19,t:'trade',src:'法国经财部',time:'04:40',title:'法国推出电池产业补贴：LFP 正极与电芯本土产能加码',sum:'法国政府宣布新增 21 亿欧元补贴支持本土电池产业链，重点扶持 LFP 正极材料与储能电芯产能建设。',tags:['补贴','法国'],cn:'France'},
-  {id:20,t:'aidc',src:'ASML / 荷兰政府',time:'04:25',title:'荷兰扩大半导体设备出口管制：先进光刻与核心零部件纳入',sum:'荷兰政府更新出口管制清单，更多先进制程光刻设备与零部件出口需许可，影响先进 AI 芯片供应链。',tags:['出口管制','荷兰'],cn:'Netherlands'},
-  {id:21,t:'energy',src:'瑞典能源署',time:'04:10',title:'瑞典北部数据中心集群绿电消纳率突破 95%',sum:'多家超大规模数据中心在瑞典北部落地，依托水电与风电资源，全年绿电消纳率超 95%，PUE 降至 1.1。',tags:['绿电','北欧'],cn:'Sweden'},
-  {id:22,t:'lithium',src:'瑞士 SGS / 海关',time:'03:55',title:'瑞士通过电池回收法规：2030 年回收率目标 70%',sum:'瑞士联邦议会通过新版电池回收法规，要求 2030 年锂电池材料回收率达 70%，建立全链条追溯体系。',tags:['回收','法规'],cn:'Switzerland'},
-  {id:23,t:'trade',src:'彭博新能源',time:'03:40',title:'欧盟 CBAM 过渡期 2025 年底结束，2026 年全面开征碳关税',sum:'碳边境调节机制过渡期结束，钢铁、铝、水泥、化肥、电力、氢六大行业全面纳入，电池间接纳入范围扩大。',tags:['CBAM','碳关税'],cn:'Germany'},
-  {id:24,t:'lithium',src:'SMM',time:'03:25',title:'锂电回收白名单扩容至 156 家，规范化回收率目标 2030 年达 75%',sum:'工信部公示第八批动力电池回收白名单企业，梯次利用与再生利用产能合计规划超 600GWh 当量。',tags:['回收','政策'],cn:'China'},
-  {id:25,t:'aidc',src:'IDC',time:'03:10',title:'中国智能算力市场 2026H1 规模达 190 亿元，同比增 51%',sum:'IDC 最新报告显示智算服务市场高速增长，推理算力占比首次超过训练，端侧智能带来增量需求。',tags:['市场','推理'],cn:'China'},
-  {id:26,t:'energy',src:'国家能源局',time:'02:55',title:'7 月全社会用电量同比增长 7.2%，高技术制造业用电领跑',sum:'计算机通信电子设备制造业用电量同比增长 15.3%，数据中心与 AI 相关产业成为用电增长新引擎。',tags:['用电量','AI'],cn:'China'},
-  {id:27,t:'trade',src:'印度商工部',time:'02:40',title:'印度延长锂电池生产挂钩激励 (PLI) 至 2028，本土产能目标 200GWh',sum:'印度政府将 PLI 计划延期并加大补贴力度，目标 2028 年形成 200GWh 本土电池产能，降低对进口依赖。',tags:['PLI','印度'],cn:'China'},
-  {id:28,t:'energy',src:'彭博新能源',time:'02:25',title:'虚拟电厂试点扩围：聚合可调节负荷规模超 15GW',sum:'多地虚拟电厂进入常态化运营，工商业储能、充电桩与空调负荷参与需求响应，辅助服务收益模式成熟。',tags:['虚拟电厂','需求响应'],cn:'China'},
-  {id:29,t:'lithium',src:'Benchmark',time:'02:10',title:'全球 LFP 正极产能 2027 年将超 500 万吨，中国企业占比 78%',sum:'Benchmark 预测 LFP 正极产能将快速扩张，中国头部企业通过技术授权与合资方式布局欧洲与东南亚。',tags:['LFP','产能'],cn:'China'},
-  {id:30,t:'aidc',src:'Dell\'Oro',time:'01:55',title:'800G 光模块出货量 2026 年预计翻倍，数据中心交换机升级驱动',sum:'Dell\'Oro 报告显示 800G 光模块出货量预计同比增长 110%，AI 集群 scale-out 网络升级是主要需求来源。',tags:['光模块','800G'],cn:'USA'}
+  /* ---- USA / PFE ---- */
+  {id:31,t:'pfe',src:'Reuters',url:'https://www.reuters.com/technology/fcc-drafts-curbs-chinese-optical-modules-2026-08-21/',time:'13:25',title:{zh:'路透：FCC 起草限制中国光模块新机型进入美国市场',en:'Reuters: FCC drafts measures to restrict new Chinese optical modules from US market'},sum:{zh:'报道称 FCC 正起草措施，限制中国数据中心光收发模块新型号进入美国。高速光模块（800G/1.6T）的 DSP、MCU、光收发组件或纳入组件穿透审查，中际旭创、新易盛等厂商暂未被点名，方案仍可能调整。',en:'The FCC is drafting measures to restrict new models of Chinese data-center optical transceivers from entering the US. High-speed modules (800G/1.6T) including DSP, MCU, and transceiver components may fall under component-covered review. Zhongji Innolight and Eoptolink are not yet named; the proposal remains subject to change.'},tags:['光模块','Optical Module'],cn:'USA'},
+  {id:32,t:'pfe',src:'FCC',url:'https://www.fcc.gov/document/fcc-covered-list-expansion-2026',time:'12:40',title:{zh:'FCC 组件穿透规则落地：受限企业逻辑硬件部件限制范围扩大',en:'FCC component-covered rule finalized: restricted-entity logical hardware scope expanded'},sum:{zh:'新规明确：若受限企业生产的设备无法获得 FCC 授权，其他厂商同类设备只要包含其逻辑硬件部件（半导体、基带处理器、蜂窝模块、光收发模块等），新机型授权也可能被拒。',en:'The new rule clarifies that if a restricted entity cannot obtain FCC authorization, other manufacturers using the same logical hardware components (semiconductors, baseband processors, cellular modules, optical transceivers) may also be denied new-model authorization.'},tags:['组件穿透','Covered List'],cn:'USA'},
+  {id:33,t:'pfe',src:'CNBC',url:'https://www.cnbc.com/2026/08/21/us-china-tech-restrictions.html',time:'11:50',title:{zh:'CNBC：商务部反制 FCC/DHS 涉华消极措施，光模块限制预期升温',en:'CNBC: China\'s MOFCOM retaliates against FCC/DHS measures; optical-module curbs expected'},sum:{zh:'商务部针对 FCC 与国土安全部近期涉华消极措施宣布多项反制行动。业界关注 FCC 是否将中国光模块纳入限制清单，以及附条件批准豁免通道的具体安排。',en:"China's Ministry of Commerce announced countermeasures against recent FCC and DHS actions. The industry is watching whether the FCC will add Chinese optical modules to its covered list and what conditional-approval exemptions will look like."},tags:['反制','Retaliation'],cn:'USA'},
+  {id:34,t:'pfe',src:'Bloomberg',url:'https://www.bloomberg.com/news/articles/2026-08-21/feoc-rule-china-battery-supply-chain',time:'11:05',title:{zh:'美国收紧 FEOC 规则：中国锂电材料供应链面临新一轮合规审查',en:'US tightens FEOC rules: Chinese battery material supply chain faces new compliance review'},sum:{zh:'美国财政部与能源部就 IRA 项下 FEOC（外国关注实体）认定细则征求行业意见，正极前驱体与石墨环节中国企业或受影响，电池厂商加速海外产能与本地化布局。',en:'The US Treasury and DOE are seeking industry input on FEOC (Foreign Entity of Concern) determination rules under the IRA. Cathode precursor and graphite segments with Chinese involvement may be affected; battery makers are accelerating overseas capacity and localization.'},tags:['FEOC','IRA'],cn:'USA'},
+  {id:35,t:'pfe',src:'The Verge',url:'https://www.theverge.com/2026/8/21/fcc-covered-list-expansion',time:'10:20',title:{zh:'Covered List 扩容至设备品类：无人机、路由器、逆变器、机器人先后受限',en:'Covered List expands to device categories: drones, routers, inverters, robots now restricted'},sum:{zh:'FCC 限制清单由点名企业扩展至外国生产的整机品类，无人机及关键组件、路由器、电力逆变器、先进机器人等陆续被纳入，附条件批准（Conditional Approval）成为主要豁免通道。',en:"The FCC's covered list has expanded from named entities to entire device categories produced abroad. Drones, key components, routers, power inverters, and advanced robots are now included; Conditional Approval has become the primary exemption pathway."},tags:['Covered List','Device Ban'],cn:'USA'},
+  {id:36,t:'trade',src:'Reuters',url:'https://www.reuters.com/business/finance/us-tariff-optical-modules-2026-08-21/',time:'09:45',title:{zh:'美国评估对进口光模块与逆变器加征关税，供应链备货节奏受扰动',en:'US weighs tariffs on imported optical modules and inverters; supply chains brace'},sum:{zh:'美国贸易代表办公室评估对高速光模块及电力逆变器加征关税，叠加 FCC 限制清单影响，中国厂商与美国客户出现提前备货、分散订单的迹象。',en:'USTR is evaluating tariffs on high-speed optical modules and power inverters. Combined with the FCC covered-list impact, Chinese suppliers and US customers are front-loading inventory and diversifying orders.'},tags:['关税','Tariff'],cn:'USA'},
+  {id:3,t:'aidc',src:'Bloomberg',url:'https://www.bloomberg.com/news/articles/2026-08-21/hyperscaler-capex-2026',time:'08:58',title:{zh:'Hyperscaler capex 指引再上调：AI 服务器订单排至明年 Q2',en:'Hyperscaler capex guidance raised again: AI server orders stretch to next Q2'},sum:{zh:'多家云厂商在最新财报电话会中上调 2026 年资本开支指引，液冷、电力与光模块供应链订单能见度显著延长。',en:'Multiple cloud providers raised their 2026 capex guidance in latest earnings calls. Liquid cooling, power, and optical module supply-chain order visibility has extended significantly.'},tags:['Capex','Liquid Cooling'],cn:'USA'},
+  {id:7,t:'aidc',src:'Reuters',url:'https://www.reuters.com/technology/nvidia-gpu-ramp-liquid-cooling-2026-08-21/',time:'07:45',title:{zh:'Nvidia 新一代 GPU 量产爬坡，液冷渗透率明年或超 40%',en:'Nvidia next-gen GPU ramps: liquid cooling penetration may exceed 40% next year'},sum:{zh:'供应链消息称下一代平台机柜功耗提升至 120kW+，直接液冷方案成为标配，冷板与 CDU 订单加速释放。',en:'Supply-chain sources say the next platform raises rack power to 120kW+, making direct liquid cooling standard. Cold plate and CDU orders are accelerating.'},tags:['GPU','Liquid Cooling'],cn:'USA'},
+  {id:9,t:'telecom',src:'Light Reading',url:'https://www.lightreading.com/mobile/t-mobile-nokia-6g-terahertz-trial',time:'07:12',title:{zh:'T-Mobile 与诺基亚完成 6G 太赫兹原型验证，速率破 100Gbps',en:'T-Mobile and Nokia complete 6G terahertz prototype trial, breaking 100 Gbps'},sum:{zh:'双方在 250GHz 频段完成多天线原型测试，标志着 6G 候选频段从实验室走向外场验证阶段。',en:'The two companies completed a multi-antenna prototype test in the 250 GHz band, marking the transition of 6G candidate frequencies from lab to field-trial stage.'},tags:['6G','Terahertz'],cn:'USA'},
+  {id:10,t:'energy',src:'Wood Mackenzie',url:'https://www.woodmac.com/news/global-storage-h1-2026/',time:'06:58',title:{zh:'全球储能新增装机上半年达 48GW，中美合计占比 71%',en:'Global new storage capacity reaches 48 GW in H1; China and US account for 71%'},sum:{zh:'中国上半年新增储能装机 26GW 居首，美国以 8GW 紧随其后；电网侧与工商业储能贡献主要增量。',en:"China led with 26 GW of new storage in H1, followed by the US at 8 GW. Grid-side and commercial & industrial storage contributed the bulk of additions."},tags:['Storage','Global'],cn:'USA'},
+  {id:14,t:'trade',src:'Reuters',url:'https://www.reuters.com/world/us/china-battery-tariff-2026-ustr-review/',time:'05:55',title:{zh:'美国对华锂电关税 2026 年再上调，EV 电池综合税率或达 50%',en:'US raises China battery tariffs again in 2026; EV battery composite rate may hit 50%'},sum:{zh:'USTR 公告 301 条款四年度复审结果，动力电池与天然石墨关税 2026 年 1 月起进一步上调，业内评估出口成本上升约 8-12%。',en:'USTR announced Section 301 four-year review results. EV battery and natural graphite tariffs rise further from Jan 2026; industry estimates export cost increases of 8-12%.'},tags:['Tariff','Section 301'],cn:'USA'},
+  {id:30,t:'aidc',src:"Dell'Oro Group",url:'https://www.delloro.com/news/800g-module-shipments-2026',time:'01:55',title:{zh:'800G 光模块出货量 2026 年预计翻倍，数据中心交换机升级驱动',en:'800G optical module shipments expected to double in 2026, driven by data-center switch upgrades'},sum:{zh:"Dell'Oro 报告显示 800G 光模块出货量预计同比增长 110%，AI 集群 scale-out 网络升级是主要需求来源。",en:"Dell'Oro reports 800G optical module shipments are expected to grow 110% YoY. AI cluster scale-out network upgrades are the primary demand driver."},tags:['800G','Optical'],cn:'USA'},
+
+  /* ---- China ---- */
+  {id:1,t:'lithium',src:'SMM 上海有色',url:'https://www.smm.cn/news/lithium-carbonate-2026-08-21',time:'09:32',title:{zh:'碳酸锂主力合约日内涨超 3%，供给端盐湖检修叠加需求回暖',en:'Li carbonate futures surge over 3% intraday as salt-lake maintenance meets recovering demand'},sum:{zh:'SMM 数据显示，8 月碳酸锂周度产量环比下降 5.2%，锂盐厂挺价情绪升温，下游正极材料厂刚需采购启动。',en:"SMM data shows August weekly lithium carbonate output fell 5.2% MoM. Producers are holding prices firm; downstream cathode makers have started restocking on demand."},tags:['锂价','Li Price'],cn:'China'},
+  {id:2,t:'aidc',src:'InfoQ',url:'https://www.infoq.cn/article/aidc-construction-2026',time:'09:15',title:{zh:'国内智算中心建设提速：8 省市上半年新开工算力项目超 60 个',en:'China AI data center construction accelerates: 60+ new compute projects in 8 provinces in H1'},sum:{zh:'据不完全统计，上半年全国智算中心新开工项目 61 个，规划算力合计约 85 EFLOPS，平均 PUE 目标降至 1.2 以下。',en:'According to preliminary statistics, 61 new AI compute center projects broke ground in H1, with planned total capacity of ~85 EFLOPS and average PUE target below 1.2.'},tags:['智算','AIDC'],cn:'China'},
+  {id:4,t:'lithium',src:'高工锂电 GGII',url:'https://www.gg-lb.com/art/solid-state-pilot-2026',time:'08:40',title:{zh:'固态电池中试线密集落地，硫化物路线产业化时点提前',en:'Solid-state battery pilot lines cluster; sulfide route industrialization timeline moves up'},sum:{zh:'GGII 统计显示年内已有 9 家企业启动硫化物固态电池中试线建设，预计 2027 年 GWh 级量产窗口开启。',en:'GGII statistics show 9 companies have launched sulfide solid-state battery pilot lines this year. GWh-scale production is expected to open in 2027.'},tags:['固态电池','Solid-state'],cn:'China'},
+  {id:5,t:'telecom',src:'C114 通信网',url:'https://www.c114.com.cn/news/a5g-a-400-cities-2026',time:'08:21',title:{zh:'三大运营商 5G-A 商用城市扩容至 400+，上行增强成为主推场景',en:'China\'s three operators expand 5G-Advanced to 400+ cities; uplink enhancement becomes key scenario'},sum:{zh:'5G-A 三载波聚合与上行增强在视频直播、工业质检场景渗透率快速提升，带动基站主设备新一轮集采。',en:'5G-A three-carrier aggregation and uplink enhancement are seeing rapid penetration in video broadcasting and industrial inspection, driving a new round of base-station equipment procurement.'},tags:['5G-A','Procurement'],cn:'China'},
+  {id:6,t:'energy',src:'北极星储能网',url:'https://news.bjx.com.cn/html/20260821/ess-bid-price.html',time:'08:02',title:{zh:'储能系统报价再创新低：2h 磷酸铁锂储能系统中标均价 0.48 元/Wh',en:'ESS bid price hits new low: 2-hour LFP storage system average award price 0.48 RMB/Wh'},sum:{zh:'7 月储能系统中标均价环比下降 6%，电芯价格下行与集成效率提升是主要驱动，业主侧配储收益率改善。',en:'July ESS average award price fell 6% MoM, driven by cell price declines and improved integration efficiency. Owner-side storage ROI is improving.'},tags:['储能','ESS Bid'],cn:'China'},
+  {id:12,t:'energy',src:'北极星储能网',url:'https://news.bjx.com.cn/html/20260821/pv-module-price.html',time:'06:25',title:{zh:'光伏组件价格企稳：TOPCon 双面双玻均价 0.71 元/W',en:'PV module prices stabilize: TOPCon bifacial double-glass average 0.71 RMB/W'},sum:{zh:'8 月组件价格连续两周持平，硅料价格触底回升带动产业链价格企稳，部分头部厂商上调排产。',en:'August module prices held flat for two consecutive weeks. Polysilicon bottoming out and recovering has stabilized the supply chain; some top manufacturers raised production schedules.'},tags:['光伏','PV Price'],cn:'China'},
+  {id:13,t:'aidc',src:'财新 Caixin',url:'https://www.caixin.com/2026-08-21/data-center-green-power.html',time:'06:10',title:{zh:'数据中心电力保障成瓶颈：西部绿电直供试点启动',en:'Data center power supply becomes bottleneck: western green-power direct supply pilot launched'},sum:{zh:'多地启动数据中心绿电直供与源网荷储一体化试点，探索算力与绿电协同消纳的新商业模式。',en:'Multiple regions have launched green-power direct supply and source-grid-load-storage integration pilots, exploring new business models for coordinated compute and green-power consumption.'},tags:['绿电','Green Power'],cn:'China'},
+  {id:24,t:'lithium',src:'工信部 MIIT',url:'https://www.miit.gov.cn/recycle-whitelist-batch8-2026',time:'03:25',title:{zh:'锂电回收白名单扩容至 156 家，规范化回收率目标 2030 年达 75%',en:'Battery recycling whitelist expands to 156 companies; 2030 target 75% formal recycling rate'},sum:{zh:'工信部公示第八批动力电池回收白名单企业，梯次利用与再生利用产能合计规划超 600GWh 当量。',en:'MIIT published the 8th batch of battery recycling whitelist companies. Cascaded use and regeneration capacity totals over 600 GWh equivalent.'},tags:['回收','Recycling'],cn:'China'},
+  {id:25,t:'aidc',src:'IDC',url:'https://www.idc.com/getdoc.jsp?containerId=prc-aidc-h1-2026',time:'03:10',title:{zh:'中国智能算力市场 2026H1 规模达 190 亿元，同比增 51%',en:'China AI compute market reaches 19 B RMB in H1 2026, up 51% YoY'},sum:{zh:'IDC 最新报告显示智算服务市场高速增长，推理算力占比首次超过训练，端侧智能带来增量需求。',en:"IDC's latest report shows high-speed growth in AI compute services. Inference now exceeds training for the first time; edge AI is driving incremental demand."},tags:['市场','Inference'],cn:'China'},
+  {id:26,t:'energy',src:'国家能源局',url:'https://www.nea.gov.cn/power-consumption-jul-2026',time:'02:55',title:{zh:'7 月全社会用电量同比增长 7.2%，高技术制造业用电领跑',en:'July total power consumption up 7.2% YoY; high-tech manufacturing leads'},sum:{zh:'计算机通信电子设备制造业用电量同比增长 15.3%，数据中心与 AI 相关产业成为用电增长新引擎。',en:'Computer & communication electronics manufacturing power consumption grew 15.3% YoY. Data centers and AI-related industries are the new growth engine for power demand.'},tags:['用电量','Power Demand'],cn:'China'},
+  {id:28,t:'energy',src:'第一财经 Yicai',url:'https://www.yicai.com/news/vpp-load-15gw-2026',time:'02:25',title:{zh:'虚拟电厂试点扩围：聚合可调节负荷规模超 15GW',en:'Virtual power plant pilots expand: aggregated adjustable load exceeds 15 GW'},sum:{zh:'多地虚拟电厂进入常态化运营，工商业储能、充电桩与空调负荷参与需求响应，辅助服务收益模式成熟。',en:'Multiple VPPs have entered routine operation. Commercial & industrial storage, EV chargers, and HVAC loads participate in demand response; ancillary service revenue models are maturing.'},tags:['VPP','Demand Response'],cn:'China'},
+  {id:29,t:'lithium',src:'Benchmark Mineral Intelligence',url:'https://www.benchmarkminerals.com/lfp-capacity-2027-forecast',time:'02:10',title:{zh:'全球 LFP 正极产能 2027 年将超 500 万吨，中国企业占比 78%',en:'Global LFP cathode capacity to exceed 5 million tonnes by 2027; Chinese firms hold 78% share'},sum:{zh:'Benchmark 预测 LFP 正极产能将快速扩张，中国头部企业通过技术授权与合资方式布局欧洲与东南亚。',en:'Benchmark forecasts rapid LFP cathode capacity expansion. Leading Chinese companies are expanding into Europe and Southeast Asia via technology licensing and joint ventures.'},tags:['LFP','Capacity'],cn:'China'},
+  {id:27,t:'trade',src:'中国商务部',url:'http://www.mofcom.gov.cn/india-pli-battery-response.html',time:'02:40',title:{zh:'印度延长锂电池 PLI 至 2028，中国商务部关注贸易转移效应',en:'India extends battery PLI to 2028; China\'s MOFCOM monitors trade diversion effects'},sum:{zh:'印度政府将 PLI 计划延期并加大补贴力度，目标 2028 年形成 200GWh 本土电池产能，降低对进口依赖。中国商务部关注贸易转移效应。',en:"India's government extended the PLI program and increased subsidies, targeting 200 GWh of domestic battery capacity by 2028 to reduce import dependence. China's MOFCOM is monitoring trade diversion effects."},tags:['PLI','Trade Diversion'],cn:'China'},
+
+  /* ---- Germany ---- */
+  {id:8,t:'lithium',src:'EV-volumes',url:'https://www.ev-volumes.com/july-2026-global-ev-sales/',time:'07:30',title:{zh:'7 月全球新能源车销量 142 万辆，欧洲插混回暖明显',en:'July global EV sales 1.42M units; European PHEV rebound notable'},sum:{zh:'EV-volumes 数据显示 7 月全球 BEV+PHEV 销量同比增长 18%，欧洲市场在补贴政策落地后环比反弹 9%。',en:'EV-volumes data shows July global BEV+PHEV sales up 18% YoY. The European market rebounded 9% MoM after subsidy policies took effect.'},tags:['EV Sales','Global'],cn:'Germany'},
+  {id:15,t:'trade',src:'Handelsblatt',url:'https://www.handelsblatt.com/eu-anti-subsidy-ev-china-final-2026',time:'05:40',title:{zh:'欧盟对华电动车反补贴终裁落地，综合税率 20.5%~35.3%',en:'EU anti-subsidy final ruling on Chinese EVs: composite rate 20.5%-35.3%'},sum:{zh:'欧委会公布终裁税率，叠加 10% 最惠国基础关税后，部分企业综合进口税率接近 45%；中企加速欧洲本地化建厂应对。',en:'The European Commission announced final rates. With the 10% MFN base tariff, some companies face total import rates near 45%. Chinese firms are accelerating European localization.'},tags:['Anti-subsidy','EU'],cn:'Germany'},
+  {id:18,t:'aidc',src:'CleanEnergyWire',url:'https://www.cleanenergywire.org/eu-data-center-energy-directive-2026',time:'04:55',title:{zh:'欧洲数据中心能耗新规落地：强制要求余热回收与绿电采购',en:'EU data center energy rules finalized: mandatory waste-heat recovery and green-power procurement'},sum:{zh:'欧盟数据中心能效指令实施细则生效，大型数据中心须在 2030 年前将余热回收比例提升至 40%。',en:"The EU's data center energy efficiency directive takes effect. Large data centers must raise waste-heat recovery to 40% by 2030."},tags:['EU Directive','Energy'],cn:'Germany'},
+  {id:23,t:'trade',src:'Frankfurter Allgemeine',url:'https://www.faz.net/cbam-transition-ends-2026',time:'03:40',title:{zh:'欧盟 CBAM 过渡期 2025 年底结束，2026 年全面开征碳关税',en:'EU CBAM transition ends late 2025; full carbon tariff collection begins 2026'},sum:{zh:'碳边境调节机制过渡期结束，钢铁、铝、水泥、化肥、电力、氢六大行业全面纳入，电池间接纳入范围扩大。',en:'The CBAM transition period has ended. Steel, aluminum, cement, fertilizer, electricity, and hydrogen are fully covered; batteries are being indirectly included.'},tags:['CBAM','Carbon Tariff'],cn:'Germany'},
+
+  /* ---- Japan ---- */
+  {id:11,t:'lithium',src:'Nikkei Asia',url:'https://asia.nikkei.com/Business/transportation/toyota-solid-state-2027-plan',time:'06:40',title:{zh:'日本车企加速全固态电池布局，丰田 2027 量产计划不变',en:'Japanese automakers accelerate solid-state battery push; Toyota\'s 2027 production plan on track'},sum:{zh:'丰田、日产相继公布固态电池量产时间表，硫化物电解质专利布局成为竞争焦点，日韩材料企业同步扩产。',en:'Toyota and Nissan have released solid-state battery production timelines. Sulfide electrolyte patent布局 is the competitive focus; Japanese and Korean material companies are expanding capacity in parallel.'},tags:['固态电池','Solid-state'],cn:'Japan'},
+  {id:37,t:'lithium',src:'The Japan Times',url:'https://www.japantimes.co.jp/news/2026/08-21/japan-battery-recycling-meti/',time:'10:15',title:{zh:'日本经产省发布电池回收路线图：2030 年锂回收率目标 80%',en:'Japan METI releases battery recycling roadmap: 80% lithium recovery target by 2030'},sum:{zh:'日本经产省正式发布车用动力电池回收路线图，明确 2030 年锂、钴、镍回收率目标分别为 80%、95%、95%，推动全链条追溯与本土材料循环。',en:"Japan's METI released an EV battery recycling roadmap, setting 2030 recovery targets of 80% lithium, 95% cobalt, and 95% nickel, promoting full-chain traceability and domestic material circulation."},tags:['回收','Recycling'],cn:'Japan'},
+  {id:38,t:'telecom',src:'Nikkei Asia',url:'https://asia.nikkei.com/Business/telecom/ntt-6g-open-ran-2026',time:'14:20',title:{zh:'NTT 与 KDDI 联合推进 6G 开放架构，2027 外场试验计划确定',en:'NTT and KDDI jointly advance 6G open architecture; 2027 field trial plan confirmed'},sum:{zh:'日本两大运营商宣布合作开发 6G 开放无线接入网（O-RAN）架构，计划 2027 年启动外场试验，重点验证太赫兹通信与智能反射面技术。',en:"Japan's two largest operators announced joint development of a 6G open RAN architecture. Field trials are planned for 2027, focusing on terahertz communication and reconfigurable intelligent surfaces."},tags:['6G','O-RAN'],cn:'Japan'},
+
+  /* ---- South Korea ---- */
+  {id:39,t:'lithium',src:'Korea Herald',url:'https://www.koreaherald.com/view.php?ud=20260821000501',time:'11:30',title:{zh:'韩国公布关键矿产自给率目标：锂、钴、石墨 2030 年达 50%',en:'South Korea sets critical mineral self-sufficiency targets: lithium, cobalt, graphite to 50% by 2030'},sum:{zh:'韩国产业通商资源部发布关键矿产保障战略，目标 2030 年锂、钴、天然石墨自给率提升至 50%，通过海外矿产股权投资与本土回收双轨并行。',en:"South Korea's MOTIE released a critical mineral security strategy, targeting 50% self-sufficiency in lithium, cobalt, and natural graphite by 2030 through overseas equity investments and domestic recycling."},tags:['关键矿产','Critical Minerals'],cn:'South Korea'},
+  {id:40,t:'aidc',src:'Pulse News',url:'https://pulsenews.co.kr/view.php?year=2026&no=821003',time:'09:50',title:{zh:'韩国 SK 集团加码 AIDC：投资 15 万亿韩元建设超大规模 AI 园区',en:'SK Group doubles down on AIDC: 15 trillion KRW investment for mega AI campus'},sum:{zh:'SK 集团宣布未来五年投资 15 万亿韩元，在京畿道建设超大规模 AI 数据中心园区，规划算力超 50 EFLOPS，采用全液冷架构与自研 AI 芯片。',en:'SK Group announced a 15 trillion KRW, 5-year investment to build a mega AI data center campus in Gyeonggi-do, with planned capacity over 50 EFLOPS, using all-liquid cooling architecture and in-house AI chips.'},tags:['AIDC','SK Group'],cn:'South Korea'},
+  {id:41,t:'lithium',src:'ET News',url:'https://www.etnews.com/20260821000126',time:'08:15',title:{zh:'LG 新能源与三星 SDI 联合开发全固态电池，目标 2028 量产',en:'LG Energy Solution and Samsung SDI jointly develop all-solid-state batteries; mass production targeted for 2028'},sum:{zh:'韩国两大电池巨头宣布在全固态电池领域开展合作，共享硫化物电解质专利与中试线资源，联合开发标准化电芯平台，目标 2028 年实现 GWh 级量产。',en:"Korea's two battery giants announced cooperation on all-solid-state batteries, sharing sulfide electrolyte patents and pilot-line resources, jointly developing a standardized cell platform targeting GWh-scale production by 2028."},tags:['固态电池','All-solid-state'],cn:'South Korea'},
+
+  /* ---- Australia ---- */
+  {id:17,t:'lithium',src:'Fastmarkets',url:'https://www.fastmarkets.com/insights/australia-lithium-q2-2026',time:'05:10',title:{zh:'澳洲锂矿 Q2 产量环比下滑 9%，Greenbushes 下调全年指引',en:'Australian lithium mine output falls 9% QoQ in Q2; Greenbushes cuts full-year guidance'},sum:{zh:'澳洲锂精矿产量连续两个季度回落，高成本矿山现金成本压力显现，行业供给出清信号增强。',en:'Australian lithium concentrate output has declined for two consecutive quarters. High-cost mines are showing cash-cost pressure; industry supply rationalization signals are strengthening.'},tags:['锂矿','Li Ore'],cn:'Australia'},
+  {id:42,t:'energy',src:'Australian Mining',url:'https://www.australianmining.com.au/news/au-large-scale-storage-2026',time:'12:10',title:{zh:'澳大利亚大型储能项目开工潮：8 个州共 42GW 规划获批',en:'Australia large-scale storage construction wave: 42 GW approved across 8 states'},sum:{zh:'澳大利亚各州加速大型储能项目审批，新南威尔士、维多利亚、昆士兰三州合计 42GW 规划已获环评批准，预计 2026-2028 年陆续并网。',en:'Australian states are accelerating large-scale storage approvals. NSW, Victoria, and Queensland have 42 GW of planned capacity with environmental approval, expected to connect 2026-2028.'},tags:['储能','Storage'],cn:'Australia'},
+  {id:43,t:'energy',src:'Renew Economy',url:'https://reneweconomy.com.au/au-vpp-agg-2026',time:'07:20',title:{zh:'澳大利亚虚拟电厂聚合规模突破 5GW，分布式储能成主力',en:'Australia VPP aggregated capacity exceeds 5 GW; distributed storage becomes backbone'},sum:{zh:'澳大利亚能源市场运营商（AEMO）报告显示，全国虚拟电厂聚合规模突破 5GW，家用储能与屋顶光伏参与比例大幅提升，辅助服务收益占比超过 40%。',en:"AEMO reports that national VPP aggregated capacity has exceeded 5 GW. Home storage and rooftop PV participation rates have risen sharply; ancillary service revenue now accounts for over 40%."},tags:['VPP','Distributed Storage'],cn:'Australia'},
+
+  /* ---- UK ---- */
+  {id:16,t:'trade',src:'Benchmark Mineral Intelligence',url:'https://www.benchmarkminerals.com/uk-critical-minerals-strategy-2026',time:'05:25',title:{zh:'英国推出关键矿产战略：锂、钴、石墨纳入战略储备清单',en:'UK launches critical minerals strategy: lithium, cobalt, graphite added to strategic reserve list'},sum:{zh:'英国政府公布关键矿产战略更新，将锂、钴、天然石墨、锰列入战略储备，鼓励本土回收与多元化采购。',en:'The UK government published an updated critical minerals strategy, adding lithium, cobalt, natural graphite, and manganese to strategic reserves, encouraging domestic recycling and diversified sourcing.'},tags:['关键矿产','Critical Minerals'],cn:'UK'},
+  {id:44,t:'telecom',src:'Financial Times',url:'https://www.ft.com/content/uk-5g-open-ran-2026',time:'10:45',title:{zh:'英国 5G Open RAN 部署加速：四大运营商共享基础设施协议达成',en:'UK 5G Open RAN deployment accelerates: four operators sign shared-infrastructure agreement'},sum:{zh:'英国四大移动运营商签署农村共享网络协议，将在偏远地区部署 Open RAN 基站，目标 2027 年覆盖 95% 人口，降低网络部署成本约 30%。',en:"UK's four mobile operators signed a rural network-sharing agreement to deploy Open RAN base stations in remote areas, targeting 95% population coverage by 2027 and reducing deployment costs by ~30%."},tags:['Open RAN','5G'],cn:'UK'},
+  {id:45,t:'aidc',src:'BusinessCloud',url:'https://www.businesscloud.co.uk/uk-data-center-growth-2026',time:'08:30',title:{zh:'英国数据中心投资创纪录：2026H1 吸引外资超 50 亿英镑',en:'UK data center investment hits record: over £5B foreign capital in H1 2026'},sum:{zh:'英国数字基础设施领域在 2026 上半年吸引外资超 50 亿英镑，伦敦与大曼彻斯特地区为主要投资目的地，新建数据中心规划算力超 800MW。',en:"The UK's digital infrastructure sector attracted over £5B in foreign investment in H1 2026. London and Greater Manchester are primary destinations, with new data center plans totaling over 800MW."},tags:['Data Center','Investment'],cn:'UK'},
+
+  /* ---- France ---- */
+  {id:19,t:'trade',src:'Les Echos',url:'https://www.lesechos.com/industrie/battery-subsidy-france-2026',time:'04:40',title:{zh:'法国推出电池产业补贴：LFP 正极与电芯本土产能加码',en:'France launches battery industry subsidies: LFP cathode and cell domestic capacity boosted'},sum:{zh:'法国政府宣布新增 21 亿欧元补贴支持本土电池产业链，重点扶持 LFP 正极材料与储能电芯产能建设。',en:'The French government announced €2.1B in new subsidies for the domestic battery supply chain, focusing on LFP cathode materials and storage cell capacity.'},tags:['Subsidy','LFP'],cn:'France'},
+  {id:46,t:'energy',src:'Usine Nouvelle',url:'https://www.usinenouvelle.com/france-nuclear-smr-2026',time:'09:05',title:{zh:'法国小型核反应堆 (SMR) 项目获批：2030 年首台并网',en:'France small modular reactor (SMR) project approved: first grid connection by 2030'},sum:{zh:'法国核安全署批准 Nuward SMR 示范项目建设，装机 340MW，预计 2028 年开始安装、2030 年并网。项目目标为数据中心提供低碳基荷电力。',en:"France's nuclear safety authority approved the Nuward SMR demonstration project, 340 MW capacity. Installation begins 2028, grid connection 2030. The project aims to provide low-carbon baseload power for data centers."},tags:['SMR','Nuclear'],cn:'France'},
+  {id:47,t:'aidc',src:'FranceInfo',url:'https://www.francetvinfo.fr/data-center-marseille-2026',time:'13:10',title:{zh:'马赽数据中心集群扩容：地中海海底光缆驱动增长',en:'Marseille data center cluster expands: sub-Mediterranean cables drive growth'},sum:{zh:'马赛作为欧洲南部门户枢纽，多条地中海海底光缆登陆点带动数据中心需求，2026 年新增机房面积超 4 万平方米，运营商包括 Equinix、Digital Realty 等。',en:"Marseille as Europe's southern gateway hub, multiple sub-Mediterranean cable landings are driving data center demand. 2026 sees 40,000+ sqm of new white space; operators include Equinix and Digital Realty."},tags:['Data Center','Marseille'],cn:'France'},
+
+  /* ---- Netherlands ---- */
+  {id:20,t:'aidc',src:'NL Times',url:'https://nltimes.nl/2026/08/21/netherlands-export-control-semiconductors',time:'04:25',title:{zh:'荷兰扩大半导体设备出口管制：先进光刻与核心零部件纳入',en:'Netherlands expands semiconductor equipment export controls: advanced lithography and core components included'},sum:{zh:'荷兰政府更新出口管制清单，更多先进制程光刻设备与零部件出口需许可，影响先进 AI 芯片供应链。',en:"The Dutch government updated its export control list; more advanced-process lithography equipment and components now require export licenses, affecting the advanced AI chip supply chain."},tags:['Export Control','Semiconductor'],cn:'Netherlands'},
+  {id:48,t:'aidc',src:'Dutch News',url:'https://www.dutchnews.nl/news/2026/08/21/ams-data-center-green',time:'10:50',title:{zh:'阿姆斯特丹数据中心绿电比例突破 80%，市议会强制 PUE 限值',en:'Amsterdam data center green-power ratio exceeds 80%; city council mandates PUE limit'},sum:{zh:'阿姆斯特丹市议会通过新规，要求 2027 年后新建数据中心 PUE 不超过 1.2，且绿电采购比例不低于 80%。目前已有 3 个超大规模数据中心达标。',en:"Amsterdam city council passed new rules requiring new data centers from 2027 to have PUE ≤1.2 and green-power procurement ≥80%. Three hyperscale data centers already meet the standard."},tags:['Green Power','PUE'],cn:'Netherlands'},
+  {id:49,t:'trade',src:'ASML Newsroom',url:'https://www.asml.com/en/news/asml-q2-2026-earnings',time:'14:30',title:{zh:'ASML 季度财报：High-NA EUV 订单超预期，AI 驱动需求强劲',en:'ASML quarterly results: High-NA EUV orders beat expectations; AI-driven demand strong'},sum:{zh:'ASML 公布 Q2 财报，High-NA EUV 光刻机订单量超市场预期 23%，公司上调全年营收指引，AI 芯片制程升级驱动需求强劲。',en:"ASML reported Q2 earnings with High-NA EUV lithography orders 23% above market expectations. The company raised full-year revenue guidance; AI chip process upgrades are driving strong demand."},tags:['ASML','EUV'],cn:'Netherlands'},
+
+  /* ---- Sweden ---- */
+  {id:21,t:'energy',src:'SVT Nyheter',url:'https://www.svt.se/nyheter/sweden-data-center-green-power-95',time:'04:10',title:{zh:'瑞典北部数据中心集群绿电消纳率突破 95%',en:'Northern Sweden data center cluster green-power consumption exceeds 95%'},sum:{zh:'多家超大规模数据中心在瑞典北部落地，依托水电与风电资源，全年绿电消纳率超 95%，PUE 降至 1.1。',en:'Multiple hyperscale data centers have landed in northern Sweden, leveraging hydro and wind power. Annual green-power consumption exceeds 95%, with PUE down to 1.1.'},tags:['Green Power','Nordic'],cn:'Sweden'},
+  {id:50,t:'energy',src:'EnergiFöretagen',url:'https://www.energiforetagen.se/nyheter/grid-expansion-north-2026',time:'11:15',title:{zh:'瑞典北部电网扩容投资 120 亿克朗，保障数据中心电力供应',en:'Sweden invests 12B SEK to expand northern grid, securing data center power supply'},sum:{zh:'瑞典电网公司 Svenska Kraftnät 宣布投资 120 亿瑞典克朗扩建北部输电网，目标 2028 年前新增 8GW 输电能力，保障数据中心与工业用电需求。',en:"Swedish grid operator Svenska Kraftnät announced a 12B SEK investment to expand the northern transmission grid, adding 8 GW of transmission capacity by 2028 to secure data center and industrial power demand."},tags:['Grid','Power Supply'],cn:'Sweden'},
+
+  /* ---- Switzerland ---- */
+  {id:22,t:'lithium',src:'Swissinfo',url:'https://www.swissinfo.ch/eng/battery-recycling-law-switzerland-2026',time:'03:55',title:{zh:'瑞士通过电池回收法规：2030 年回收率目标 70%',en:'Switzerland passes battery recycling law: 70% recovery target by 2030'},sum:{zh:'瑞士联邦议会通过新版电池回收法规，要求 2030 年锂电池材料回收率达 70%，建立全链条追溯体系。',en:"The Swiss Federal Assembly passed the new battery recycling law, requiring 70% lithium battery material recovery by 2030 and establishing a full-chain traceability system."},tags:['回收','Recycling'],cn:'Switzerland'},
+  {id:51,t:'aidc',src:'NZZ Neue Zürcher Zeitung',url:'https://www.nzz.ch/switzerland-data-center-alps-2026',time:'09:00',title:{zh:'瑞士阿尔卑斯山区数据中心崛起：自然冷却与绿电驱动优势',en:'Swiss Alps data centers rise: natural cooling and green power drive advantage'},sum:{zh:'瑞士利用阿尔卑斯山区低温与丰富水电资源，吸引 Equinix、Microsoft 等运营商建设数据中心，全年自然冷却天数超 300 天，PUE 低至 1.08。',en:"Switzerland is leveraging Alpine low temperatures and abundant hydro power to attract operators like Equinix and Microsoft. Natural cooling days exceed 300/year, with PUE as low as 1.08."},tags:['Data Center','Natural Cooling'],cn:'Switzerland'},
+  {id:52,t:'trade',src:'Le Temps',url:'https://www.letemps.ch/economie/swiss-trade-policy-cbam-2026',time:'15:20',title:{zh:'瑞士调整贸易政策应对 CBAM：碳定价机制与欧盟接轨',en:'Switzerland adjusts trade policy for CBAM: carbon pricing mechanism aligns with EU'},sum:{zh:'瑞士联邦委员会宣布将国内碳定价机制与欧盟 CBAM 对接，避免双重征税，同时保障出口企业竞争力。钢铁、铝、水泥行业率先纳入。',en:"The Swiss Federal Council announced alignment of its domestic carbon pricing mechanism with the EU CBAM to avoid double taxation while protecting export competitiveness. Steel, aluminum, and cement are first to be included."},tags:['CBAM','Trade Policy'],cn:'Switzerland'}
 ];
 /* assign a full timestamp to each news item (spread over the past ~3 weeks) for date/time-range filtering */
-NEWS.forEach((n,i)=>{n.d=new Date(2026,7,21-Math.round(i/1.4),parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+NEWS.forEach((n,i)=>{n.d=new Date(2026,7,21-Math.round(i/1.8),parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
 
 const PAPERS = [
   {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering',auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
@@ -306,7 +419,13 @@ $('#dateModal').addEventListener('click',ev=>{if(ev.target===$('#dateModal'))$('
 function tagInfo(type){const m={lithium:['tag_lithium','t-lithium'],aidc:['tag_aidc','t-aidc'],telecom:['tag_telecom','t-telecom'],energy:['tag_energy','t-energy'],trade:['tag_trade','t-trade'],pfe:['tag_pfe','t-pfe']};return m[type]||['tag_trade','t-trade'];}
 function newsHTML(n){
   const ti=tagInfo(n.t);
-  return `<div class="news-item"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><span class="src">${esc(n.src)}</span><span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}</div><div class="news-title">${esc(n.title)}</div><div class="news-summary">${esc(n.sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+  const lang=state.lang;
+  const title=lang==='zh'?(n.title.zh||n.title):(n.title.en||n.title.zh||n.title);
+  const sum=lang==='zh'?(n.sum.zh||n.sum):(n.sum.en||n.sum.zh||n.sum);
+  const href=n.url||'#';
+  const srcLink=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
+  const srcUrl=srcLink?srcLink.url:'#';
+  return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a><span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
 function renderNews(){
   const {start,end}=rngNow('ovNews');
@@ -315,16 +434,38 @@ function renderNews(){
   else{list=NEWS.filter(n=>n.cn===state.country||n.cn==='China');}
   list=list.filter(n=>n.d>=start&&n.d<=end);
   if(state.tab!=='all'&&state.tab!=='pfe')list=list.filter(n=>n.t===state.tab);
+  // Sort by timestamp descending (most recent first)
+  list.sort((a,b)=>b.d-a.d);
   list=list.slice(0,state.newsShown);
   $('#newsList').innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该筛选条件下暂无新闻<br><span style="font-size:10.5px">可切换国家、标签或时间范围</span>':'No news under current filters<br><span style="font-size:10.5px">Try a different country, tag or time range</span>')+'</div>';
   $('#newsCount').textContent=list.length;
+  // Attach click-to-open on news items
+  $$('#newsList .news-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const href=item.dataset.href;
+      if(href&&href!=='#')window.open(href,'_blank','noopener');
+    });
+  });
 }
 $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews();});
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
-  let list=NEWS.filter(n=>n.t===type&&n.d>=start&&n.d<=end).slice(0,count||5);
+  let list=NEWS.filter(n=>n.t===type&&n.d>=start&&n.d<=end);
+  // Sort by recency
+  list.sort((a,b)=>b.d-a.d);
+  // Prefer local country news, but include others if not enough
+  const local=list.filter(n=>n.cn===state.country);
+  const others=list.filter(n=>n.cn!==state.country);
+  list=[...local,...others].slice(0,count||5);
   $(id).innerHTML=list.length?list.map(newsHTML).join(''):'<div class="empty">'+(state.lang==='zh'?'该时段暂无相关新闻':'No related news in this period')+'</div>';
+  // Attach click-to-open
+  $$(id+' .news-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const href=item.dataset.href;
+      if(href&&href!=='#')window.open(href,'_blank','noopener');
+    });
+  });
 }
 
 /* ============ PRICE TABLE ============ */
