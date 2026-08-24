@@ -242,4 +242,14 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .rp-in{flex:1;min-width:0;height:26px;border:1px solid var(--line);border-radius:6px;padding:0 6px;font-family:var(--mono);font-size:10.5px;color:var(--ink);background:var(--panel);outline:none}
 .rp-in:focus{border-color:var(--accent-line)}
 .rp-foot{display:flex;justify-content:flex-end;margin-top:10px}
+/* ===== News clickable links ===== */
+.news-item{cursor:pointer}
+.news-meta .src{font-weight:600;color:var(--ink-2);text-decoration:none;transition:color .12s}
+.news-meta .src:hover{color:var(--accent)}
+.news-meta .read-ext{font-size:10px;color:var(--accent);text-decoration:none;font-weight:500;opacity:.8;transition:opacity .12s}
+.news-meta .read-ext:hover{opacity:1;text-decoration:underline}
+.news-title a{color:inherit;text-decoration:none;transition:color .12s}
+.news-title a:hover{color:var(--accent)}
+.news-item:hover .news-title a{color:var(--accent)}
+/* ===== End News links ===== */
 .rp-foot .btn{height:26px;font-size:11px}
