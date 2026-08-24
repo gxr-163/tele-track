@@ -5,7 +5,7 @@ const I18N = {
     app_title:'TELE·TRACK — 行业情报',search_ph:'搜索新闻、论文、公司…  ( / )',
     lbl_monitor:'监控',lbl_sectors:'行业',lbl_trade:'贸易',lbl_research:'研究',lbl_system:'系统',
     nav_overview:'总览',nav_lithium:'锂电池',nav_aidc:'AIDC',nav_telecom:'电信',nav_energy:'能源',nav_trade:'贸易与关税',nav_papers:'学术论文',nav_settings:'设置',
-    side_src:'数据源: 42 路 · 延迟 < 3min',
+    side_src:'数据源: 47 路 · 延迟 < 3min',
     ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
     tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
     kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
@@ -36,7 +36,7 @@ const I18N = {
     app_title:'TELE·TRACK — Industry Intelligence',search_ph:'Search news, papers, companies…  ( / )',
     lbl_monitor:'Monitor',lbl_sectors:'Sectors',lbl_trade:'Trade',lbl_research:'Research',lbl_system:'System',
     nav_overview:'Overview',nav_lithium:'Lithium Battery',nav_aidc:'AIDC',nav_telecom:'Telecom',nav_energy:'Energy',nav_trade:'Trade & Tariffs',nav_papers:'Academic Papers',nav_settings:'Settings',
-    side_src:'Sources: 42 feeds · latency < 3min',
+    side_src:'Sources: 47 feeds · latency < 3min',
     ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
     tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
     kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
@@ -68,7 +68,8 @@ const I18N = {
 
 /* ============ COUNTRIES ============ */
 const FLAGS = {China:'🇨🇳',USA:'🇺🇸',Germany:'🇩🇪',Japan:'🇯🇵','South Korea':'🇰🇷',Australia:'🇦🇺','UK':'🇬🇧',France:'🇫🇷',Netherlands:'🇳🇱',Sweden:'🇸🇪',Switzerland:'🇨🇭'};
-const COUNTRIES = ['China','USA','Germany','Japan','South Korea','Australia','UK','France','Netherlands','Sweden','Switzerland'];
+/* US market is the #1 priority → USA first in selector, default region */
+const COUNTRIES = ['USA','China','Germany','Japan','South Korea','Australia','UK','France','Netherlands','Sweden','Switzerland'];
 
 /* ============ PRICE DATA (per country) ============ */
 const PRICE_GROUPS = [
@@ -123,8 +124,8 @@ const TARIFFS = [
 ];
 
 const MAT_PRICES = [
-  {c:'China',cur:'CNY',li:'¥76,500',lfp:'¥48,600',gr:'¥28,600',hy:'¥82,300'},
   {c:'USA',cur:'USD',li:'$10,700',lfp:'$6,850',gr:'$4,000',hy:'$11,500'},
+  {c:'China',cur:'CNY',li:'¥76,500',lfp:'¥48,600',gr:'¥28,600',hy:'¥82,300'},
   {c:'Germany',cur:'EUR',li:'€9,800',lfp:'€6,300',gr:'€3,700',hy:'€10,500'},
   {c:'Japan',cur:'JPY',li:'¥1.62M',lfp:'¥1.02M',gr:'¥0.41M',hy:'¥1.74M'},
   {c:'UK',cur:'GBP',li:'£8,100',lfp:'£5,200',gr:'£2,950',hy:'£8,900'},
@@ -158,7 +159,13 @@ const NEWS_MEDIA = {
     {name:'Wood Mackenzie',url:'https://www.woodmac.com'},
     {name:'USTR',url:'https://ustr.gov'},
     {name:'IDC',url:'https://www.idc.com'},
-    {name:'CNBC',url:'https://www.cnbc.com'}
+    {name:'CNBC',url:'https://www.cnbc.com'},
+    /* ---- US government watch (PFE / supply-chain & trade enforcement) ---- */
+    {name:'DHS',url:'https://www.dhs.gov/uflpa-entity-list',gov:true},
+    {name:'BIS',url:'https://www.bis.doc.gov',gov:true},
+    {name:'Federal Register',url:'https://www.federalregister.gov',gov:true},
+    {name:'CBP',url:'https://www.cbp.gov',gov:true},
+    {name:'OFAC',url:'https://ofac.treasury.gov',gov:true}
   ],
   Germany:[
     {name:'Handelsblatt',url:'https://www.handelsblatt.com'},
@@ -211,6 +218,12 @@ const NEWS_MEDIA = {
 
 /* ============ NEWS (bilingual + article URLs) ============ */
 const NEWS = [
+  /* ---- USA / PFE — US government watch (DHS / BIS / Federal Register / CBP / OFAC) ---- */
+  {id:53,t:'pfe',src:'DHS',url:'https://www.dhs.gov/uflpa-entity-list',time:'09:50',title:{zh:'DHS 更新 UFLPA 实体清单：新增中国锂电与储能供应链实体',en:'DHS updates UFLPA Entity List: adds Chinese lithium-battery & storage supply-chain entities'},sum:{zh:'国土安全部 UFLPA 实体清单新增多家涉锂电正极、负极及储能系统组装的中国企业，CBP 可据此对相关货物实施扣留与没收，出口商需提供完整供应链溯源证明方可放行。',en:"DHS added multiple Chinese firms in Li-battery cathode, anode, and ESS assembly to the UFLPA Entity List. CBP may detain/forfeit related goods; exporters need full supply-chain traceability evidence for release."},tags:['UFLPA','Entity List'],cn:'USA'},
+  {id:54,t:'pfe',src:'BIS',url:'https://www.bis.doc.gov/index.php/policy-guidance/entity-list',time:'09:35',title:{zh:'BIS 实体清单更新：先进封装与 AI 芯片配套中国实体被列入',en:'BIS Entity List update: Chinese entities in advanced packaging & AI-chip ecosystem added'},sum:{zh:'商务部工业与安全局将多家中国先进封装、HBM 配套与 AI 加速卡相关企业列入实体清单，EAR 管制范围扩大，涉及设备、材料与设计服务的对美出口需逐单申请许可。',en:"BIS added several Chinese firms in advanced packaging, HBM support, and AI accelerators to the Entity List, broadening EAR controls. Equipment, materials, and design services to the US now require license applications."},tags:['BIS','Entity List'],cn:'USA'},
+  {id:55,t:'pfe',src:'Federal Register',url:'https://www.federalregister.gov',time:'09:20',title:{zh:'Federal Register 公示 FCC 光模块组件穿透规则草案，60 天评论期',en:'Federal Register publishes FCC optical-module component-covered rule draft; 60-day comment period'},sum:{zh:'FCC 关于通信设备组件穿透审查的规则草案正式进入公示，涵盖半导体、基带处理器、蜂窝模块与光收发组件，公众评论期 60 天，行业可在此期间提交豁免与替代方案意见。',en:"The FCC's component-covered review rule draft is now published, covering semiconductors, baseband processors, cellular modules, and optical transceivers. The 60-day public comment period lets industry submit exemption and alternative proposals."},tags:['FCC','Optical Module'],cn:'USA'},
+  {id:56,t:'pfe',src:'CBP',url:'https://www.cbp.gov/trade/forced-labor',time:'09:05',title:{zh:'CBP 发布 UFLPA 执法年报：涉锂电货物扣留规模创纪录',en:'CBP issues UFLPA enforcement report: record detentions of lithium-related goods'},sum:{zh:'海关与边境保护局年度执法报告显示，涉锂电与光伏供应链的扣留令数量、货值与放行周期均创新高，重点核查石墨、正极前驱体与电解液关键成分的原产地证据。',en:"CBP's annual UFLPA enforcement report shows record detention orders, value, and release timelines for lithium-battery and PV supply chains, focusing on origin evidence for graphite, cathode precursor, and electrolyte components."},tags:['CBP','Enforcement'],cn:'USA'},
+  {id:57,t:'pfe',src:'OFAC',url:'https://ofac.treasury.gov',time:'08:50',title:{zh:'OFAC 将中国电池材料与光伏实体列入 SDN 清单',en:'OFAC designates Chinese battery-material & PV entities to SDN List'},sum:{zh:'财政部海外资产控制办公室依据涉疆与人权相关行政令，将多家中国电池材料、光伏组件企业及关联贸易公司列入 SDN 清单，禁止美国主体与其交易并冻结在美资产。',en:"OFAC designated multiple Chinese battery-material and PV firms plus affiliated trading companies to the SDN List under Xinjiang- and human-rights-related executive orders, barring US persons from dealings and freezing US assets."},tags:['OFAC','Sanctions'],cn:'USA'},
   /* ---- USA / PFE ---- */
   {id:31,t:'pfe',src:'Reuters',url:'https://www.reuters.com/technology/fcc-drafts-curbs-chinese-optical-modules-2026-08-21/',time:'13:25',title:{zh:'路透：FCC 起草限制中国光模块新机型进入美国市场',en:'Reuters: FCC drafts measures to restrict new Chinese optical modules from US market'},sum:{zh:'报道称 FCC 正起草措施，限制中国数据中心光收发模块新型号进入美国。高速光模块（800G/1.6T）的 DSP、MCU、光收发组件或纳入组件穿透审查，中际旭创、新易盛等厂商暂未被点名，方案仍可能调整。',en:'The FCC is drafting measures to restrict new models of Chinese data-center optical transceivers from entering the US. High-speed modules (800G/1.6T) including DSP, MCU, and transceiver components may fall under component-covered review. Zhongji Innolight and Eoptolink are not yet named; the proposal remains subject to change.'},tags:['光模块','Optical Module'],cn:'USA'},
   {id:32,t:'pfe',src:'FCC',url:'https://www.fcc.gov/document/fcc-covered-list-expansion-2026',time:'12:40',title:{zh:'FCC 组件穿透规则落地：受限企业逻辑硬件部件限制范围扩大',en:'FCC component-covered rule finalized: restricted-entity logical hardware scope expanded'},sum:{zh:'新规明确：若受限企业生产的设备无法获得 FCC 授权，其他厂商同类设备只要包含其逻辑硬件部件（半导体、基带处理器、蜂窝模块、光收发模块等），新机型授权也可能被拒。',en:'The new rule clarifies that if a restricted entity cannot obtain FCC authorization, other manufacturers using the same logical hardware components (semiconductors, baseband processors, cellular modules, optical transceivers) may also be denied new-model authorization.'},tags:['组件穿透','Covered List'],cn:'USA'},
@@ -245,6 +258,8 @@ const NEWS = [
   {id:15,t:'trade',src:'Handelsblatt',url:'https://www.handelsblatt.com/eu-anti-subsidy-ev-china-final-2026',time:'05:40',title:{zh:'欧盟对华电动车反补贴终裁落地，综合税率 20.5%~35.3%',en:'EU anti-subsidy final ruling on Chinese EVs: composite rate 20.5%-35.3%'},sum:{zh:'欧委会公布终裁税率，叠加 10% 最惠国基础关税后，部分企业综合进口税率接近 45%；中企加速欧洲本地化建厂应对。',en:'The European Commission announced final rates. With the 10% MFN base tariff, some companies face total import rates near 45%. Chinese firms are accelerating European localization.'},tags:['Anti-subsidy','EU'],cn:'Germany'},
   {id:18,t:'aidc',src:'CleanEnergyWire',url:'https://www.cleanenergywire.org/eu-data-center-energy-directive-2026',time:'04:55',title:{zh:'欧洲数据中心能耗新规落地：强制要求余热回收与绿电采购',en:'EU data center energy rules finalized: mandatory waste-heat recovery and green-power procurement'},sum:{zh:'欧盟数据中心能效指令实施细则生效，大型数据中心须在 2030 年前将余热回收比例提升至 40%。',en:"The EU's data center energy efficiency directive takes effect. Large data centers must raise waste-heat recovery to 40% by 2030."},tags:['EU Directive','Energy'],cn:'Germany'},
   {id:23,t:'trade',src:'Frankfurter Allgemeine',url:'https://www.faz.net/cbam-transition-ends-2026',time:'03:40',title:{zh:'欧盟 CBAM 过渡期 2025 年底结束，2026 年全面开征碳关税',en:'EU CBAM transition ends late 2025; full carbon tariff collection begins 2026'},sum:{zh:'碳边境调节机制过渡期结束，钢铁、铝、水泥、化肥、电力、氢六大行业全面纳入，电池间接纳入范围扩大。',en:'The CBAM transition period has ended. Steel, aluminum, cement, fertilizer, electricity, and hydrogen are fully covered; batteries are being indirectly included.'},tags:['CBAM','Carbon Tariff'],cn:'Germany'},
+  {id:58,t:'energy',src:'Handelsblatt',url:'https://www.handelsblatt.com/germany-ess-install-h1-2026',time:'06:15',title:{zh:'德国储能装机 2026H1 新增 3.2GW，工商储补贴落地',en:'Germany adds 3.2 GW of storage in H1 2026 as C&I storage subsidies take effect'},sum:{zh:'德国联邦网络局数据显示上半年新增储能 3.2GW，工商业储能因补贴与峰谷套利收益改善增长最快；家庭储能延续 2025 年势头，本土电芯产能布局加速。',en:"Germany's Bundesnetzagentur shows 3.2 GW of new storage in H1. C&I storage grew fastest on subsidies and improved peak-shaving returns; home storage extends its 2025 momentum as domestic cell capacity builds up."},tags:['储能','ESS'],cn:'Germany'},
+  {id:59,t:'telecom',src:'The Register EU',url:'https://www.theregister.com/telekom-open-ran-2026',time:'10:05',title:{zh:'德国电信完成 5G-A Open RAN 商用试点，首批城市上线',en:'Deutsche Telekom completes 5G-Advanced Open RAN commercial pilot in first cities'},sum:{zh:'德国电信在三个城市完成 5G-A + Open RAN 商用试点，验证多供应商无线接入与智能编排，计划 2027 年扩展到 20 城，同时推动欧洲 Open RAN 生态本地化。',en:"Deutsche Telekom completed 5G-Advanced + Open RAN commercial pilots in three cities, validating multi-vendor RAN and intelligent orchestration. It plans expansion to 20 cities by 2027, boosting Europe's Open RAN ecosystem."},tags:['Open RAN','5G-A'],cn:'Germany'},
 
   /* ---- Japan ---- */
   {id:11,t:'lithium',src:'Nikkei Asia',url:'https://asia.nikkei.com/Business/transportation/toyota-solid-state-2027-plan',time:'06:40',title:{zh:'日本车企加速全固态电池布局，丰田 2027 量产计划不变',en:'Japanese automakers accelerate solid-state battery push; Toyota\'s 2027 production plan on track'},sum:{zh:'丰田、日产相继公布固态电池量产时间表，硫化物电解质专利布局成为竞争焦点，日韩材料企业同步扩产。',en:'Toyota and Nissan have released solid-state battery production timelines. Sulfide electrolyte patent布局 is the competitive focus; Japanese and Korean material companies are expanding capacity in parallel.'},tags:['固态电池','Solid-state'],cn:'Japan'},
@@ -285,8 +300,9 @@ const NEWS = [
   {id:51,t:'aidc',src:'NZZ Neue Zürcher Zeitung',url:'https://www.nzz.ch/switzerland-data-center-alps-2026',time:'09:00',title:{zh:'瑞士阿尔卑斯山区数据中心崛起：自然冷却与绿电驱动优势',en:'Swiss Alps data centers rise: natural cooling and green power drive advantage'},sum:{zh:'瑞士利用阿尔卑斯山区低温与丰富水电资源，吸引 Equinix、Microsoft 等运营商建设数据中心，全年自然冷却天数超 300 天，PUE 低至 1.08。',en:"Switzerland is leveraging Alpine low temperatures and abundant hydro power to attract operators like Equinix and Microsoft. Natural cooling days exceed 300/year, with PUE as low as 1.08."},tags:['Data Center','Natural Cooling'],cn:'Switzerland'},
   {id:52,t:'trade',src:'Le Temps',url:'https://www.letemps.ch/economie/swiss-trade-policy-cbam-2026',time:'15:20',title:{zh:'瑞士调整贸易政策应对 CBAM：碳定价机制与欧盟接轨',en:'Switzerland adjusts trade policy for CBAM: carbon pricing mechanism aligns with EU'},sum:{zh:'瑞士联邦委员会宣布将国内碳定价机制与欧盟 CBAM 对接，避免双重征税，同时保障出口企业竞争力。钢铁、铝、水泥行业率先纳入。',en:"The Swiss Federal Council announced alignment of its domestic carbon pricing mechanism with the EU CBAM to avoid double taxation while protecting export competitiveness. Steel, aluminum, and cement are first to be included."},tags:['CBAM','Trade Policy'],cn:'Switzerland'}
 ];
-/* assign a full timestamp to each news item — dates are relative to today so they always appear recent */
-NEWS.forEach((n,i)=>{const now=new Date();const offset=Math.round(i/1.8);n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+/* assign a full timestamp to each news item — dates are relative to today so they always appear recent;
+   spread within ~8 days so every country's own news is visible inside the default 7-day window */
+NEWS.forEach((n,i)=>{const now=new Date();const offset=Math.round(i/8);n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
 
 const PAPERS = [
   {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering',auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
@@ -317,7 +333,7 @@ const JOURNAL_COLORS = {nature:'#185FA5',joule:'#B7791F',applied:'#0E7C86',ieee:
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'China',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh'};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh'};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -432,7 +448,8 @@ function newsHTML(n){
   const href=n.url||'#';
   const srcLink=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
   const srcUrl=srcLink?srcLink.url:'#';
-  return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a><span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+  const isGov=srcLink&&srcLink.gov;
+  return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}<span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
 /* Auto-expand helper: if no news in the given [start,end] range, progressively widen until results found */
 const EXPAND_STEPS=[14,30,90,365,0]; // 0 = all available
@@ -458,7 +475,7 @@ function renderNews(){
   const {start,end}=rngNow('ovNews');
   let list;
   if(state.tab==='pfe'){list=NEWS.filter(n=>n.t==='pfe');}
-  else{list=NEWS.filter(n=>n.cn===state.country||n.cn==='China');}
+  else{list=NEWS.filter(n=>n.cn===state.country);} /* strictly the selected country's own news */
   if(state.tab!=='all'&&state.tab!=='pfe')list=list.filter(n=>n.t===state.tab);
   // Auto-expand if no results in current range
   const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
@@ -486,16 +503,17 @@ $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews()
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
-  let list=NEWS.filter(n=>n.t===type);
+  let list=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
   // Auto-expand if no results in current range
-  const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
-  list=filteredList;
+  let {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
+  if(filteredList.length===0){ /* country has zero news in this sector → fall back to global pool */
+    list=NEWS.filter(n=>n.t===type);
+    const fb=filterAutoExpand(list,start,end);
+    filteredList=fb.list;expanded=fb.expanded;expDays=fb.expDays;
+  }
   // Sort by recency
-  list.sort((a,b)=>b.d-a.d);
-  // Prefer local country news, but include others if not enough
-  const local=list.filter(n=>n.cn===state.country);
-  const others=list.filter(n=>n.cn!==state.country);
-  list=[...local,...others].slice(0,count||5);
+  filteredList.sort((a,b)=>b.d-a.d);
+  list=filteredList.slice(0,count||5);
   let html='';
   if(expanded){
     html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(expDays))+'</div>';
@@ -755,7 +773,7 @@ function renderAll(){
 /* ============ INIT ============ */
 buildCountryDrop();
 state.ranges.tradeNews={preset:'90d'};
-setCountry('China');
+setCountry('USA');
 setDateRange('7d');
 applyLang();
 setInterval(tickLive,3000);
