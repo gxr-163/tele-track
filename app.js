@@ -23,7 +23,7 @@ const I18N = {
     tc_title:'电信行业监测',tc_sub:'5G · 网络资本开支 · 运营商数据',tc_kpi1:'5G 基站',tc_kpi2:'5G 用户',tc_kpi3:'电信资本开支',tc_kpi4:'算力网络投入',tc_cum:'累计',tc_pen:'渗透率 62%',tc_share:'占比提升',tc_chart1:'5G 基站累计建设',tc_ops:'运营商动态',tc_news:'电信新闻流',
     eg_title:'能源行业监测',eg_sub:'电力需求 · 储能 · 新能源装机 · 电价',eg_kpi1:'全社会用电量',eg_kpi2:'新型储能新增',eg_kpi3:'风光装机占比',eg_kpi4:'绿电交易量',eg_cum:'1-7月累计',eg_yoy:'同比',eg_gen:'发电装机',eg_yoy2:'同比',eg_chart1:'电力需求结构',eg_chart2:'新型储能装机趋势',eg_news:'能源新闻流',
     tr_title:'贸易与关税监测',tr_sub:'各国原材料价格 · 关税政策 · 贸易壁垒实时追踪',tr_kpi1:'中国锂电出口额',tr_kpi2:'对华综合关税均值',tr_kpi3:'欧盟 CBAM 覆盖率',tr_kpi4:'贸易政策事件',tr_yoy1:'1-7月同比',tr_yoy2:'同比上升',tr_cbam:'碳关税过渡期结束',tr_7d:'近7日新增',tr_tariff_tbl:'主要产品关税对比',tr_vs_cn:'对华进口',tr_mat_tbl:'各国原材料实时价格',tr_timeline:'关税政策动态',
-    pa_title:'学术论文库',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE 自动追踪',pa_search_ph:'搜索标题 / 作者 / 关键词',
+    pa_title:'学术论文库',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE 自动追踪',pa_search_ph:'搜索标题 / 作者 / 关键词',pa_cites:'被引',pa_hot:'🔥 热门',pa_f_all:'全部',
     se_title:'系统设置',se_sub:'数据源、推送、订阅与 API 配置',se_edit:'编辑',se_ds:'数据源与抓取',se_notif:'通知',se_sub2:'订阅与区域',se_api:'API 与集成',se_upgrade:'升级',
     dm_title:'自定义日期时间范围',dm_sub:'选择新闻抓取的起止日期与时间',dm_cancel:'取消',dm_apply:'应用',rp_24h:'近24小时',rp_7d:'近7天',rp_30d:'近30天',rp_90d:'近90天',rp_1y:'近1年',rp_custom:'自定义',rp_from:'开始',rp_to:'结束',rp_apply:'应用',rp_title:'日期与时间范围',
     tag_lithium:'锂电池',tag_aidc:'AIDC',tag_telecom:'电信',tag_energy:'能源',tag_trade:'贸易',tag_pfe:'PFE 政策',
@@ -57,7 +57,7 @@ const I18N = {
     tc_title:'Telecom Industry Monitor',tc_sub:'5G · Network Capex · Operator Data',tc_kpi1:'5G Base Stations',tc_kpi2:'5G Users',tc_kpi3:'Telecom Capex',tc_kpi4:'Compute Network Invest',tc_cum:'Cumulative',tc_pen:'Penetration 62%',tc_share:'Share rising',tc_chart1:'5G Base Station Cumulative',tc_ops:'Operator Updates',tc_news:'Telecom News Feed',
     eg_title:'Energy Industry Monitor',eg_sub:'Power Demand · Storage · RE Capacity · Tariffs',eg_kpi1:'Total Power Consumption',eg_kpi2:'New Storage Added',eg_kpi3:'RE Share of Capacity',eg_kpi4:'Green Power Trade',eg_cum:'Jan-Jul cumulative',eg_yoy:'YoY',eg_gen:'Generation capacity',eg_yoy2:'YoY',eg_chart1:'Power Demand Mix',eg_chart2:'New Storage Trend',eg_news:'Energy News Feed',
     tr_title:'Trade & Tariffs Monitor',tr_sub:'Raw material prices · Tariff policy · Trade barriers real-time tracking',tr_kpi1:'China Li-battery Exports',tr_kpi2:'Avg Tariff on China',tr_kpi3:'EU CBAM Coverage',tr_kpi4:'Trade Policy Events',tr_yoy1:'Jan-Jul YoY',tr_yoy2:'YoY increase',tr_cbam:'Carbon tariff transition ends',tr_7d:'Last 7 days new',tr_tariff_tbl:'Major Product Tariffs',tr_vs_cn:'on China imports',tr_mat_tbl:'Raw Material Prices by Country',tr_timeline:'Tariff Policy Updates',
-    pa_title:'Academic Paper Library',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE auto-tracking',pa_search_ph:'Search title / author / keyword',
+    pa_title:'Academic Paper Library',pa_sub:'arXiv / Nature Energy / Joule / Applied Energy / IEEE auto-tracking',pa_search_ph:'Search title / author / keyword',pa_cites:'citations',pa_hot:'🔥 HOT',pa_f_all:'All',
     se_title:'System Settings',se_sub:'Data sources, alerts, subscriptions & API config',se_edit:'Edit',se_ds:'Data Sources',se_notif:'Notifications',se_sub2:'Subscriptions & Region',se_api:'API & Integration',se_upgrade:'Upgrade',
     dm_title:'Custom Date & Time Range',dm_sub:'Select news capture start and end date & time',dm_cancel:'Cancel',dm_apply:'Apply',rp_24h:'Last 24h',rp_7d:'Last 7d',rp_30d:'Last 30d',rp_90d:'Last 90d',rp_1y:'Last 1Y',rp_custom:'Custom',rp_from:'From',rp_to:'To',rp_apply:'Apply',rp_title:'Date & Time Range',
     tag_lithium:'Lithium',tag_aidc:'AIDC',tag_telecom:'Telecom',tag_energy:'Energy',tag_trade:'Trade',tag_pfe:'PFE Policy',
@@ -319,19 +319,22 @@ const NEWS = [
 NEWS.forEach((n,i)=>{if(n.d)return;const now=new Date();const offset=Math.min(6,Math.round(i/8));n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
 
 const PAPERS = [
-  {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering',auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
-  {id:2,j:'joule',jname:'Joule',t:'aidc',date:'2026-08-15',title:'Carbon-aware workload scheduling for hyperscale data centers with renewable co-location',auth:'M. Chen, R. Patel, S. Kim',org:'Stanford University / Microsoft Research',cites:52,hot:1},
-  {id:3,j:'applied',jname:'Applied Energy',t:'lithium',date:'2026-08-12',title:'Degradation-aware second-life battery valuation framework for grid storage markets',auth:'H. Liu, J. Park, A. Müller',org:'Zhejiang University · 浙江大学',cites:21,hot:0},
-  {id:4,j:'ieee',jname:'IEEE Trans. Power Systems',t:'energy',date:'2026-08-10',title:'Frequency-constrained optimal planning of BESS in high-renewable power systems',auth:'Q. Zhao, E. Brown, L. Nguyen',org:'EPRI / Xi\'an Jiaotong University',cites:17,hot:0},
-  {id:5,j:'arxiv',jname:'arXiv',t:'aidc',date:'2026-08-19',title:'Rack-aware cooling optimization: a transformer-based digital twin for liquid-cooled AI clusters',auth:'T. Ito, D. Silva, Y. Chen',org:'University of Tokyo / NVIDIA',cites:9,hot:1},
-  {id:6,j:'nature',jname:'Nature Energy',t:'energy',date:'2026-08-08',title:'Battery-electric versus green-hydrogen long-haul trucking: a system-level lifecycle assessment',auth:'S. Weber, F. Rossi, K. Tanaka',org:'Fraunhofer ISI',cites:44,hot:0},
-  {id:7,j:'applied',jname:'Applied Energy',t:'aidc',date:'2026-08-05',title:'Waste-heat-driven absorption cooling for data center energy recovery: pilot results',auth:'G. Sun, P. Mehta, R. Costa',org:'Hunan University · 湖南大学',cites:13,hot:0},
-  {id:8,j:'ieee',jname:'IEEE Comm. Magazine',t:'telecom',date:'2026-08-02',title:'Non-terrestrial network integration in 6G: architecture and spectrum sharing',auth:'A. Kowalski, J. Lee, M. Hassan',org:'Samsung R&D / TU Dresden',cites:28,hot:0},
-  {id:9,j:'arxiv',jname:'arXiv',t:'lithium',date:'2026-07-30',title:'Unsupervised anomaly detection for lithium-ion cell manufacturing with physics-informed autoencoders',auth:'W. Huang, C. Fischer, N. Gupta',org:'CATL / KIT',cites:6,hot:0},
-  {id:10,j:'joule',jname:'Joule',t:'telecom',date:'2026-07-28',title:'Energy-efficient massive MIMO: joint beamforming and power allocation for 5G-Advanced',auth:'L. Andersson, H. Park, X. Wu',org:'Ericsson / Chalmers',cites:15,hot:0},
-  {id:11,j:'nature',jname:'Nature Energy',t:'aidc',date:'2026-07-25',title:'Green hydrogen-powered microgrids for off-grid AI compute clusters',auth:'R. Mensah, S. Zhou, V. Kumar',org:'MIT / NREL',cites:31,hot:1},
-  {id:12,j:'applied',jname:'Applied Energy',t:'energy',date:'2026-07-22',title:'Co-optimization of solar-wind-storage portfolios under carbon market uncertainty',auth:'F. Bianchi, Y. Nakamura, T. Gomez',org:'Politecnico di Milano',cites:19,hot:0}
+  {id:1,j:'nature',jname:'Nature Energy',t:'lithium',date:'2026-08-18',title:{zh:'硫化物固态电解质动力学瓶颈的界面工程解决策略',en:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering'},auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
+  {id:2,j:'joule',jname:'Joule',t:'aidc',date:'2026-08-15',title:{zh:'超大规模数据中心的碳感知工作负载调度与可再生能源协同',en:'Carbon-aware workload scheduling for hyperscale data centers with renewable co-location'},auth:'M. Chen, R. Patel, S. Kim',org:'Stanford University / Microsoft Research',cites:52,hot:1},
+  {id:3,j:'applied',jname:'Applied Energy',t:'lithium',date:'2026-08-12',title:{zh:'面向电网储能市场的退役电池梯次利用评估框架',en:'Degradation-aware second-life battery valuation framework for grid storage markets'},auth:'H. Liu, J. Park, A. Müller',org:'Zhejiang University · 浙江大学',cites:21,hot:0},
+  {id:4,j:'ieee',jname:'IEEE Trans. Power Systems',t:'energy',date:'2026-08-10',title:{zh:'高比例可再生能源电力系统中储能频率约束优化规划',en:'Frequency-constrained optimal planning of BESS in high-renewable power systems'},auth:'Q. Zhao, E. Brown, L. Nguyen',org:'EPRI / Xi\'an Jiaotong University',cites:17,hot:0},
+  {id:5,j:'arxiv',jname:'arXiv',t:'aidc',date:'2026-08-19',title:{zh:'机架级冷却优化：基于 Transformer 的液冷 AI 集群数字孪生',en:'Rack-aware cooling optimization: a transformer-based digital twin for liquid-cooled AI clusters'},auth:'T. Ito, D. Silva, Y. Chen',org:'University of Tokyo / NVIDIA',cites:9,hot:1},
+  {id:6,j:'nature',jname:'Nature Energy',t:'energy',date:'2026-08-08',title:{zh:'纯电动 vs 绿氢长途重卡：系统级全生命周期评估',en:'Battery-electric versus green-hydrogen long-haul trucking: a system-level lifecycle assessment'},auth:'S. Weber, F. Rossi, K. Tanaka',org:'Fraunhofer ISI',cites:44,hot:0},
+  {id:7,j:'applied',jname:'Applied Energy',t:'aidc',date:'2026-08-05',title:{zh:'数据中心废热驱动吸收式制冷能量回收：试点结果',en:'Waste-heat-driven absorption cooling for data center energy recovery: pilot results'},auth:'G. Sun, P. Mehta, R. Costa',org:'Hunan University · 湖南大学',cites:13,hot:0},
+  {id:8,j:'ieee',jname:'IEEE Comm. Magazine',t:'telecom',date:'2026-08-02',title:{zh:'6G 非地面网络融合：架构与频谱共享',en:'Non-terrestrial network integration in 6G: architecture and spectrum sharing'},auth:'A. Kowalski, J. Lee, M. Hassan',org:'Samsung R&D / TU Dresden',cites:28,hot:0},
+  {id:9,j:'arxiv',jname:'arXiv',t:'lithium',date:'2026-07-30',title:{zh:'基于物理信息自编码器的锂离子电池制造异常检测',en:'Unsupervised anomaly detection for lithium-ion cell manufacturing with physics-informed autoencoders'},auth:'W. Huang, C. Fischer, N. Gupta',org:'CATL / KIT',cites:6,hot:0},
+  {id:10,j:'joule',jname:'Joule',t:'telecom',date:'2026-07-28',title:{zh:'节能大规模 MIMO：5G-A 联合波束成形与功率分配',en:'Energy-efficient massive MIMO: joint beamforming and power allocation for 5G-Advanced'},auth:'L. Andersson, H. Park, X. Wu',org:'Ericsson / Chalmers',cites:15,hot:0},
+  {id:11,j:'nature',jname:'Nature Energy',t:'aidc',date:'2026-07-25',title:{zh:'离网 AI 算力集群的绿氢微电网供电',en:'Green hydrogen-powered microgrids for off-grid AI compute clusters'},auth:'R. Mensah, S. Zhou, V. Kumar',org:'MIT / NREL',cites:31,hot:1},
+  {id:12,j:'applied',jname:'Applied Energy',t:'energy',date:'2026-07-22',title:{zh:'碳市场不确定性下的光伏-风电-储能组合协同优化',en:'Co-optimization of solar-wind-storage portfolios under carbon market uncertainty'},auth:'F. Bianchi, Y. Nakamura, T. Gomez',org:'Politecnico di Milano',cites:19,hot:0}
 ];
+/* assign relative dates so papers are always fresh — spread across 1–25 days ago so
+   most are visible inside the default 7-day window, all within 30 days */
+PAPERS.forEach((p,i)=>{const off=[1,2,3,5,6,7,4,8,10,12,18,25][i]||(i+1);const d=new Date(Date.now()-off*864e5);p.date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');});
 
 const TREND7 = [
   {d:'08-15',v:{lithium:32,aidc:41,telecom:18,energy:24}},
@@ -705,13 +708,15 @@ function renderTariffs(){
 function paperHTML(p){
   const tagMap={lithium:['tag_lithium','t-lithium'],aidc:['tag_aidc','t-aidc'],telecom:['tag_telecom','t-telecom'],energy:['tag_energy','t-energy']};
   const tm=tagMap[p.t]||['tag_trade','t-trade'];
-  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">🔥 HOT</span>':''}</div><div class="p-title">${esc(p.title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">citations <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span><span>DOI</span></span></div></div>`;
+  const zh=state.lang==='zh';
+  const title=zh?(p.title.zh||p.title.en||p.title):(p.title.en||p.title.zh||p.title);
+  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span><span>DOI</span></span></div></div>`;
 }
 function renderPapers(){
   const {start,end}=rngNow('papers');
   let list=PAPERS.filter(p=>{const d=new Date(p.date);return d>=start&&d<=end;});
   if(state.paperJournal!=='all')list=list.filter(p=>p.j===state.paperJournal);
-  if(state.paperQuery){const q=state.paperQuery.toLowerCase();list=list.filter(p=>(p.title+p.auth+p.org).toLowerCase().includes(q));}
+  if(state.paperQuery){const q=state.paperQuery.toLowerCase();list=list.filter(p=>{const title=p.title;const tt=typeof title==='string'?title:((title.zh||'')+' '+(title.en||''));return (tt+p.auth+p.org).toLowerCase().includes(q);});}
   list=list.slice(0,state.papersShown);
   $('#paperGrid').innerHTML=list.length?list.map(paperHTML).join(''):'<div class="empty" style="grid-column:1/-1">'+(state.lang==='zh'?'未找到匹配论文':'No matching papers')+'</div>';
 }
