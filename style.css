@@ -214,9 +214,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .news-sec-title .bar{width:3px;height:11px;border-radius:2px;background:var(--accent);flex:none}
 .news-sec-title.gov .bar{background:var(--teal)}
 .news-sec-title .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
-.gov-src-row{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px 4px}
-.gov-src-row a{font-size:10px;letter-spacing:.3px;color:var(--ink-2);border:1px solid var(--line-2);border-radius:5px;padding:2px 8px;text-decoration:none;transition:border-color .12s,color .12s}
-.gov-src-row a:hover{border-color:var(--teal);color:var(--teal)}
+.gov-src-row{display:flex;flex-wrap:wrap;gap:6px;padding:9px 12px 4px;align-items:center}
+.gov-chip{display:inline-flex;align-items:stretch;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:var(--panel)}
+.gov-chip .gcf{font-size:10px;letter-spacing:.3px;line-height:1.6;color:var(--ink-2);background:transparent;border:none;padding:3px 8px;cursor:pointer;display:inline-flex;gap:5px;align-items:center;transition:color .12s,background .12s;font-family:inherit}
+.gov-chip .gcf:hover{color:var(--teal)}
+.gov-chip .gcf.active{color:var(--teal);background:color-mix(in srgb,var(--teal) 10%,transparent);font-weight:600}
+.gov-chip .gc-cnt{font-family:var(--mono);font-size:9px;opacity:.55}
+.gov-chip .gcf.active .gc-cnt{opacity:.8}
+.gov-chip .gce{font-size:10px;line-height:1.6;color:var(--ink-3);border-left:1px solid var(--line-2);padding:3px 7px;text-decoration:none;transition:color .12s,background .12s}
+.gov-chip .gce:hover{color:var(--teal);background:color-mix(in srgb,var(--teal) 8%,transparent)}
 .heat-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .heat{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:10px;text-align:center;cursor:pointer;transition:border .12s}
 .heat:hover{border-color:var(--accent-line)}
