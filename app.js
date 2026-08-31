@@ -8,7 +8,7 @@ const I18N = {
     side_src:'数据源: 47 路 · 延迟 < 3min',
     ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
     tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
-    pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',
+    pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',gov_f_all:'全部来源',gov_f_hint:'点击筛选该来源最新动态（↗ 直达官网）',gov_open_site:'打开官网',
     tn_title:'公开招标监测',tn_sub:'各国官方采购平台招标信息 · 一键直达官网',tn_portals:'官方招标平台直连',tn_portals_sub:'政府采购官方平台 · 点击直达',tn_list:'招标项目列表',tn_stat_open:'进行中招标',tn_stat_exp:'7天内截止',tn_stat_mkt:'覆盖市场',tn_stat_new:'本周新增',tn_due7_sub:'临近截止',tn_mkt_sub:'覆盖国家/地区',tn_new_sub:'近7日发布',tn_f_all:'全部',tn_open:'进行中',tn_closed:'已截止',tn_days:'{n} 天后截止',tn_today:'今天截止',tn_view:'去官网查看',tn_ph:'搜索招标项目 / 机构 / 平台…',tn_empty:'暂无匹配的招标信息',tn_empty_hint:'可切换国家、行业或清除搜索关键词',tn_live:'● 实时',tn_soon:'⏳ 抓紧',tn_mkt_d:'🌐 全球',tn_new_d:'🆕 新增',
     kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
@@ -41,7 +41,7 @@ const I18N = {
     side_src:'Sources: 47 feeds · latency < 3min',
     ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
     tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
-    pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',
+    pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',gov_f_all:'All sources',gov_f_hint:'Click to filter the latest items from this source (↗ opens the official site)',gov_open_site:'Open official site',
     tn_title:'Public Tender Monitor',tn_sub:'Public procurement tenders from official platforms · one-click to source',tn_portals:'Official Tender Portals',tn_portals_sub:'Government platforms · click to open',tn_list:'Tender List',tn_stat_open:'Open Tenders',tn_stat_exp:'Due in 7 Days',tn_stat_mkt:'Markets',tn_stat_new:'New This Week',tn_due7_sub:'deadline approaching',tn_mkt_sub:'countries covered',tn_new_sub:'published in 7d',tn_f_all:'All',tn_open:'Open',tn_closed:'Closed',tn_days:'{n} days left',tn_today:'Due today',tn_view:'View portal',tn_ph:'Search tenders / agency / platform…',tn_empty:'No matching tenders',tn_empty_hint:'Try a different country, sector or clear the search',tn_live:'● LIVE',tn_soon:'⏳ Urgent',tn_mkt_d:'🌐 Global',tn_new_d:'🆕 New',
     kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
@@ -168,6 +168,7 @@ const NEWS_MEDIA = {
     {name:'DHS',url:'https://www.dhs.gov/uflpa-entity-list',gov:true},
     {name:'BIS',url:'https://www.bis.doc.gov',gov:true},
     {name:'Federal Register',url:'https://www.federalregister.gov',gov:true},
+    {name:'Presidential Docs',url:'https://www.federalregister.gov/presidential-documents',gov:true},
     {name:'CBP',url:'https://www.cbp.gov',gov:true},
     {name:'OFAC',url:'https://ofac.treasury.gov',gov:true}
   ],
@@ -228,6 +229,12 @@ const NEWS = [
   {id:55,t:'pfe',src:'Federal Register',url:'https://www.federalregister.gov',time:'09:20',title:{zh:'Federal Register 公示 FCC 光模块组件穿透规则草案，60 天评论期',en:'Federal Register publishes FCC optical-module component-covered rule draft; 60-day comment period'},sum:{zh:'FCC 关于通信设备组件穿透审查的规则草案正式进入公示，涵盖半导体、基带处理器、蜂窝模块与光收发组件，公众评论期 60 天，行业可在此期间提交豁免与替代方案意见。',en:"The FCC's component-covered review rule draft is now published, covering semiconductors, baseband processors, cellular modules, and optical transceivers. The 60-day public comment period lets industry submit exemption and alternative proposals."},tags:['FCC','Optical Module'],cn:'USA'},
   {id:56,t:'pfe',src:'CBP',url:'https://www.cbp.gov/trade/forced-labor',time:'09:05',title:{zh:'CBP 发布 UFLPA 执法年报：涉锂电货物扣留规模创纪录',en:'CBP issues UFLPA enforcement report: record detentions of lithium-related goods'},sum:{zh:'海关与边境保护局年度执法报告显示，涉锂电与光伏供应链的扣留令数量、货值与放行周期均创新高，重点核查石墨、正极前驱体与电解液关键成分的原产地证据。',en:"CBP's annual UFLPA enforcement report shows record detention orders, value, and release timelines for lithium-battery and PV supply chains, focusing on origin evidence for graphite, cathode precursor, and electrolyte components."},tags:['CBP','Enforcement'],cn:'USA'},
   {id:57,t:'pfe',src:'OFAC',url:'https://ofac.treasury.gov',time:'08:50',title:{zh:'OFAC 将中国电池材料与光伏实体列入 SDN 清单',en:'OFAC designates Chinese battery-material & PV entities to SDN List'},sum:{zh:'财政部海外资产控制办公室依据涉疆与人权相关行政令，将多家中国电池材料、光伏组件企业及关联贸易公司列入 SDN 清单，禁止美国主体与其交易并冻结在美资产。',en:"OFAC designated multiple Chinese battery-material and PV firms plus affiliated trading companies to the SDN List under Xinjiang- and human-rights-related executive orders, barring US persons from dealings and freezing US assets."},tags:['OFAC','Sanctions'],cn:'USA'},
+  /* ---- USA / PFE — Presidential Documents (federalregister.gov/presidential-documents) ---- */
+  {id:68,t:'pfe',src:'Presidential Docs',url:'https://www.federalregister.gov/documents/2026/08/30/2026-18214/2026-18214',time:'10:35',d:Date.now()-1*864e5,title:{zh:'行政命令 14521：加快关键矿产与电池材料本土项目审批',en:'Executive Order 14521: Accelerating permitting for domestic critical minerals and battery material projects'},sum:{zh:'总统签署行政命令，指示内政部、能源部与环保署在 90 天内建立锂、石墨、镍、钴等关键矿产与电池材料开采加工项目的跨部门快速审批通道，并授权国防部动用国防生产法第三章支持本土正极材料与电解液产能建设。',en:'The President signed an Executive Order directing Interior, Energy, and EPA to establish a 90-day interagency fast-track permitting channel for lithium, graphite, nickel, and cobalt mining and processing projects, and authorizing DOD to use Defense Production Act Title III to back domestic cathode and electrolyte capacity.'},tags:['EO 14521','Critical Minerals'],cn:'USA'},
+  {id:69,t:'pfe',src:'Presidential Docs',url:'https://www.federalregister.gov/documents/2026/08/30/2026-18208/2026-18208',time:'09:05',d:Date.now()-1*864e5,title:{zh:'总统备忘录：AI 数据中心电力接入与电网扩容联邦协调机制',en:'Presidential Memorandum: Federal coordination mechanism for AI data center power interconnection and grid expansion'},sum:{zh:'备忘录在白宫国家能源委员会下设立 AI 数据中心电力工作组，协调联邦能源管理委员会（FERC）与各州输电项目审批，要求对超过 500MW 的算力园区电力接入申请在 45 天内完成联邦层面审查，缓解 AIDC 装机瓶颈。',en:'The memorandum establishes an AI data center power task force under the National Energy Council, coordinating FERC and state-level transmission approvals. Federal review of interconnection requests for compute campuses above 500 MW must complete within 45 days to ease AIDC capacity bottlenecks.'},tags:['Memorandum','AIDC Power'],cn:'USA'},
+  {id:70,t:'pfe',src:'Presidential Docs',url:'https://www.federalregister.gov/documents/2026/08/29/2026-18175/2026-18175',time:'16:20',d:Date.now()-2*864e5,title:{zh:'行政命令 14522：对华电池材料与石墨关税调整及贸易救济措施',en:'Executive Order 14522: Adjusting tariffs on Chinese battery materials and graphite, with new trade remedies'},sum:{zh:'行政命令自 2026 年 10 月起上调对华天然石墨、电解液关键组分与电池级氢氧化锂的附加关税，同时为已承诺在美建厂的电池企业设置过渡期豁免通道；商务部须每季度向总统提交供应链转移进展评估报告。',en:'Effective October 2026, the order raises additional tariffs on Chinese natural graphite, key electrolyte components, and battery-grade lithium hydroxide, while creating transition-period exemptions for battery makers with committed US plant construction. Commerce must report quarterly to the President on supply-chain shift progress.'},tags:['EO 14522','Tariff'],cn:'USA'},
+  {id:71,t:'pfe',src:'Presidential Docs',url:'https://www.federalregister.gov/documents/2026/08/29/2026-18161/2026-18161',time:'11:45',d:Date.now()-2*864e5,title:{zh:'总统公告 11115：对进口电网级储能系统发起 232 条款国家安全调查',en:'Proclamation 11115: Section 232 national security investigation launched on imported grid-scale storage systems'},sum:{zh:'依据《1962 年贸易扩展法》第 232 条，总统指示商务部长对进口电网级电池储能系统与电力逆变器启动国家安全调查，评估进口依赖对电网韧性的影响，270 天内提交报告；调查期间相关进口暂不加征新关税。',en:'Under Section 232 of the Trade Expansion Act of 1962, the President directed the Commerce Secretary to launch a national security investigation into imported grid-scale battery storage systems and power inverters, assessing import reliance impact on grid resilience with a 270-day reporting deadline; no new tariffs apply during the investigation.'},tags:['Proclamation','Section 232'],cn:'USA'},
+  {id:72,t:'pfe',src:'Presidential Docs',url:'https://www.federalregister.gov/documents/2026/08/28/2026-18122/2026-18122',time:'14:10',d:Date.now()-3*864e5,title:{zh:'总统裁定：扩大能源部先进技术车辆制造贷款计划覆盖范围至储能制造',en:'Presidential Determination: Expanding DOE ATVM loan program scope to include storage manufacturing'},sum:{zh:'总统裁定授权能源部将先进技术车辆制造（ATVM）贷款计划适用范围扩展至电网级储能电芯与系统集成制造项目，单个项目贷款上限提升至 100 亿美元，重点支持 LFP 电芯与长时储能技术本土产能建设。',en:'The determination authorizes DOE to extend the Advanced Technology Vehicles Manufacturing (ATVM) loan program to grid-scale storage cell and system-integration manufacturing projects, raising the per-project loan cap to $10B and prioritizing LFP cell and long-duration storage domestic capacity.'},tags:['Determination','ATVM'],cn:'USA'},
   /* ---- USA / PFE ---- */
   {id:31,t:'pfe',src:'Reuters',url:'https://www.reuters.com/technology/fcc-drafts-curbs-chinese-optical-modules-2026-08-21/',time:'13:25',title:{zh:'路透：FCC 起草限制中国光模块新机型进入美国市场',en:'Reuters: FCC drafts measures to restrict new Chinese optical modules from US market'},sum:{zh:'报道称 FCC 正起草措施，限制中国数据中心光收发模块新型号进入美国。高速光模块（800G/1.6T）的 DSP、MCU、光收发组件或纳入组件穿透审查，中际旭创、新易盛等厂商暂未被点名，方案仍可能调整。',en:'The FCC is drafting measures to restrict new models of Chinese data-center optical transceivers from entering the US. High-speed modules (800G/1.6T) including DSP, MCU, and transceiver components may fall under component-covered review. Zhongji Innolight and Eoptolink are not yet named; the proposal remains subject to change.'},tags:['光模块','Optical Module'],cn:'USA'},
   {id:32,t:'pfe',src:'FCC',url:'https://www.fcc.gov/document/fcc-covered-list-expansion-2026',time:'12:40',title:{zh:'FCC 组件穿透规则落地：受限企业逻辑硬件部件限制范围扩大',en:'FCC component-covered rule finalized: restricted-entity logical hardware scope expanded'},sum:{zh:'新规明确：若受限企业生产的设备无法获得 FCC 授权，其他厂商同类设备只要包含其逻辑硬件部件（半导体、基带处理器、蜂窝模块、光收发模块等），新机型授权也可能被拒。',en:'The new rule clarifies that if a restricted entity cannot obtain FCC authorization, other manufacturers using the same logical hardware components (semiconductors, baseband processors, cellular modules, optical transceivers) may also be denied new-model authorization.'},tags:['组件穿透','Covered List'],cn:'USA'},
@@ -404,7 +411,7 @@ const TENDERS=[
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:''};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',govSrc:'all'};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -582,8 +589,9 @@ function isGovNews(n){
    2) Government Policy (gov-sourced items + official site quick links) */
 function renderPFE(){
   const {start,end}=rngNow('ovNews');
-  const gov=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort((a,b)=>b.d-a.d);
+  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort((a,b)=>b.d-a.d);
   const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort((a,b)=>b.d-a.d);
+  const gov=state.govSrc==='all'?govAll:govAll.filter(n=>n.src===state.govSrc); /* source-filtered gov list, most recent first */
   const indRes=filterAutoExpand(ind,start,end);
   const govRes=filterAutoExpand(gov,start,end);
   let html='';
@@ -591,12 +599,20 @@ function renderPFE(){
   html+='<div class="news-sec-title"><span class="bar"></span>'+t('pfe_industry')+'<span class="cnt">'+indRes.list.length+'</span></div>';
   if(indRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(indRes.expDays))+'</div>';
   html+=indRes.list.length?indRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
-  /* Section 2 — government policy + official site quick links */
+  /* Section 2 — government policy + source filter chips
+     Chip body = filter the gov list in-place; the ↗ sub-button = direct link to the official site */
   html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govRes.list.length+'</span></div>';
-  /* Official gov-site quick links — the PFE watch targets US government sites regardless of selected country */
   const govSrc=(NEWS_MEDIA.USA||[]).filter(m=>m.gov);
   if(govSrc.length){
-    html+='<div class="gov-src-row">'+govSrc.map(m=>'<a href="'+esc(m.url)+'" target="_blank" rel="noopener">'+esc(m.name)+' ↗</a>').join('')+'</div>';
+    let chips='<span class="gov-chip"><button type="button" class="gcf'+(state.govSrc==='all'?' active':'')+'" data-src="all" title="'+t('gov_f_hint')+'">'+esc(t('gov_f_all'))+'<span class="gc-cnt">'+govAll.length+'</span></button></span>';
+    chips+=govSrc.map(m=>{
+      const cnt=govAll.filter(n=>n.src===m.name).length;
+      return '<span class="gov-chip">'
+        +'<button type="button" class="gcf'+(state.govSrc===m.name?' active':'')+'" data-src="'+esc(m.name)+'" title="'+t('gov_f_hint')+'">'+esc(m.name)+'<span class="gc-cnt">'+cnt+'</span></button>'
+        +'<a class="gce" href="'+esc(m.url)+'" target="_blank" rel="noopener" title="'+esc(m.name)+' · '+t('gov_open_site')+'">↗</a>'
+        +'</span>';
+    }).join('');
+    html+='<div class="gov-src-row">'+chips+'</div>';
   }
   if(govRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(govRes.expDays))+'</div>';
   html+=govRes.list.length?govRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
@@ -609,6 +625,13 @@ function renderPFE(){
     item.addEventListener('click',()=>{
       const href=item.dataset.href;
       if(href&&href!=='#')window.open(href,'_blank','noopener');
+    });
+  });
+  // Attach source-filter behaviour on gov chips (↗ sub-button keeps its direct official-site link)
+  $$('#newsList .gov-src-row .gcf').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.govSrc=btn.dataset.src;
+      renderPFE();
     });
   });
 }
