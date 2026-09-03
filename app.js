@@ -22,7 +22,7 @@ const I18N = {
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
     tc_title:'电信行业监测',tc_sub:'5G · 网络资本开支 · 运营商数据',tc_kpi1:'5G 基站',tc_kpi2:'5G 用户',tc_kpi3:'电信资本开支',tc_kpi4:'算力网络投入',tc_cum:'累计',tc_pen:'渗透率 62%',tc_share:'占比提升',tc_chart1:'5G 基站累计建设',tc_ops:'运营商动态',tc_news:'电信新闻流',
     eg_title:'能源行业监测',eg_sub:'电力需求 · 储能 · 新能源装机 · 电价',eg_kpi1:'全社会用电量',eg_kpi2:'新型储能新增',eg_kpi3:'风光装机占比',eg_kpi4:'绿电交易量',eg_cum:'1-7月累计',eg_yoy:'同比',eg_gen:'发电装机',eg_yoy2:'同比',eg_chart1:'电力需求结构',eg_chart2:'新型储能装机趋势',eg_news:'能源新闻流',
-    tr_title:'贸易与关税监测',tr_sub:'各国原材料价格 · 关税政策 · 贸易壁垒实时追踪',tr_kpi1:'中国锂电出口额',tr_kpi2:'对华综合关税均值',tr_kpi3:'欧盟 CBAM 覆盖率',tr_kpi4:'贸易政策事件',tr_yoy1:'1-7月同比',tr_yoy2:'同比上升',tr_cbam:'碳关税过渡期结束',tr_7d:'近7日新增',tr_tariff_tbl:'主要产品关税对比',tr_vs_cn:'对华进口',tr_mat_tbl:'各国原材料实时价格',tr_timeline:'关税政策动态',
+    tr_title:'贸易与关税监测',tr_sub:'各国原材料价格 · 关税政策 · 贸易壁垒实时追踪',tr_kpi1:'中国锂电出口额',tr_kpi2:'对华综合关税均值',tr_kpi3:'欧盟 CBAM 覆盖率',tr_kpi4:'贸易政策事件',tr_yoy1:'1-7月同比',tr_yoy2:'同比上升',tr_cbam:'碳关税过渡期结束',tr_7d:'近7日新增',tr_tariff_tbl:'主要产品关税对比',tr_vs_cn:'对华进口',tr_mat_tbl:'各国原材料实时价格',tr_timeline:'关税政策动态',tr_src_hint:'来源标注于各行 · 点击来源名跳转官方页面',
     pa_title:'学术论文库',pa_sub:'顶刊自动追踪 · Nature Energy / Science / Joule / EES / Adv. Mater. / IEEE / arXiv',pa_search_ph:'搜索标题 / 作者 / 关键词',pa_cites:'被引',pa_hot:'🔥 热门',pa_f_all:'全部',
     se_title:'系统设置',se_sub:'数据源、推送、订阅与 API 配置',se_edit:'编辑',se_ds:'数据源与抓取',se_notif:'通知',se_sub2:'订阅与区域',se_api:'API 与集成',se_upgrade:'升级',
     dm_title:'自定义日期时间范围',dm_sub:'选择新闻抓取的起止日期与时间',dm_cancel:'取消',dm_apply:'应用',rp_24h:'近24小时',rp_7d:'近7天',rp_30d:'近30天',rp_90d:'近90天',rp_1y:'近1年',rp_custom:'自定义',rp_from:'开始',rp_to:'结束',rp_apply:'应用',rp_title:'日期与时间范围',
@@ -56,7 +56,7 @@ const I18N = {
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
     tc_title:'Telecom Industry Monitor',tc_sub:'5G · Network Capex · Operator Data',tc_kpi1:'5G Base Stations',tc_kpi2:'5G Users',tc_kpi3:'Telecom Capex',tc_kpi4:'Compute Network Invest',tc_cum:'Cumulative',tc_pen:'Penetration 62%',tc_share:'Share rising',tc_chart1:'5G Base Station Cumulative',tc_ops:'Operator Updates',tc_news:'Telecom News Feed',
     eg_title:'Energy Industry Monitor',eg_sub:'Power Demand · Storage · RE Capacity · Tariffs',eg_kpi1:'Total Power Consumption',eg_kpi2:'New Storage Added',eg_kpi3:'RE Share of Capacity',eg_kpi4:'Green Power Trade',eg_cum:'Jan-Jul cumulative',eg_yoy:'YoY',eg_gen:'Generation capacity',eg_yoy2:'YoY',eg_chart1:'Power Demand Mix',eg_chart2:'New Storage Trend',eg_news:'Energy News Feed',
-    tr_title:'Trade & Tariffs Monitor',tr_sub:'Raw material prices · Tariff policy · Trade barriers real-time tracking',tr_kpi1:'China Li-battery Exports',tr_kpi2:'Avg Tariff on China',tr_kpi3:'EU CBAM Coverage',tr_kpi4:'Trade Policy Events',tr_yoy1:'Jan-Jul YoY',tr_yoy2:'YoY increase',tr_cbam:'Carbon tariff transition ends',tr_7d:'Last 7 days new',tr_tariff_tbl:'Major Product Tariffs',tr_vs_cn:'on China imports',tr_mat_tbl:'Raw Material Prices by Country',tr_timeline:'Tariff Policy Updates',
+    tr_title:'Trade & Tariffs Monitor',tr_sub:'Raw material prices · Tariff policy · Trade barriers real-time tracking',tr_kpi1:'China Li-battery Exports',tr_kpi2:'Avg Tariff on China',tr_kpi3:'EU CBAM Coverage',tr_kpi4:'Trade Policy Events',tr_yoy1:'Jan-Jul YoY',tr_yoy2:'YoY increase',tr_cbam:'Carbon tariff transition ends',tr_7d:'Last 7 days new',tr_tariff_tbl:'Major Product Tariffs',tr_vs_cn:'on China imports',tr_mat_tbl:'Raw Material Prices by Country',tr_timeline:'Tariff Policy Updates',tr_src_hint:'Source labeled per row · click a source to open its official page',
     pa_title:'Academic Paper Library',pa_sub:'Top-journal auto-tracking · Nature Energy / Science / Joule / EES / Adv. Mater. / IEEE / arXiv',pa_search_ph:'Search title / author / keyword',pa_cites:'citations',pa_hot:'🔥 HOT',pa_f_all:'All',
     se_title:'System Settings',se_sub:'Data sources, alerts, subscriptions & API config',se_edit:'Edit',se_ds:'Data Sources',se_notif:'Notifications',se_sub2:'Subscriptions & Region',se_api:'API & Integration',se_upgrade:'Upgrade',
     dm_title:'Custom Date & Time Range',dm_sub:'Select news capture start and end date & time',dm_cancel:'Cancel',dm_apply:'Apply',rp_24h:'Last 24h',rp_7d:'Last 7d',rp_30d:'Last 30d',rp_90d:'Last 90d',rp_1y:'Last 1Y',rp_custom:'Custom',rp_from:'From',rp_to:'To',rp_apply:'Apply',rp_title:'Date & Time Range',
@@ -137,6 +137,28 @@ const MAT_PRICES = [
   {c:'Sweden',cur:'SEK',li:'kr115K',lfp:'kr72K',gr:'kr42K',hy:'kr124K'},
   {c:'Switzerland',cur:'CHF',li:'CHF9,400',lfp:'CHF6,050',gr:'CHF3,500',hy:'CHF10,100'}
 ];
+
+/* ============ TRADE TABLE SOURCES ============
+   Official body behind each tariff / material-price figure.
+   Used to label the source of every row and to provide the original-link access. */
+const TARIFF_SRC = {
+  USA:{name:{zh:'美国贸易代表处',en:'USTR'},url:'https://ustr.gov/issue-areas/enforcement/trade-remedies/301-investigations'},
+  EU:{name:{zh:'欧盟委员会 TARIC',en:'EU TARIC'},url:'https://ec.europa.eu/taxation_customs/taric'},
+  India:{name:{zh:'印度商工部 DGTR',en:'India DGTR'},url:'https://www.dgtr.gov.in'},
+  Brazil:{name:{zh:'巴西外贸委员会',en:'MDIC Brazil'},url:'https://www.gov.br/mdic'},
+  Australia:{name:{zh:'澳大利亚海关 ABF',en:'ABF Australia'},url:'https://www.abf.gov.au'},
+  Netherlands:{name:{zh:'荷兰出口管制政策',en:'NL Export Controls'},url:'https://www.government.nl/topics/export-controls-of-strategic-goods'}
+};
+const MAT_SRC = {
+  USA:{name:{zh:'Fastmarkets',en:'Fastmarkets'},url:'https://www.fastmarkets.com'},
+  China:{name:{zh:'SMM 上海有色',en:'SMM'},url:'https://www.smm.cn'},
+  Germany:{name:{zh:'Fastmarkets',en:'Fastmarkets'},url:'https://www.fastmarkets.com'},
+  Japan:{name:{zh:'Fastmarkets',en:'Fastmarkets'},url:'https://www.fastmarkets.com'},
+  UK:{name:{zh:'LME 伦敦金属交易所',en:'LME'},url:'https://www.lme.com'},
+  France:{name:{zh:'Fastmarkets',en:'Fastmarkets'},url:'https://www.fastmarkets.com'},
+  Sweden:{name:{zh:'标普全球普氏',en:'S&P Global Platts'},url:'https://www.spglobal.com/commodityinsights/en'},
+  Switzerland:{name:{zh:'标普全球普氏',en:'S&P Global Platts'},url:'https://www.spglobal.com/commodityinsights/en'}
+};
 
 /* ============ NEWS MEDIA (local outlets per country) ============ */
 const NEWS_MEDIA = {
@@ -722,13 +744,22 @@ function renderPrices(){
 }
 
 /* ============ TARIFF TABLE ============ */
+/* Row-level source chip: labels which official body / data provider stands behind the figure,
+   and opens that original source in a new tab (source attribution + original-link access). */
+function tblSrcCell(s,lang){
+  const nm=lang==='zh'?(s.name.zh||s.name.en):(s.name.en||s.name.zh);
+  const tip=(lang==='zh'?'官方来源，点击跳转原页面':'official source — click to open');
+  return '<span class="t-src"><a href="'+esc(s.url)+'" target="_blank" rel="noopener" title="'+esc(nm)+' · '+tip+'">'+esc(nm)+' ↗</a></span>';
+}
 function renderTariffs(){
+  const lang=state.lang;
   let html='<thead><tr><th>'+t('th_product')+'</th><th>'+t('th_market')+'</th><th>'+t('th_rate')+'</th><th>'+t('th_note')+'</th><th>'+t('th_effective')+'</th></tr></thead><tbody>';
   TARIFFS.forEach(row=>{
     row.markets.forEach((m,i)=>{
+      const src=TARIFF_SRC[m.m];
       html+=`<tr${i===0?'':' style="border-top:1px solid var(--line-2)"'}>`;
-      if(i===0)html+=`<td class="name" rowspan="${row.markets.length}"><b>${row.p[state.lang]}</b></td>`;
-      html+=`<td class="name">${FLAGS[m.m]||''} ${m.m}</td><td><span class="tariff-badge ${m.s}">${m.r}</span></td><td style="font-family:var(--sans)">${m.n[state.lang]}</td><td style="font-size:10.5px;color:var(--ink-3)">${m.e}</td></tr>`;
+      if(i===0)html+=`<td class="name" rowspan="${row.markets.length}"><b>${row.p[lang]}</b></td>`;
+      html+=`<td class="name">${FLAGS[m.m]||''} ${m.m}${src?tblSrcCell(src,lang):''}</td><td><span class="tariff-badge ${m.s}">${m.r}</span></td><td style="font-family:var(--sans)">${m.n[lang]}</td><td style="font-size:10.5px;color:var(--ink-3)">${m.e}</td></tr>`;
     });
   });
   html+='</tbody>';
@@ -736,7 +767,8 @@ function renderTariffs(){
 
   html='<thead><tr><th>'+t('th_country')+'</th><th>'+t('th_li')+'</th><th>'+t('th_lfp')+'</th><th>'+t('th_gr')+'</th><th>'+t('th_hy')+'</th></tr></thead><tbody>';
   MAT_PRICES.forEach(m=>{
-    html+=`<tr><td class="name">${FLAGS[m.c]||''} ${m.c} <span style="font-size:9px;color:var(--ink-3)">(${m.cur})</span></td><td>${m.li}</td><td>${m.lfp}</td><td>${m.gr}</td><td>${m.hy}</td></tr>`;
+    const src=MAT_SRC[m.c];
+    html+=`<tr><td class="name">${FLAGS[m.c]||''} ${m.c} <span style="font-size:9px;color:var(--ink-3)">(${m.cur})</span>${src?tblSrcCell(src,lang):''}</td><td>${m.li}</td><td>${m.lfp}</td><td>${m.gr}</td><td>${m.hy}</td></tr>`;
   });
   html+='</tbody>';
   $('#matPriceTable').innerHTML=html;
