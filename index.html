@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TELE·TRACK — Industry Intelligence</title>
-<link rel="stylesheet" href="style.css?v=20260831c">
+<link rel="stylesheet" href="style.css?v=20260903">
 </head>
 <body>
 <div class="app">
@@ -168,12 +168,12 @@
           <!-- Tariff comparison -->
           <div class="panel">
             <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--purple)"></span> <span data-i18n="tr_tariff_tbl">主要产品关税对比</span></div><span class="chip" style="cursor:default" data-i18n="tr_vs_cn">对华进口</span></div>
-            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="tariffTable"></table></div>
+            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="tariffTable"></table><div class="tbl-src-hint" data-i18n="tr_src_hint">来源标注于各行 · 点击来源名跳转官方页面</div></div>
           </div>
           <!-- Raw material prices by country -->
           <div class="panel">
             <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="tr_mat_tbl">各国原材料实时价格</span></div></div>
-            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="matPriceTable"></table></div>
+            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="matPriceTable"></table><div class="tbl-src-hint" data-i18n="tr_src_hint">来源标注于各行 · 点击来源名跳转官方页面</div></div>
           </div>
         </div>
 
@@ -233,6 +233,6 @@
 <div class="modal-mask" id="dateModal"><div class="modal"><h3 data-i18n="dm_title">自定义日期范围</h3><div class="m-sub" data-i18n="dm_sub">选择新闻抓取的起止日期</div><div class="m-field"><label>START</label><input type="date" id="dStart" value="2026-08-01"></div><div class="m-field"><label>END</label><input type="date" id="dEnd" value="2026-08-21"></div><div class="m-field"><label>START TIME</label><input type="time" id="dStartT" value="00:00"></div><div class="m-field"><label>END TIME</label><input type="time" id="dEndT" value="23:59"></div><div class="m-actions"><button class="btn" id="dCancel" data-i18n="dm_cancel">取消</button><button class="btn primary" id="dApply" data-i18n="dm_apply">应用</button></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=20260831c"></script>
+<script src="app.js?v=20260903"></script>
 </body>
 </html>
