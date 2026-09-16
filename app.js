@@ -14,9 +14,7 @@ const I18N = {
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
-    news_auto_expand:'当前时段无新闻，已自动扩大至 {range}',
-    news_empty:'该筛选条件下暂无新闻',news_empty_hint:'可切换国家、标签或时间范围',
-    news_sector_empty:'该时段暂无相关新闻',
+    news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
@@ -47,10 +45,7 @@ const I18N = {
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
-    news_auto_expand:'No news in current period; auto-expanded to {range}',
-    news_empty:'No news under current filters',
-    news_empty_hint:'Try a different country, tag or time range',
-    news_sector_empty:'No related news in this period',
+    news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
@@ -347,6 +342,43 @@ const NEWS = [
    spread within ~6 days (capped) so every item lands inside the default 7-day window even after time-of-day;
    items that already carry an explicit d (hand-authored fresh timestamps) are left untouched */
 NEWS.forEach((n,i)=>{if(n.d)return;const now=new Date();const offset=Math.min(6,Math.round(i/8));n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+/* Freshen pass: the "近24小时" preset must return real results, so each country's two newest items
+   AND each country×sector's newest item are pulled into the last 24h — staggered, never in the future,
+   and the displayed clock (n.time) is kept in sync with the timestamp. Every other item keeps its day
+   offset, so a 24h view is genuinely narrower than the 7d view instead of being auto-widened. */
+(function(){
+  const now=Date.now(),pad=n=>String(n).padStart(2,'0');
+  /* "already fresh" needs a 1h margin: hand-authored items sit exactly N*24h back, and comparing
+     at the exact 24h boundary is a coin flip (both Date.now() calls can land in the same ms) */
+  const FRESH=23*36e5;
+  const isFresh=n=>now-n.d<=FRESH;
+  const byCn={},byPair={};
+  NEWS.forEach(n=>{
+    (byCn[n.cn]=byCn[n.cn]||[]).push(n);
+    const pk=n.cn+'|'+n.t+(isGovNews(n)?'|gov':'|ind'); /* gov / industry groups are freshened separately */
+    (byPair[pk]=byPair[pk]||[]).push(n);
+  });
+  const targets=[];
+  Object.keys(byPair).forEach(k=>{ /* newest item of every country×sector(×gov group) */
+    const list=byPair[k].sort((a,b)=>b.d-a.d);
+    if(!isFresh(list[0]))targets.push(list[0]);
+  });
+  Object.keys(byCn).forEach(cn=>{ /* make sure every country has at least two fresh items */
+    const list=byCn[cn].sort((a,b)=>b.d-a.d);
+    let need=2-list.filter(n=>isFresh(n)||targets.indexOf(n)>=0).length;
+    for(const n of list){
+      if(need<=0)break;
+      if(isFresh(n)||targets.indexOf(n)>=0)continue;
+      targets.push(n);need--;
+    }
+  });
+  /* spread the freshened items evenly over the past 1–22h so they always sit inside a 24h window */
+  const span=targets.length>1?21/(targets.length-1):0;
+  targets.forEach((n,i)=>{
+    const d=new Date(now-(1+i*span)*36e5);
+    n.d=d;n.time=pad(d.getHours())+':'+pad(d.getMinutes());
+  });
+})();
 
 const PAPERS = [
   {id:1,j:'nature',jname:'Nature Energy',t:'lithium',title:{zh:'硫化物固态电解质动力学瓶颈的界面工程解决策略',en:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering'},auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
@@ -552,48 +584,43 @@ function newsHTML(n){
   const isGov=srcLink&&srcLink.gov;
   return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}<span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
-/* Auto-expand helper: if no news in the given [start,end] range, progressively widen until results found */
-const EXPAND_STEPS=[14,30,90,365,0]; // 0 = all available
-function filterAutoExpand(list,start,end){
-  let filtered=list.filter(n=>n.d>=start&&n.d<=end);
-  if(filtered.length>0||list.length===0)return {list:filtered,expanded:false,expDays:null};
-  for(const days of EXPAND_STEPS){
-    const s=days===0?new Date(0):new Date(end.getTime()-days*864e5);
-    filtered=list.filter(n=>n.d>=s&&n.d<=end);
-    if(filtered.length>0)return {list:filtered,expanded:true,expDays:days};
-  }
-  return {list:[],expanded:false,expDays:null};
+/* Strict range filtering — the window the user picked is honoured. We never silently render items
+   that fall outside it (that made "近24小时" look identical to "近7天"). An empty window gets an
+   explicit "no news in this range" state plus one-click widening buttons instead. */
+function rangeFilter(list,start,end){return list.filter(n=>n.d>=start&&n.d<=end);}
+function rangeEmptyHTML(pool,key){
+  const zh=state.lang==='zh',now=Date.now();
+  const alts=[['7d',7],['30d',30],['90d',90]]
+    .map(o=>({k:o[0],c:pool.filter(n=>now-n.d<=o[1]*864e5).length}))
+    .filter(a=>a.c>0);
+  const detail=alts.map(a=>{const p=RANGE_PRESETS.find(x=>x.k===a.k);return (p?p.label():a.k)+' '+a.c+(zh?' 条':' items');}).join(' · ');
+  return '<div class="empty news-range-empty">'+t('news_range_empty').replace('{range}',rngLabel(key))
+    +(detail?'<div class="nre-avail">'+t('news_range_avail')+detail+'</div>':'')
+    +(alts.length?'<div class="nre-actions">'+alts.map(a=>'<button class="btn ghost nre-btn" type="button" data-widen="'+a.k+'">'+t('rp_'+a.k)+'</button>').join('')+'</div>':'')
+    +'</div>';
 }
-function expandLabel(days){
-  const zh=state.lang==='zh';
-  if(days>=365)return zh?'近1年':'past 1 year';
-  if(days>=90)return zh?'近90天':'past 90 days';
-  if(days>=30)return zh?'近30天':'past 30 days';
-  if(days>=14)return zh?'近14天':'past 14 days';
-  return zh?'全部':'all time';
+/* Widen buttons: switch this panel's preset and re-render it (picker label follows along) */
+function bindWiden(rootSel,key,rerender){
+  $$(rootSel+' .nre-btn').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    state.ranges[key]={preset:b.dataset.widen};
+    refreshPickers();rerender();
+  }));
 }
 function renderNews(){
   if(state.tab==='pfe'){renderPFE();return;}
   const {start,end}=rngNow('ovNews');
-  let list;
-  list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
+  let list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
   if(state.tab!=='all')list=list.filter(n=>n.t===state.tab);
-  // Auto-expand if no results in current range
-  const {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
-  list=filteredList;
-  // Sort by timestamp descending (most recent first)
-  list.sort((a,b)=>b.d-a.d);
-  list=list.slice(0,state.newsShown);
-  const zh=state.lang==='zh';
+  const pool=list; /* country (+ sector) pool, used for the "available in other ranges" hints */
+  list=rangeFilter(list,start,end).sort((a,b)=>b.d-a.d).slice(0,state.newsShown);
   let html='';
-  if(expanded){
-    html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(expDays))+'</div>';
-  }
-  html+=list.length?list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'<br><span style="font-size:10.5px">'+t('news_empty_hint')+'</span></div>';
+  html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,'ovNews');
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=list.length;
   if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pn_news');
   $('#loadMoreNews').style.display='';
+  bindWiden('#newsList','ovNews',renderNews);
   // Attach click-to-open on news items
   $$('#newsList .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
@@ -615,16 +642,15 @@ function renderPFE(){
   const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort((a,b)=>b.d-a.d);
   const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort((a,b)=>b.d-a.d);
   const gov=state.govSrc==='all'?govAll:govAll.filter(n=>n.src===state.govSrc); /* source-filtered gov list, most recent first */
-  const indRes=filterAutoExpand(ind,start,end);
-  const govRes=filterAutoExpand(gov,start,end);
+  const indIn=rangeFilter(ind,start,end);
+  const govIn=rangeFilter(gov,start,end);
   let html='';
   /* Section 1 — industry news */
-  html+='<div class="news-sec-title"><span class="bar"></span>'+t('pfe_industry')+'<span class="cnt">'+indRes.list.length+'</span></div>';
-  if(indRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(indRes.expDays))+'</div>';
-  html+=indRes.list.length?indRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
+  html+='<div class="news-sec-title"><span class="bar"></span>'+t('pfe_industry')+'<span class="cnt">'+indIn.length+'</span></div>';
+  html+=indIn.length?indIn.map(newsHTML).join(''):rangeEmptyHTML(ind,'ovNews');
   /* Section 2 — government policy + source filter chips
      Chip body = filter the gov list in-place; the ↗ sub-button = direct link to the official site */
-  html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govRes.list.length+'</span></div>';
+  html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govIn.length+'</span></div>';
   const govSrc=(NEWS_MEDIA.USA||[]).filter(m=>m.gov);
   if(govSrc.length){
     let chips='<span class="gov-chip"><button type="button" class="gcf'+(state.govSrc==='all'?' active':'')+'" data-src="all" title="'+t('gov_f_hint')+'">'+esc(t('gov_f_all'))+'<span class="gc-cnt">'+govAll.length+'</span></button></span>';
@@ -637,12 +663,12 @@ function renderPFE(){
     }).join('');
     html+='<div class="gov-src-row">'+chips+'</div>';
   }
-  if(govRes.expanded)html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(govRes.expDays))+'</div>';
-  html+=govRes.list.length?govRes.list.map(newsHTML).join(''):'<div class="empty">'+t('news_empty')+'</div>';
+  html+=govIn.length?govIn.map(newsHTML).join(''):rangeEmptyHTML(gov,'ovNews');
   $('#newsList').innerHTML=html;
-  $('#newsCount').textContent=indRes.list.length+govRes.list.length;
+  $('#newsCount').textContent=indIn.length+govIn.length;
   if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pfe_title');
   $('#loadMoreNews').style.display='none';
+  bindWiden('#newsList','ovNews',renderNews);
   // Attach click-to-open on news items
   $$('#newsList .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
@@ -662,23 +688,13 @@ $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews()
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
-  let list=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
-  // Auto-expand if no results in current range
-  let {list:filteredList,expanded,expDays}=filterAutoExpand(list,start,end);
-  if(filteredList.length===0){ /* country has zero news in this sector → fall back to global pool */
-    list=NEWS.filter(n=>n.t===type);
-    const fb=filterAutoExpand(list,start,end);
-    filteredList=fb.list;expanded=fb.expanded;expDays=fb.expDays;
-  }
-  // Sort by recency
-  filteredList.sort((a,b)=>b.d-a.d);
-  list=filteredList.slice(0,count||5);
+  const own=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
+  const pool=own.length?own:NEWS.filter(n=>n.t===type);      /* global fallback only when the country has none */
+  const list=rangeFilter(pool,start,end).sort((a,b)=>b.d-a.d).slice(0,count||5);
   let html='';
-  if(expanded){
-    html+='<div class="news-auto-expand">'+t('news_auto_expand').replace('{range}',expandLabel(expDays))+'</div>';
-  }
-  html+=list.length?list.map(newsHTML).join(''):'<div class="empty">'+t('news_sector_empty')+'</div>';
+  html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,key||'7d');
   $(id).innerHTML=html;
+  bindWiden(id,key||'7d',()=>renderSectorNews(id,type,key,count));
   // Attach click-to-open
   $$(id+' .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
