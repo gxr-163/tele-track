@@ -230,6 +230,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .gov-chip .gcf.active{color:var(--teal);background:color-mix(in srgb,var(--teal) 10%,transparent);font-weight:600}
 .gov-chip .gc-cnt{font-family:var(--mono);font-size:9px;opacity:.55}
 .gov-chip .gcf.active .gc-cnt{opacity:.8}
+/* a source with nothing inside the selected range: still clickable-by-look, but visibly spent */
+.gov-chip .gcf.gc-zero{color:var(--ink-3);opacity:.5;cursor:default}
+.gov-chip .gcf.gc-zero:hover{color:var(--ink-3)}
+.gov-chip .gcf.gc-zero .gc-cnt{opacity:.7}
 .gov-chip .gce{font-size:10px;line-height:1.6;color:var(--ink-3);border-left:1px solid var(--line-2);padding:3px 7px;text-decoration:none;transition:color .12s,background .12s}
 .gov-chip .gce:hover{color:var(--teal);background:color-mix(in srgb,var(--teal) 8%,transparent)}
 .heat-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
