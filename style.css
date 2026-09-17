@@ -215,6 +215,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .nre-btn{font-size:10.5px!important;padding:4px 12px!important}
 /* "showing latest X of Y" hint when the feed caps at newsShown inside a larger window */
 .feed-shown-hint{padding:10px 14px;text-align:center;font-size:10.5px;color:var(--ink-3);border-top:1px dashed var(--line-2)}
+/* live-source status line in the PFE gov section */
+.fr-live-note{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:10px;color:var(--ink-3);letter-spacing:.2px}
+.fr-live-note .fr-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none}
 /* PFE view — two-section layout (industry news / government policy) */
 .news-sec-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-2);padding:12px 12px 7px;border-bottom:1px solid var(--line-2)}
 .news-sec-title .bar{width:3px;height:11px;border-radius:2px;background:var(--accent);flex:none}
