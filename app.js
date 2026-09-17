@@ -8,7 +8,7 @@ const I18N = {
     side_src:'数据源: 47 路 · 延迟 < 3min',
     ov_title:'行业动态总览',ov_sub_a:'Telecom & Energy 实时监测 · 聚焦',ov_sub_b:'数据更新于',
     tab_all:'全部',tab_battery:'电池',tab_aidc:'AIDC',tab_pfe:'PFE 限制',btn_export:'导出报告',
-    pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',gov_f_all:'全部来源',gov_f_hint:'点击筛选该来源最新动态（↗ 直达官网）',gov_open_site:'打开官网',
+    pfe_title:'PFE 限制监测',pfe_industry:'行业新闻',pfe_gov:'政府政策 · 官方直连',gov_f_all:'全部来源',gov_f_hint:'点击筛选该来源在所选时间范围内的动态（数字=条数，0 表示该范围无内容；↗ 直达官网）',gov_open_site:'打开官网',
     tn_title:'公开招标监测',tn_sub:'各国官方采购平台招标信息 · 一键直达官网',tn_portals:'官方招标平台直连',tn_portals_sub:'政府采购官方平台 · 点击直达',tn_list:'招标项目列表',tn_stat_open:'进行中招标',tn_stat_exp:'7天内截止',tn_stat_mkt:'覆盖市场',tn_stat_new:'本周新增',tn_due7_sub:'临近截止',tn_mkt_sub:'覆盖国家/地区',tn_new_sub:'近7日发布',tn_f_all:'全部',tn_open:'进行中',tn_closed:'已截止',tn_days:'{n} 天后截止',tn_today:'今天截止',tn_view:'去官网查看',tn_ph:'搜索招标项目 / 机构 / 平台…',tn_empty:'暂无匹配的招标信息',tn_empty_hint:'可切换国家、行业或清除搜索关键词',tn_live:'● 实时',tn_soon:'⏳ 抓紧',tn_mkt_d:'🌐 全球',tn_new_d:'🆕 新增',
     kpi_li_idx:'锂电池指数',kpi_aidc_cap:'AIDC 装机',kpi_news_today:'今日新闻',kpi_papers_week:'本周论文',kpi_1d:'日变化',kpi_qoq:'环比上季',kpi_24h:'24小时量',
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
@@ -40,7 +40,7 @@ const I18N = {
     side_src:'Sources: 47 feeds · latency < 3min',
     ov_title:'Industry Overview',ov_sub_a:'Telecom & Energy real-time monitor · focus on',ov_sub_b:'updated at',
     tab_all:'All',tab_battery:'Battery',tab_aidc:'AIDC',tab_pfe:'PFE Ban',btn_export:'Export Report',
-    pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',gov_f_all:'All sources',gov_f_hint:'Click to filter the latest items from this source (↗ opens the official site)',gov_open_site:'Open official site',
+    pfe_title:'PFE Restrictions',pfe_industry:'Industry News',pfe_gov:'Government Policy · Official',gov_f_all:'All sources',gov_f_hint:'Click to filter this source inside the selected range (number = items, 0 = none in range; ↗ opens the official site)',gov_open_site:'Open official site',
     tn_title:'Public Tender Monitor',tn_sub:'Public procurement tenders from official platforms · one-click to source',tn_portals:'Official Tender Portals',tn_portals_sub:'Government platforms · click to open',tn_list:'Tender List',tn_stat_open:'Open Tenders',tn_stat_exp:'Due in 7 Days',tn_stat_mkt:'Markets',tn_stat_new:'New This Week',tn_due7_sub:'deadline approaching',tn_mkt_sub:'countries covered',tn_new_sub:'published in 7d',tn_f_all:'All',tn_open:'Open',tn_closed:'Closed',tn_days:'{n} days left',tn_today:'Due today',tn_view:'View portal',tn_ph:'Search tenders / agency / platform…',tn_empty:'No matching tenders',tn_empty_hint:'Try a different country, sector or clear the search',tn_live:'● LIVE',tn_soon:'⏳ Urgent',tn_mkt_d:'🌐 Global',tn_new_d:'🆕 New',
     kpi_li_idx:'Lithium Battery Index',kpi_aidc_cap:'AIDC Capacity',kpi_news_today:'News Today',kpi_papers_week:'Papers This Week',kpi_1d:'1D change',kpi_qoq:'vs prev quarter',kpi_24h:'24h volume',
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
@@ -732,11 +732,17 @@ function renderPFE(){
   html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govIn.length+'</span></div>';
   const govSrc=(NEWS_MEDIA.USA||[]).filter(m=>m.gov);
   if(govSrc.length){
-    let chips='<span class="gov-chip"><button type="button" class="gcf'+(state.govSrc==='all'?' active':'')+'" data-src="all" title="'+t('gov_f_hint')+'">'+esc(t('gov_f_all'))+'<span class="gc-cnt">'+govAll.length+'</span></button></span>';
+    /* Chip counts are IN-WINDOW, not all-time. An all-time count disagreed with the section count
+       above it and, worse, advertised items ("Presidential Docs 18") that clicking could never show
+       because they sit outside the selected range. Now the number is exactly what a click yields,
+       so a 0 is a useful signal instead of a dead end. */
+    const govInWin=govAll.filter(n=>n.d>=start&&n.d<=end);
+    let chips='<span class="gov-chip"><button type="button" class="gcf'+(state.govSrc==='all'?' active':'')+'" data-src="all" title="'+esc(t('gov_f_hint'))+'" >'+esc(t('gov_f_all'))+'<span class="gc-cnt">'+govInWin.length+'</span></button></span>';
     chips+=govSrc.map(m=>{
-      const cnt=govAll.filter(n=>n.src===m.name).length;
+      const cnt=govInWin.filter(n=>n.src===m.name).length;
+      const cls='gcf'+(state.govSrc===m.name?' active':'')+(cnt?'':' gc-zero');
       return '<span class="gov-chip">'
-        +'<button type="button" class="gcf'+(state.govSrc===m.name?' active':'')+'" data-src="'+esc(m.name)+'" title="'+t('gov_f_hint')+'">'+esc(m.name)+'<span class="gc-cnt">'+cnt+'</span></button>'
+        +'<button type="button" class="'+cls+'" data-src="'+esc(m.name)+'" title="'+esc(m.name)+' · '+esc(t('gov_f_hint'))+'"'+(cnt?'':' disabled')+'>'+esc(m.name)+'<span class="gc-cnt">'+cnt+'</span></button>'
         +'<a class="gce" href="'+esc(m.url)+'" target="_blank" rel="noopener" title="'+esc(m.name)+' · '+t('gov_open_site')+'">↗</a>'
         +'</span>';
     }).join('');
