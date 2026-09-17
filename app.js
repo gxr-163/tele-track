@@ -14,7 +14,7 @@ const I18N = {
     pt_title:'核心商品价格 · 现货',pn_news:'行业新闻流',pn_papers:'最新学术论文',view_all:'查看全部 →',
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
-    news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',
+    news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',news_shown_of:'已显示最新 {shown} / {total} 条，点击下方加载更多',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
@@ -45,7 +45,7 @@ const I18N = {
     pt_title:'Core Commodity Prices · Spot',pn_news:'Industry News Feed',pn_papers:'Latest Academic Papers',view_all:'View all →',
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
-    news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',
+    news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',news_shown_of:'Showing latest {shown} of {total} — click below to load more',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
@@ -378,6 +378,9 @@ NEWS.forEach((n,i)=>{if(n.d)return;const now=new Date();const offset=Math.min(6,
     const d=new Date(now-(1+i*span)*36e5);
     n.d=d;n.time=pad(d.getHours())+':'+pad(d.getMinutes());
   });
+  /* sync every card clock to its real timestamp: hand-authored items with explicit d (Date.now()-N days)
+     keep a stale clock like "11:15" that can land in the future relative to the actual load time */
+  NEWS.forEach(n=>{const d=new Date(n.d);n.time=pad(d.getHours())+':'+pad(d.getMinutes());});
 })();
 
 const PAPERS = [
@@ -613,13 +616,16 @@ function renderNews(){
   let list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
   if(state.tab!=='all')list=list.filter(n=>n.t===state.tab);
   const pool=list; /* country (+ sector) pool, used for the "available in other ranges" hints */
-  list=rangeFilter(list,start,end).sort((a,b)=>b.d-a.d).slice(0,state.newsShown);
+  const inWindow=rangeFilter(list,start,end).sort((a,b)=>b.d-a.d);
+  const total=inWindow.length; /* items inside the selected range — shown in the badge so the range choice is visible even when the feed caps at newsShown */
+  list=inWindow.slice(0,state.newsShown);
   let html='';
   html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,'ovNews');
+  if(total>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',total)+'</div>';
   $('#newsList').innerHTML=html;
-  $('#newsCount').textContent=list.length;
+  $('#newsCount').textContent=total;
   if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pn_news');
-  $('#loadMoreNews').style.display='';
+  $('#loadMoreNews').style.display=list.length<total?'':'none'; /* hide once every in-window item is displayed */
   bindWiden('#newsList','ovNews',renderNews);
   // Attach click-to-open on news items
   $$('#newsList .news-item').forEach(item=>{
@@ -690,9 +696,11 @@ function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
   const own=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
   const pool=own.length?own:NEWS.filter(n=>n.t===type);      /* global fallback only when the country has none */
-  const list=rangeFilter(pool,start,end).sort((a,b)=>b.d-a.d).slice(0,count||5);
+  const inWindow=rangeFilter(pool,start,end).sort((a,b)=>b.d-a.d);
+  const list=inWindow.slice(0,count||5);
   let html='';
   html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,key||'7d');
+  if(inWindow.length>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',inWindow.length)+'</div>';
   $(id).innerHTML=html;
   bindWiden(id,key||'7d',()=>renderSectorNews(id,type,key,count));
   // Attach click-to-open
