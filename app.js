@@ -15,6 +15,7 @@ const I18N = {
     dc_today:'今日',dc_yest:'昨日',dc_7d:'7天',dc_30d:'30天',dc_custom:'自定义',
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
     news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',news_shown_of:'已显示最新 {shown} / {total} 条，点击下方加载更多',
+    pfe_fr_live:'总统文件 · 实时同步自 federalregister.gov API',pfe_fr_cached:'总统文件 · 来自 federalregister.gov 缓存',pfe_fr_off:'总统文件 · 演示数据（实时源未连接）',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
@@ -46,6 +47,7 @@ const I18N = {
     dc_today:'Today',dc_yest:'Yesterday',dc_7d:'7 days',dc_30d:'30 days',dc_custom:'Custom',
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
     news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',news_shown_of:'Showing latest {shown} of {total} — click below to load more',
+    pfe_fr_live:'Presidential documents · live from the federalregister.gov API',pfe_fr_cached:'Presidential documents · cached from the federalregister.gov API',pfe_fr_off:'Presidential documents · demo data (live feed unavailable)',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
@@ -380,7 +382,78 @@ NEWS.forEach((n,i)=>{if(n.d)return;const now=new Date();const offset=Math.min(6,
   });
   /* sync every card clock to its real timestamp: hand-authored items with explicit d (Date.now()-N days)
      keep a stale clock like "11:15" that can land in the future relative to the actual load time */
-  NEWS.forEach(n=>{const d=new Date(n.d);n.time=pad(d.getHours())+':'+pad(d.getMinutes());});
+  NEWS.forEach(n=>{if(n.real)return;const d=new Date(n.d);n.time=pad(d.getHours())+':'+pad(d.getMinutes());});
+})();
+
+/* ============ REAL PRESIDENTIAL DOCUMENTS — live from the federalregister.gov API ============
+   The simulated EO/proclamation items above are placeholders. On boot we fetch the real feed
+   (public CORS-enabled API) and swap them in with their TRUE publication dates. If the network
+   or the API is unavailable we keep the simulated items and label the source as demo. Real items
+   carry real:true and are never touched by the demo freshen/time-sync patches above. */
+const FR_TYPES=[['executive_order','Executive Order','行政命令'],['proclamation','Proclamation','总统公告'],['memorandum','Presidential Memorandum','总统备忘录'],['determination','Presidential Determination','总统裁定']];
+let frState='off',frLastSync=null,frIdSeq=900;
+function frMapDoc(doc,ptype){
+  const conf=FR_TYPES.find(x=>x[0]===ptype)||['','Presidential Document','总统文件'];
+  const num=doc.executive_order_number||'';
+  const headZh=ptype==='executive_order'?('行政命令 EO '+num+'：'):conf[2]+'：';
+  const headEn=ptype==='executive_order'?('Executive Order '+num+': '):conf[1]+': ';
+  const sum=doc.abstract||'';
+  const fbZh='联邦公报总统文件 · 文号 '+(doc.document_number||'-')+(doc.signing_date?(' · 签署于 '+doc.signing_date):'');
+  const fbEn='Federal Register presidential document · No. '+(doc.document_number||'-')+(doc.signing_date?(' · signed '+doc.signing_date):'');
+  return {id:frIdSeq++,t:'pfe',src:'Presidential Docs',cn:'USA',real:true,
+    url:doc.html_url||'#',
+    d:frPubDate(doc.publication_date),
+    time:doc.publication_date||'',
+    title:{zh:headZh+(doc.title||''),en:headEn+(doc.title||'')},
+    sum:{zh:sum||fbZh,en:sum||fbEn},
+    tags:[doc.document_number?('FR '+doc.document_number):'','LIVE'].filter(Boolean)};
+}
+/* publication_date is date-granular, so anchor it to LOCAL MIDNIGHT of that day.
+   Anchoring at noon would push a document published today into the future whenever the visitor
+   loads the page before 12:00 — and rangeFilter (d >= start && d <= end) would then hide it from
+   EVERY window, including 近7天/近30天, making a brand-new EO look like it never arrived. */
+function frPubDate(s){
+  if(!s)return new Date();
+  const d=new Date(s+'T00:00:00');
+  if(isNaN(d.getTime()))return new Date();
+  const now=new Date();
+  return d>now?now:d; /* absolute guard: never a future timestamp */
+}
+function frFetchType(ptype){
+  const url='https://www.federalregister.gov/api/v1/documents.json?conditions%5Bpresidential_document_type%5D%5B%5D='+ptype+'&per_page=6&order=newest&'+['title','abstract','html_url','publication_date','signing_date','document_number','executive_order_number'].map(f=>'fields%5B%5D='+f).join('&');
+  if(typeof fetch!=='function')return Promise.reject(new Error('fetch unavailable'));
+  return fetch(url).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(j=>(j.results||[]).map(d=>frMapDoc(d,ptype)));
+}
+function frFetchAll(){
+  return Promise.all(FR_TYPES.map(x=>frFetchType(x[0]).catch(()=>[])))
+    .then(arrs=>{
+      const docs=arrs.flat().sort((a,b)=>b.d-a.d).slice(0,18);
+      if(!docs.length){frState='off';return 0;}
+      applyRealDocs(docs,false);
+      frState='live';frLastSync=new Date();
+      return docs.length;
+    })
+    .catch(()=>{frState='off';return 0;});
+}
+function applyRealDocs(docs,fromCache){
+  if(!docs||!docs.length)return false;
+  for(let i=NEWS.length-1;i>=0;i--)if(NEWS[i].src==='Presidential Docs'&&!NEWS[i].real)NEWS.splice(i,1); /* drop simulated placeholders */
+  docs.forEach(d=>NEWS.push(d));
+  if(!fromCache)lsSet('fr_docs',JSON.stringify({t:Date.now(),docs:docs}));
+  return true;
+}
+(function(){ /* boot: instant paint from cache, then refresh from the live API */
+  try{
+    const cached=JSON.parse(lsGet('fr_docs')||'null');
+    if(cached&&cached.docs&&cached.docs.length){
+      cached.docs.forEach(d=>{d.d=new Date(d.d);});
+      if(applyRealDocs(cached.docs,true)){frState='cached';frLastSync=new Date(cached.t);}
+    }
+  }catch(e){}
+  frFetchAll().then(n=>{
+    if(n&&document.getElementById('newsList'))renderNews(); /* repaint if the feed is visible */
+  });
 })();
 
 const PAPERS = [
@@ -669,6 +742,9 @@ function renderPFE(){
     }).join('');
     html+='<div class="gov-src-row">'+chips+'</div>';
   }
+  /* live-source status: real items come from the federalregister.gov API; demo fallback is labelled honestly */
+  const frNote=frState==='live'?'pfe_fr_live':(frState==='cached'?'pfe_fr_cached':'pfe_fr_off');
+  html+='<div class="fr-live-note"><span class="fr-dot"></span>'+t(frNote)+(frLastSync?' · '+frLastSync.getFullYear()+'-'+String(frLastSync.getMonth()+1).padStart(2,'0')+'-'+String(frLastSync.getDate()).padStart(2,'0'):'')+'</div>';
   html+=govIn.length?govIn.map(newsHTML).join(''):rangeEmptyHTML(gov,'ovNews');
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=indIn.length+govIn.length;
