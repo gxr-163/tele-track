@@ -436,10 +436,30 @@ function frFetchAll(){
     })
     .catch(()=>{frState='off';return 0;});
 }
+/* Insert a batch of real presidential documents, replacing anything an earlier pass put in.
+   This runs TWICE per load — once with the localStorage cache for an instant paint, then again with
+   the live API response. The original version only stripped the demo placeholders, so the second pass
+   left the cached copy AND the fresh copy of every shared document in the feed: a returning visitor
+   saw each presidential document twice (18 cached + 18 live = 36 rows, 18 of them duplicates).
+   Removal is keyed on url, which is stable across the cache round-trip while ids are not. */
 function applyRealDocs(docs,fromCache){
   if(!docs||!docs.length)return false;
-  for(let i=NEWS.length-1;i>=0;i--)if(NEWS[i].src==='Presidential Docs'&&!NEWS[i].real)NEWS.splice(i,1); /* drop simulated placeholders */
-  docs.forEach(d=>NEWS.push(d));
+  const incoming=new Set(docs.map(d=>d.url).filter(Boolean));
+  for(let i=NEWS.length-1;i>=0;i--){
+    const n=NEWS[i];
+    if(n.src!=='Presidential Docs')continue;
+    if(!n.real){NEWS.splice(i,1);continue;}          /* demo placeholder — always drop */
+    if(!n.url||incoming.has(n.url))NEWS.splice(i,1); /* superseded / unusable — the fresh copy replaces it */
+  }
+  /* defensive sweep: collapse any real duplicates that survived (a corrupted cache could hold repeats) */
+  const seen=new Set();
+  for(let i=NEWS.length-1;i>=0;i--){
+    const n=NEWS[i];
+    if(!n.real||!n.url)continue;
+    if(seen.has(n.url)){NEWS.splice(i,1);continue;}
+    seen.add(n.url);
+  }
+  docs.forEach(d=>{if(d.url&&seen.has(d.url))return;if(d.url)seen.add(d.url);NEWS.push(d);});
   if(!fromCache)lsSet('fr_docs',JSON.stringify({t:Date.now(),docs:docs}));
   return true;
 }
