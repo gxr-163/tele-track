@@ -340,10 +340,21 @@ const NEWS = [
   {id:51,t:'aidc',src:'NZZ Neue Zürcher Zeitung',url:'https://www.nzz.ch/switzerland-data-center-alps-2026',time:'09:00',title:{zh:'瑞士阿尔卑斯山区数据中心崛起：自然冷却与绿电驱动优势',en:'Swiss Alps data centers rise: natural cooling and green power drive advantage'},sum:{zh:'瑞士利用阿尔卑斯山区低温与丰富水电资源，吸引 Equinix、Microsoft 等运营商建设数据中心，全年自然冷却天数超 300 天，PUE 低至 1.08。',en:"Switzerland is leveraging Alpine low temperatures and abundant hydro power to attract operators like Equinix and Microsoft. Natural cooling days exceed 300/year, with PUE as low as 1.08."},tags:['Data Center','Natural Cooling'],cn:'Switzerland'},
   {id:52,t:'trade',src:'Le Temps',url:'https://www.letemps.ch/economie/swiss-trade-policy-cbam-2026',time:'15:20',title:{zh:'瑞士调整贸易政策应对 CBAM：碳定价机制与欧盟接轨',en:'Switzerland adjusts trade policy for CBAM: carbon pricing mechanism aligns with EU'},sum:{zh:'瑞士联邦委员会宣布将国内碳定价机制与欧盟 CBAM 对接，避免双重征税，同时保障出口企业竞争力。钢铁、铝、水泥行业率先纳入。',en:"The Swiss Federal Council announced alignment of its domestic carbon pricing mechanism with the EU CBAM to avoid double taxation while protecting export competitiveness. Steel, aluminum, and cement are first to be included."},tags:['CBAM','Trade Policy'],cn:'Switzerland'}
 ];
+/* Stamp a demo item as "today (or N days back) at its authored clock" — and never in the future.
+   An item placed on TODAY at a clock later than the current time lands in the future, and
+   rangeFilter (d >= start && d <= end) then hides it from EVERY window at once. The feed would
+   silently look thinner before that clock time — an 18:20 item is invisible to a 09:00 visitor,
+   and the whole 7d count shifts as the day advances. Such an item reads as "yesterday at that
+   clock" instead: still recent, still in order, always in the past. */
+function demoStamp(time,offsetDays,now){
+  const hh=parseInt(time.slice(0,2))||0,mm=parseInt(time.slice(3,5))||0;
+  const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offsetDays,hh,mm);
+  return d>now?new Date(d.getTime()-864e5):d;
+}
 /* assign a full timestamp to each news item — dates are relative to today so they always appear recent;
    spread within ~6 days (capped) so every item lands inside the default 7-day window even after time-of-day;
    items that already carry an explicit d (hand-authored fresh timestamps) are left untouched */
-NEWS.forEach((n,i)=>{if(n.d)return;const now=new Date();const offset=Math.min(6,Math.round(i/8));n.d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset,parseInt(n.time.slice(0,2))||0,parseInt(n.time.slice(3,5))||0);});
+NEWS.forEach((n,i)=>{if(n.d)return;n.d=demoStamp(n.time,Math.min(6,Math.round(i/8)),new Date());});
 /* Freshen pass: the "近24小时" preset must return real results, so each country's two newest items
    AND each country×sector's newest item are pulled into the last 24h — staggered, never in the future,
    and the displayed clock (n.time) is kept in sync with the timestamp. Every other item keeps its day
