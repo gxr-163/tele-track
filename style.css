@@ -222,6 +222,12 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .feed-src-note{flex-wrap:wrap}
 .feed-src-note.is-live .fr-dot{background:#15976B}
 .feed-split{margin-left:4px;padding:1px 5px;border-radius:3px;background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+/* provenance status line: the text takes the row, the toggle sits at the end */
+.feed-note-text{flex:1 1 auto;min-width:0}
+.feed-toggle{flex:none;margin-left:auto;padding:2px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink-3);font-family:var(--sans);font-size:9.5px;line-height:1.7;letter-spacing:.2px;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.feed-toggle:hover{color:var(--ink);border-color:var(--ink-3)}
+.feed-toggle.on{background:rgba(21,151,107,.1);border-color:rgba(21,151,107,.4);color:#15976B}
+.feed-hidden-hint{padding:6px 12px 8px;font-size:9.5px;color:var(--ink-3);letter-spacing:.2px;border-bottom:1px dashed var(--line-2)}
 /* source-provenance badges: LIVE = fetched from a real source, SAMPLE = demo data */
 .tag.t-live{background:rgba(21,151,107,.12);color:#15976B;letter-spacing:.4px;text-transform:uppercase}
 .tag.t-demo{background:rgba(183,121,31,.13);color:#B7791F;letter-spacing:.3px}
