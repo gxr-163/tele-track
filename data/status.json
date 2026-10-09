@@ -1,19 +1,59 @@
 {
   "meta": {
-    "generated": "2026-10-09T07:22:04.787Z",
+    "generated": "2026-10-09T08:11:02.272Z",
     "counts": {
       "gov": 59,
-      "media": 140,
+      "media": 148,
       "papers": 40,
-      "total": 199,
+      "total": 207,
       "govRaw": 0,
-      "mediaRaw": 156
+      "mediaRaw": 164
     },
+    "targets": [
+      "Australia/Australian Mining",
+      "Australia/Renew Economy",
+      "China/36氪 36Kr",
+      "China/C114 通信网",
+      "China/InfoQ",
+      "China/第一财经 Yicai",
+      "France/FranceInfo",
+      "France/Les Echos",
+      "France/Usine Nouvelle",
+      "Germany/CleanEnergyWire",
+      "Germany/Frankfurter Allgemeine",
+      "Germany/Handelsblatt",
+      "Japan/Nikkei Asia",
+      "Japan/The Japan Times",
+      "Netherlands/Dutch News",
+      "Netherlands/NL Times",
+      "South Korea/ET News",
+      "South Korea/Korea Herald",
+      "South Korea/Pulse News",
+      "Sweden/SVT Nyheter",
+      "Switzerland/Le Temps",
+      "Switzerland/NZZ Neue Zürcher Zeitung",
+      "Switzerland/Swissinfo",
+      "UK/BusinessCloud",
+      "USA/BIS",
+      "USA/CBP",
+      "USA/CNBC",
+      "USA/Commerce",
+      "USA/DHS",
+      "USA/DOE",
+      "USA/FCC",
+      "USA/Federal Register",
+      "USA/Light Reading",
+      "USA/OFAC",
+      "USA/Presidential Docs",
+      "USA/The Verge",
+      "USA/USTR"
+    ],
     "sources": [
       "Australia/Australian Mining",
       "Australia/Renew Economy",
       "Australia/pv-magazine-australia.com",
       "Australia/thedriven.io",
+      "China/InfoQ",
       "China/ithome.com",
       "China/leiphone.com",
       "China/tmtpost.com",
@@ -28,6 +68,7 @@
       "Germany/pv-magazine.com",
       "Germany/pv-magazine.de",
       "Japan/itmedia.co.jp",
+      "Netherlands/Dutch News",
       "Netherlands/emerce.nl",
       "Netherlands/tweakers.net",
       "South Korea/thelec.kr",
@@ -76,292 +117,350 @@
     {
       "src": "gnews/China/lithium",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "gnews/China/aidc",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "gnews overall",
       "ok": false,
-      "detail": "0/3 queries returned items"
+      "detail": "0/3 queries returned items",
+      "probe": false
     },
     {
       "src": "feed/www.infoq.cn",
       "ok": true,
-      "detail": "4 items -> InfoQ"
+      "detail": "4 items -> InfoQ",
+      "probe": false
     },
     {
       "src": "feed/www.ithome.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.tmtpost.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.leiphone.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.c114.com.cn",
       "ok": false,
-      "detail": "HTTP 404"
+      "detail": "HTTP 404",
+      "probe": true
     },
     {
       "src": "feed/www.yicai.com",
       "ok": false,
-      "detail": "HTTP 404"
+      "detail": "HTTP 404",
+      "probe": true
     },
     {
       "src": "feed/36kr.com",
       "ok": false,
-      "detail": "0 items -> 36氪 36Kr"
+      "detail": "0 items -> 36氪 36Kr",
+      "probe": true
     },
     {
       "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.japantimes.co.jp",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/asia.nikkei.com",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/www.thelec.kr",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.yna.co.kr",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.koreaherald.com",
       "ok": false,
-      "detail": "0 items -> Korea Herald"
+      "detail": "0 items -> Korea Herald",
+      "probe": true
     },
     {
       "src": "feed/www.etnews.com",
       "ok": false,
-      "detail": "0 items -> ET News"
+      "detail": "0 items -> ET News",
+      "probe": true
     },
     {
       "src": "feed/pulsenews.co.kr",
       "ok": false,
-      "detail": "HTTP 404"
+      "detail": "HTTP 404",
+      "probe": true
     },
     {
       "src": "feed/rss.golem.de",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.pv-magazine.de",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.cleanenergywire.org",
       "ok": true,
-      "detail": "4 items -> CleanEnergyWire"
+      "detail": "4 items -> CleanEnergyWire",
+      "probe": false
     },
     {
       "src": "feed/www.pv-magazine.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.handelsblatt.com",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/www.faz.net",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/www.actu-environnement.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.journaldunet.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.usinenouvelle.com",
       "ok": true,
-      "detail": "4 items -> Usine Nouvelle"
+      "detail": "4 items -> Usine Nouvelle",
+      "probe": false
     },
     {
       "src": "feed/www.connaissancedesenergies.org",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/services.lesechos.fr",
       "ok": true,
-      "detail": "4 items -> Les Echos"
+      "detail": "4 items -> Les Echos",
+      "probe": false
     },
     {
       "src": "feed/services.lesechos.fr",
       "ok": true,
-      "detail": "4 items -> Les Echos"
+      "detail": "4 items -> Les Echos",
+      "probe": false
     },
     {
       "src": "feed/www.francetvinfo.fr",
       "ok": true,
-      "detail": "4 items -> FranceInfo"
+      "detail": "4 items -> FranceInfo",
+      "probe": false
     },
     {
       "src": "feed/tweakers.net",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/nltimes.nl",
       "ok": false,
-      "detail": "0 items -> NL Times"
+      "detail": "0 items -> NL Times",
+      "probe": false
     },
     {
       "src": "feed/www.dutchnews.nl",
-      "ok": false,
-      "detail": "fetch failed"
+      "ok": true,
+      "detail": "4 items -> Dutch News",
+      "probe": false
     },
     {
       "src": "feed/www.emerce.nl",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.svt.se",
       "ok": true,
-      "detail": "4 items -> SVT Nyheter"
+      "detail": "4 items -> SVT Nyheter",
+      "probe": false
     },
     {
       "src": "feed/computersweden.se",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.moneycab.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.nzz.ch",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/www.swissinfo.ch",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/www.letemps.ch",
       "ok": false,
-      "detail": "fetch failed"
+      "detail": "fetch failed",
+      "probe": false
     },
     {
       "src": "feed/businesscloud.co.uk",
       "ok": true,
-      "detail": "4 items -> BusinessCloud"
+      "detail": "4 items -> BusinessCloud",
+      "probe": false
     },
     {
       "src": "feed/feeds.skynews.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.energylivenews.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/thedriven.io",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/reneweconomy.com.au",
       "ok": true,
-      "detail": "4 items -> Renew Economy"
+      "detail": "4 items -> Renew Economy",
+      "probe": false
     },
     {
       "src": "feed/www.pv-magazine-australia.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.australianmining.com.au",
       "ok": true,
-      "detail": "4 items -> Australian Mining"
+      "detail": "4 items -> Australian Mining",
+      "probe": false
     },
     {
       "src": "feed/electrek.co",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.utilitydive.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/spectrum.ieee.org",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.rcrwireless.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/feeds.arstechnica.com",
       "ok": true,
-      "detail": "4 items"
+      "detail": "4 items",
+      "probe": false
     },
     {
       "src": "feed/www.theverge.com",
       "ok": true,
-      "detail": "4 items -> The Verge"
+      "detail": "4 items -> The Verge",
+      "probe": false
     },
     {
       "src": "feed/www.lightreading.com",
       "ok": true,
-      "detail": "4 items -> Light Reading"
+      "detail": "4 items -> Light Reading",
+      "probe": false
     },
     {
       "src": "feed/search.cnbc.com",
       "ok": true,
-      "detail": "4 items -> CNBC"
+      "detail": "4 items -> CNBC",
+      "probe": false
     }
   ]
 }
