@@ -517,6 +517,19 @@ function applyRealDocs(docs,fromCache){
    entries, each carrying a visible 「示例」 badge. That way the page is never
    silently part-demo: every row states which it is. */
 let feedState='off',feedMeta=null,feedAt=null;
+/* Feed rows carry no clock time, and newsHTML prints n.time verbatim — so all
+   199 rows once rendered the literal string "undefined" in their meta line. The
+   stamp is derived here, at the single ingestion point, rather than in whichever
+   caller happened to build the row: a same-day row shows its clock time, an older
+   row shows its date, which is what a reader needs from a row that may be a week
+   old. The pipeline cannot make this call because it does not know the reader's
+   "today". */
+function stampFor(d){
+  if(!(d instanceof Date)||isNaN(d.getTime()))return '';
+  const now=new Date();
+  const same=d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate();
+  return same?(p2(d.getHours())+':'+p2(d.getMinutes())):(p2(d.getMonth()+1)+'-'+p2(d.getDate()));
+}
 function applyRealFeed(items){
   if(!items||!items.length)return false;
   const keys=new Set(items.map(i=>i.cn+'|'+i.src));   /* sources this feed actually covers */
@@ -541,6 +554,7 @@ function applyRealFeed(items){
   items.forEach(d=>{
     if(d.url&&seen.has(d.url))return;
     if(d.url)seen.add(d.url);
+    if(!d.time)d.time=stampFor(d.d instanceof Date?d.d:new Date(d.date));
     NEWS.push(d);
   });
   return true;
@@ -553,6 +567,8 @@ function loadRealFeed(){
     .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
     .then(j=>{
       if(!j||!j.items||!j.items.length)throw new Error('empty feed');
+      /* The on-card stamp is derived by applyRealFeed (single ingestion point) —
+         see stampFor. Here we only normalise the date into a real Date. */
       const items=j.items.map(x=>Object.assign({},x,{real:true,fed:true,d:new Date(x.date),id:feedIdSeq++}));
       feedAt=j.generated?new Date(j.generated):null;
       feedMeta={n:new Set(items.map(i=>i.cn+'|'+i.src)).size,m:items.length};
@@ -809,10 +825,12 @@ function newsHTML(n){
   /* Every row states whether it is real or demo. Without this the page showed a
      silent mix — real presidential documents dated 2026-10-07 beside demo items
      stamped "today 09:50" — with no way to tell which was which. */
+  /* the stamp is optional — a missing one must vanish, never print "undefined" */
+  const when=n.time?('<span class="sep"></span>'+esc(String(n.time))):'';
   const demoBadge=n.real
     ?'<span class="tag t-live">LIVE</span>'
     :('<span class="tag t-demo" title="'+esc(t('feed_hint'))+'">'+t('feed_demo')+'</span>');
-  return `<div class="news-item${n.real?'':' is-demo'}" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}<span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+  return `<div class="news-item${n.real?'':' is-demo'}" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}${when}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
 /* Strict range filtering — the window the user picked is honoured. We never silently render items
    that fall outside it (that made "近24小时" look identical to "近7天"). An empty window gets an
