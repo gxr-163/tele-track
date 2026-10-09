@@ -16,6 +16,8 @@ const I18N = {
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
     news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',news_shown_of:'已显示最新 {shown} / {total} 条，点击下方加载更多',
     pfe_fr_live:'总统文件 · 实时同步自 federalregister.gov API',pfe_fr_cached:'总统文件 · 来自 federalregister.gov 缓存',pfe_fr_off:'总统文件 · 演示数据（实时源未连接）',
+    feed_live:'真实数据源 · 定时任务同步（{n} 个来源 · {m} 条）',feed_off:'数据源未连接 · 当前显示演示数据',feed_demo:'示例',feed_hint:'「示例」标记的条目为演示数据，非真实抓取',
+    pa_live_note:'真实论文数据 · 来自 Crossref（{n} 篇 · 真实期刊 / 作者 / 发表日 / 被引数 / DOI 原文链接）',pa_demo_note:'演示论文数据 · 真实源未连接',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
     ai_title:'AIDC 算力基础设施监测',ai_sub:'AI Data Center · 装机 · PUE · 资本开支',ai_kpi1:'智能算力规模',ai_kpi2:'平均 PUE',ai_kpi3:'数据中心资本开支',ai_kpi4:'在用机柜',ai_yoy:'同比',ai_new:'新建项目',ai_mom:'环比',ai_chart1:'算力装机趋势 (EFLOPS)',ai_region:'区域布局',ai_news:'AIDC 相关新闻',
@@ -48,6 +50,8 @@ const I18N = {
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
     news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',news_shown_of:'Showing latest {shown} of {total} — click below to load more',
     pfe_fr_live:'Presidential documents · live from the federalregister.gov API',pfe_fr_cached:'Presidential documents · cached from the federalregister.gov API',pfe_fr_off:'Presidential documents · demo data (live feed unavailable)',
+    feed_live:'Live sources · synced by the scheduled job ({n} sources · {m} items)',feed_off:'Feed unavailable · showing demo data',feed_demo:'SAMPLE',feed_hint:'Items marked SAMPLE are demo data, not fetched from a real source',
+    pa_live_note:'Real papers · fetched from Crossref ({n} papers · real journal, authors, publication date, citations, DOI link)',pa_demo_note:'Demo papers · live source unavailable',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
     ai_title:'AIDC Compute Infrastructure Monitor',ai_sub:'AI Data Center · Capacity · PUE · Capex',ai_kpi1:'Smart Compute Scale',ai_kpi2:'Avg PUE',ai_kpi3:'Data Center Capex',ai_kpi4:'Active Racks',ai_yoy:'YoY',ai_new:'New projects',ai_mom:'QoQ',ai_chart1:'Compute Capacity Trend (EFLOPS)',ai_region:'Regional Layout',ai_news:'AIDC-related News',
@@ -175,21 +179,27 @@ const NEWS_MEDIA = {
   USA:[
     {name:'Reuters',url:'https://www.reuters.com'},
     {name:'Bloomberg',url:'https://www.bloomberg.com'},
-    {name:'FCC',url:'https://www.fcc.gov'},
     {name:'The Verge',url:'https://www.theverge.com'},
     {name:'Light Reading',url:'https://www.lightreading.com'},
     {name:"Dell'Oro Group",url:'https://www.delloro.com'},
     {name:'Wood Mackenzie',url:'https://www.woodmac.com'},
-    {name:'USTR',url:'https://ustr.gov'},
     {name:'IDC',url:'https://www.idc.com'},
     {name:'CNBC',url:'https://www.cnbc.com'},
-    /* ---- US government watch (PFE / supply-chain & trade enforcement) ---- */
+    /* ---- US government watch (PFE / supply-chain & trade enforcement) ----
+       Every one of these publishes its rules and notices through the Federal
+       Register, so all of them are fed by real documents (see tools/refresh.js +
+       the client-side federalregister.gov fetch). `gov:true` puts them in the
+       government section and gives them a filter chip. */
     {name:'DHS',url:'https://www.dhs.gov/uflpa-entity-list',gov:true},
     {name:'BIS',url:'https://www.bis.doc.gov',gov:true},
     {name:'Federal Register',url:'https://www.federalregister.gov',gov:true},
     {name:'Presidential Docs',url:'https://www.federalregister.gov/presidential-documents',gov:true},
     {name:'CBP',url:'https://www.cbp.gov',gov:true},
-    {name:'OFAC',url:'https://ofac.treasury.gov',gov:true}
+    {name:'OFAC',url:'https://ofac.treasury.gov',gov:true},
+    {name:'FCC',url:'https://www.fcc.gov',gov:true},
+    {name:'DOE',url:'https://www.energy.gov',gov:true},
+    {name:'USTR',url:'https://ustr.gov',gov:true},
+    {name:'Commerce',url:'https://www.commerce.gov',gov:true}
   ],
   Germany:[
     {name:'Handelsblatt',url:'https://www.handelsblatt.com'},
@@ -492,6 +502,86 @@ function applyRealDocs(docs,fromCache){
   });
 })();
 
+/* ============ REAL FEED — data/news.json + data/papers.json ============
+   GitHub Pages cannot be crawled by the browser for most sources: commercial
+   media feeds send no Access-Control-Allow-Origin, GDELT has none either and is
+   rate-limited to one request per five seconds, and the public CORS proxies are
+   dead or key-gated. So a scheduled job (see .github/workflows/refresh.yml) does
+   the fetching on a runner, where CORS does not exist, and commits the result.
+   The page then reads it same-origin — no proxy, no key, no CORS.
+
+   Replacement is per SOURCE, not whole-feed: a source that the job fetched
+   successfully shows real items; a source it could not fetch keeps its demo
+   entries, each carrying a visible 「示例」 badge. That way the page is never
+   silently part-demo: every row states which it is. */
+let feedState='off',feedMeta=null,feedAt=null;
+function applyRealFeed(items){
+  if(!items||!items.length)return false;
+  const keys=new Set(items.map(i=>i.cn+'|'+i.src));   /* sources this feed actually covers */
+  for(let i=NEWS.length-1;i>=0;i--){
+    const n=NEWS[i];
+    if(!keys.has(n.cn+'|'+n.src))continue;             /* untouched source — its demo rows stay */
+    /* Remove demo rows of a covered source, and rows this feed itself put there
+       last run (the feed is a full snapshot, so a url that dropped out has aged
+       out). A row fetched live in this browser is KEPT — it is fresher than the
+       snapshot, and the insert pass below skips any feed copy sharing its url. */
+    if(!n.real||n.fed)NEWS.splice(i,1);
+  }
+  /* insert, deduped by url against every real row already present (the live
+     presidential-document fetch may have landed first) */
+  const seen=new Set();
+  for(let i=NEWS.length-1;i>=0;i--){
+    const n=NEWS[i];
+    if(!n.real||!n.url)continue;
+    if(seen.has(n.url)){NEWS.splice(i,1);continue;}
+    seen.add(n.url);
+  }
+  items.forEach(d=>{
+    if(d.url&&seen.has(d.url))return;
+    if(d.url)seen.add(d.url);
+    NEWS.push(d);
+  });
+  return true;
+}
+const DEMO_IDS=NEWS.map(n=>n.id); /* ids present at load — every one of them is a demo row */
+let feedIdSeq=20000;
+function loadRealFeed(){
+  if(typeof fetch!=='function')return Promise.resolve(false);
+  return fetch('data/news.json?t='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(j=>{
+      if(!j||!j.items||!j.items.length)throw new Error('empty feed');
+      const items=j.items.map(x=>Object.assign({},x,{real:true,fed:true,d:new Date(x.date),id:feedIdSeq++}));
+      feedAt=j.generated?new Date(j.generated):null;
+      feedMeta={n:new Set(items.map(i=>i.cn+'|'+i.src)).size,m:items.length};
+      if(!applyRealFeed(items))throw new Error('apply failed');
+      feedState='live';
+      return true;
+    })
+    .catch(()=>{feedState='off';return false;});
+}
+/* How many distinct sources are real vs still demo — drives the honest status line. */
+function feedCoverage(){
+  const real=new Set(),demo=new Set();
+  NEWS.forEach(n=>{const k=n.cn+'|'+n.src;(n.real?real:demo).add(k);});
+  return {real:real.size,demo:demo.size,live:[...real].filter(k=>!demo.has(k)).length};
+}
+function feedStatusHTML(){
+  const cov=feedCoverage();
+  if(feedState!=='live'&&frState!=='live'&&frState!=='cached')
+    return '<div class="fr-live-note feed-src-note"><span class="fr-dot"></span>'+t('feed_off')+'</div>';
+  const stamp=feedAt?(' · '+t('feed_updated')+' '+feedAt.getFullYear()+'-'+p2(feedAt.getMonth()+1)+'-'+p2(feedAt.getDate())+' '+p2(feedAt.getHours())+':'+p2(feedAt.getMinutes())):'';
+  return '<div class="fr-live-note feed-src-note is-live"><span class="fr-dot live"></span>'
+    +t('feed_live').replace('{n}',cov.live).replace('{m}',NEWS.filter(n=>n.real).length)
+    +(cov.demo>0?('<span class="feed-split">'+cov.live+'/'+(cov.live+cov.demo)+'</span>'):'')
+    +stamp+'</div>';
+}
+loadRealFeed().then(ok=>{
+  /* repaint whatever is on screen once the feed lands */
+  const list=document.getElementById('newsList');
+  if(list&&ok){if(state.tab==='pfe')renderPFE();else renderNews();}
+});
+
 const PAPERS = [
   {id:1,j:'nature',jname:'Nature Energy',t:'lithium',title:{zh:'硫化物固态电解质动力学瓶颈的界面工程解决策略',en:'Resolving the kinetic bottleneck of sulfide solid-state electrolytes via interface engineering'},auth:'Y. Zhang, L. Wang, K. Xu, et al.',org:'Tsinghua University · 清华大学',cites:38,hot:1},
   {id:2,j:'joule',jname:'Joule',t:'aidc',title:{zh:'超大规模数据中心的碳感知工作负载调度与可再生能源协同',en:'Carbon-aware workload scheduling for hyperscale data centers with renewable co-location'},auth:'M. Chen, R. Patel, S. Kim',org:'Stanford University / Microsoft Research',cites:52,hot:1},
@@ -692,14 +782,35 @@ function newsHTML(n){
   const sum=lang==='zh'?(n.sum.zh||n.sum):(n.sum.en||n.sum.zh||n.sum);
   const href=n.url||'#';
   const srcLink=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
-  const srcUrl=srcLink?srcLink.url:'#';
+  /* a real feed brings real outlets (theelec.kr, golem.de, …) that were never in
+     the curated outlet list — point the source link at the article instead of "#" */
+  const srcUrl=srcLink?srcLink.url:(n.real?(n.url||'#'):'#');
   const isGov=srcLink&&srcLink.gov;
-  return `<div class="news-item" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}<span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+  /* Every row states whether it is real or demo. Without this the page showed a
+     silent mix — real presidential documents dated 2026-10-07 beside demo items
+     stamped "today 09:50" — with no way to tell which was which. */
+  const demoBadge=n.real
+    ?'<span class="tag t-live">LIVE</span>'
+    :('<span class="tag t-demo" title="'+esc(t('feed_hint'))+'">'+t('feed_demo')+'</span>');
+  return `<div class="news-item${n.real?'':' is-demo'}" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}<span class="sep"></span>${n.time}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
 /* Strict range filtering — the window the user picked is honoured. We never silently render items
    that fall outside it (that made "近24小时" look identical to "近7天"). An empty window gets an
    explicit "no news in this range" state plus one-click widening buttons instead. */
 function rangeFilter(list,start,end){return list.filter(n=>n.d>=start&&n.d<=end);}
+/* Feed ordering. Federal Register documents are date-granular (they sit at local
+   midnight) while demo rows carry an authored clock, so a plain d-desc sort put
+   every demo row stamped "today 09:50" above a real document published today —
+   the visible top of the feed was demo data while real data sat below it. Compare
+   by DAY first, and on the same day put real rows first. No timestamp is invented
+   to achieve this. */
+function dayKey(d){return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();}
+function newsCmp(a,b){
+  const ka=dayKey(a.d),kb=dayKey(b.d);
+  if(ka!==kb)return kb-ka;
+  if(!!a.real!==!!b.real)return a.real?-1:1;
+  return b.d-a.d;
+}
 function rangeEmptyHTML(pool,key){
   const zh=state.lang==='zh',now=Date.now();
   const alts=[['7d',7],['30d',30],['90d',90]]
@@ -725,10 +836,10 @@ function renderNews(){
   let list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
   if(state.tab!=='all')list=list.filter(n=>n.t===state.tab);
   const pool=list; /* country (+ sector) pool, used for the "available in other ranges" hints */
-  const inWindow=rangeFilter(list,start,end).sort((a,b)=>b.d-a.d);
+  const inWindow=rangeFilter(list,start,end).sort(newsCmp);
   const total=inWindow.length; /* items inside the selected range — shown in the badge so the range choice is visible even when the feed caps at newsShown */
   list=inWindow.slice(0,state.newsShown);
-  let html='';
+  let html=feedStatusHTML();
   html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,'ovNews');
   if(total>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',total)+'</div>';
   $('#newsList').innerHTML=html;
@@ -754,8 +865,8 @@ function isGovNews(n){
    2) Government Policy (gov-sourced items + official site quick links) */
 function renderPFE(){
   const {start,end}=rngNow('ovNews');
-  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort((a,b)=>b.d-a.d);
-  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort((a,b)=>b.d-a.d);
+  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort(newsCmp);
+  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort(newsCmp);
   const gov=state.govSrc==='all'?govAll:govAll.filter(n=>n.src===state.govSrc); /* source-filtered gov list, most recent first */
   const indIn=rangeFilter(ind,start,end);
   const govIn=rangeFilter(gov,start,end);
@@ -784,9 +895,12 @@ function renderPFE(){
     }).join('');
     html+='<div class="gov-src-row">'+chips+'</div>';
   }
-  /* live-source status: real items come from the federalregister.gov API; demo fallback is labelled honestly */
-  const frNote=frState==='live'?'pfe_fr_live':(frState==='cached'?'pfe_fr_cached':'pfe_fr_off');
-  html+='<div class="fr-live-note"><span class="fr-dot"></span>'+t(frNote)+(frLastSync?' · '+frLastSync.getFullYear()+'-'+String(frLastSync.getMonth()+1).padStart(2,'0')+'-'+String(frLastSync.getDate()).padStart(2,'0'):'')+'</div>';
+  /* live-source status: the scheduled job covers the whole feed; the older
+     presidential-document notes only apply when nothing else came through. */
+  const frNote=feedState==='live'?null:(frState==='live'?'pfe_fr_live':(frState==='cached'?'pfe_fr_cached':'pfe_fr_off'));
+  html+=frNote
+    ?('<div class="fr-live-note feed-src-note"><span class="fr-dot"></span>'+t(frNote)+(frLastSync?' · '+frLastSync.getFullYear()+'-'+String(frLastSync.getMonth()+1).padStart(2,'0')+'-'+String(frLastSync.getDate()).padStart(2,'0'):'')+'</div>')
+    :feedStatusHTML();
   html+=govIn.length?govIn.map(newsHTML).join(''):rangeEmptyHTML(gov,'ovNews');
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=indIn.length+govIn.length;
@@ -814,7 +928,7 @@ function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
   const own=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
   const pool=own.length?own:NEWS.filter(n=>n.t===type);      /* global fallback only when the country has none */
-  const inWindow=rangeFilter(pool,start,end).sort((a,b)=>b.d-a.d);
+  const inWindow=rangeFilter(pool,start,end).sort(newsCmp);
   const list=inWindow.slice(0,count||5);
   let html='';
   html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,key||'7d');
@@ -922,16 +1036,51 @@ function paperHTML(p){
   const tm=tagMap[p.t]||['tag_trade','t-trade'];
   const zh=state.lang==='zh';
   const title=zh?(p.title.zh||p.title.en||p.title):(p.title.en||p.title.zh||p.title);
-  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span><span>DOI</span></span></div></div>`;
+  /* real papers carry a DOI — make it open the paper. The curated demo entries
+     have no DOI, so they keep the decorative label instead of a dead link. */
+  const doiLink=p.url
+    ?('<a class="p-doi" href="'+esc(p.url)+'" target="_blank" rel="noopener" title="'+esc(p.doi||'DOI')+'">'+(p.doi?esc(p.doi):'DOI')+' ↗</a>')
+    :('<span>DOI</span>');
+  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]||'#4A5A6A'}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span>${doiLink}</span></div></div>`;
 }
 function renderPapers(){
   const {start,end}=rngNow('papers');
   let list=PAPERS.filter(p=>{const d=new Date(p.date);return d>=start&&d<=end;});
   if(state.paperJournal!=='all')list=list.filter(p=>p.j===state.paperJournal);
-  if(state.paperQuery){const q=state.paperQuery.toLowerCase();list=list.filter(p=>{const title=p.title;const tt=typeof title==='string'?title:((title.zh||'')+' '+(title.en||''));return (tt+p.auth+p.org).toLowerCase().includes(q);});}
+  if(state.paperQuery){const q=state.paperQuery.toLowerCase();list=list.filter(p=>{const title=p.title;const tt=typeof title==='string'?title:((title.zh||'')+' '+(title.en||''));return (tt+' '+p.auth+' '+p.org).toLowerCase().includes(q);});}
   list=list.slice(0,state.papersShown);
-  $('#paperGrid').innerHTML=list.length?list.map(paperHTML).join(''):'<div class="empty" style="grid-column:1/-1">'+(state.lang==='zh'?'未找到匹配论文':'No matching papers')+'</div>';
+  const note=paperStatusHTML();
+  $('#paperGrid').innerHTML=note+(list.length?list.map(paperHTML).join(''):'<div class="empty" style="grid-column:1/-1">'+(state.lang==='zh'?'未找到匹配论文':'No matching papers')+'</div>');
 }
+/* Real papers come from Crossref (real journal, authors, publication date,
+   citation count and DOI). Until that feed lands the curated list is shown, so
+   say which one is on screen rather than leaving the reader to guess. */
+let papersState='demo',papersAt=null;
+function paperStatusHTML(){
+  const live=papersState==='live';
+  const stamp=papersAt?(' · '+t('feed_updated')+' '+papersAt.getFullYear()+'-'+p2(papersAt.getMonth()+1)+'-'+p2(papersAt.getDate())):'';
+  return '<div class="feed-src-note'+(live?' is-live':'')+'" style="grid-column:1/-1"><span class="'+(live?'fr-dot live':'fr-dot')+'"></span>'
+    +(live?t('pa_live_note').replace('{n}',PAPERS.length):t('pa_demo_note'))+stamp+'</div>';
+}
+function loadRealPapers(){
+  if(typeof fetch!=='function')return Promise.resolve(false);
+  return fetch('data/papers.json?t='+Date.now(),{cache:'no-store'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(j=>{
+      if(!j||!j.papers||!j.papers.length)throw new Error('empty');
+      PAPERS.length=0;
+      j.papers.forEach((p,i)=>PAPERS.push(Object.assign({},p,{id:30000+i,hot:(p.cites>=25?1:0)})));
+      papersAt=j.generated?new Date(j.generated):null;
+      papersState='live';
+      return true;
+    })
+    .catch(()=>{papersState='demo';return false;});
+}
+loadRealPapers().then(ok=>{
+  if(!ok)return;
+  if(document.getElementById('paperGrid'))renderPapers();
+  if(document.getElementById('paperList'))renderHomePapers();
+});
 $('#loadMorePapers').addEventListener('click',()=>{state.papersShown+=6;renderPapers();});
 $$('#paperJournals .chip').forEach(c=>c.addEventListener('click',()=>{$$('#paperJournals .chip').forEach(x=>x.classList.toggle('active',x===c));state.paperJournal=c.dataset.j;renderPapers();}));
 $('#paperSearch').addEventListener('input',e=>{state.paperQuery=e.target.value;renderPapers();});
