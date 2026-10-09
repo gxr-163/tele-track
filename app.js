@@ -16,7 +16,8 @@ const I18N = {
     load_more_news:'加载更多新闻 ↓',load_more_papers:'加载更多论文 ↓',
     news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',news_shown_of:'已显示最新 {shown} / {total} 条，点击下方加载更多',
     pfe_fr_live:'总统文件 · 实时同步自 federalregister.gov API',pfe_fr_cached:'总统文件 · 来自 federalregister.gov 缓存',pfe_fr_off:'总统文件 · 演示数据（实时源未连接）',
-    feed_live:'真实数据源 · 定时任务同步（{n} 个来源 · {m} 条）',feed_off:'数据源未连接 · 当前显示演示数据',feed_demo:'示例',feed_hint:'「示例」标记的条目为演示数据，非真实抓取',
+    feed_live:'真实数据源 · 定时任务同步（{n}/{all} 个来源 · {m} 条真实数据 · 共 {rows} 条）',feed_off:'数据源未连接 · 当前显示演示数据',feed_demo:'示例',feed_hint:'「示例」标记的条目为演示数据，非真实抓取',
+    feed_updated:'更新于',feed_show_demo:'显示示例数据（{n}）',feed_hide_demo:'仅看真实数据（隐藏 {n} 条示例）',feed_hidden:'已隐藏 {n} 条示例数据',
     pa_live_note:'真实论文数据 · 来自 Crossref（{n} 篇 · 真实期刊 / 作者 / 发表日 / 被引数 / DOI 原文链接）',pa_demo_note:'演示论文数据 · 真实源未连接',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
@@ -50,7 +51,8 @@ const I18N = {
     load_more_news:'Load more news ↓',load_more_papers:'Load more papers ↓',
     news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',news_shown_of:'Showing latest {shown} of {total} — click below to load more',
     pfe_fr_live:'Presidential documents · live from the federalregister.gov API',pfe_fr_cached:'Presidential documents · cached from the federalregister.gov API',pfe_fr_off:'Presidential documents · demo data (live feed unavailable)',
-    feed_live:'Live sources · synced by the scheduled job ({n} sources · {m} items)',feed_off:'Feed unavailable · showing demo data',feed_demo:'SAMPLE',feed_hint:'Items marked SAMPLE are demo data, not fetched from a real source',
+    feed_live:'Live sources · synced by the scheduled job ({n}/{all} sources · {m} real items · {rows} total)',feed_off:'Feed unavailable · showing demo data',feed_demo:'SAMPLE',feed_hint:'Items marked SAMPLE are demo data, not fetched from a real source',
+    feed_updated:'updated',feed_show_demo:'Show sample data ({n})',feed_hide_demo:'Real data only (hide {n} sample)',feed_hidden:'{n} sample rows hidden',
     pa_live_note:'Real papers · fetched from Crossref ({n} papers · real journal, authors, publication date, citations, DOI link)',pa_demo_note:'Demo papers · live source unavailable',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
@@ -566,15 +568,33 @@ function feedCoverage(){
   NEWS.forEach(n=>{const k=n.cn+'|'+n.src;(n.real?real:demo).add(k);});
   return {real:real.size,demo:demo.size,live:[...real].filter(k=>!demo.has(k)).length};
 }
-function feedStatusHTML(){
+/* The status line states, in full and in words, how much of what you are looking
+   at is actually fetched: covered sources over total sources, real rows over rows
+   shown, and when the snapshot was taken. It used to end with a bare "41/87" and
+   the literal string "feed_updated" (an i18n key that was never defined), so the
+   one line whose entire job is to be honest about provenance was the one line a
+   reader could not parse. `pool` is the panel's unfiltered item set — it feeds the
+   toggle's count, so the number on the button is the number of rows the button
+   will actually change here. */
+function feedStatusHTML(pool){
   const cov=feedCoverage();
+  const demoAll=NEWS.filter(n=>!n.real).length;
+  const demoHere=pool?pool.filter(n=>!n.real).length:demoAll;
   if(feedState!=='live'&&frState!=='live'&&frState!=='cached')
     return '<div class="fr-live-note feed-src-note"><span class="fr-dot"></span>'+t('feed_off')+'</div>';
   const stamp=feedAt?(' · '+t('feed_updated')+' '+feedAt.getFullYear()+'-'+p2(feedAt.getMonth()+1)+'-'+p2(feedAt.getDate())+' '+p2(feedAt.getHours())+':'+p2(feedAt.getMinutes())):'';
+  /* A source is either covered by the snapshot (all of its rows are real) or it
+     is not (all of its rows are demo) — per-source replacement guarantees the two
+     sets never overlap, so distinct sources = fully-real + still-demo. */
+  const toggle=(demoAll>0&&demoHere>0)
+    ?('<button type="button" class="feed-toggle'+(state.hideDemo?' on':'')+'" data-feed-toggle="1" aria-pressed="'+(state.hideDemo?'true':'false')+'">'
+      +(state.hideDemo?t('feed_show_demo').replace('{n}',demoHere):t('feed_hide_demo').replace('{n}',demoHere))+'</button>')
+    :'';
   return '<div class="fr-live-note feed-src-note is-live"><span class="fr-dot live"></span>'
-    +t('feed_live').replace('{n}',cov.live).replace('{m}',NEWS.filter(n=>n.real).length)
-    +(cov.demo>0?('<span class="feed-split">'+cov.live+'/'+(cov.live+cov.demo)+'</span>'):'')
-    +stamp+'</div>';
+    +'<span class="feed-note-text">'
+    +t('feed_live').replace('{n}',cov.live).replace('{all}',cov.live+cov.demo)
+      .replace('{m}',NEWS.filter(n=>n.real).length).replace('{rows}',NEWS.length)
+    +stamp+'</span>'+toggle+'</div>';
 }
 loadRealFeed().then(ok=>{
   /* repaint whatever is on screen once the feed lands */
@@ -668,7 +688,7 @@ const TENDERS=[
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',govSrc:'all'};
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',govSrc:'all',hideDemo:false};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -835,11 +855,20 @@ function renderNews(){
   const {start,end}=rngNow('ovNews');
   let list=NEWS.filter(n=>n.cn===state.country); /* strictly the selected country's own news */
   if(state.tab!=='all')list=list.filter(n=>n.t===state.tab);
+  const poolAll=list; /* country (+ sector), unfiltered and pre-window */
+  /* Everything the reader is told about the demo rows is counted from ONE set —
+     what the selected window holds before the demo filter. Count the button from
+     the pre-window pool instead and it advertises "hide 8 sample rows" while only
+     3 of them are in the window, so clicking appears to do nothing. */
+  const winAll=rangeFilter(poolAll,start,end);
+  if(state.hideDemo)list=list.filter(n=>n.real);
   const pool=list; /* country (+ sector) pool, used for the "available in other ranges" hints */
   const inWindow=rangeFilter(list,start,end).sort(newsCmp);
   const total=inWindow.length; /* items inside the selected range — shown in the badge so the range choice is visible even when the feed caps at newsShown */
   list=inWindow.slice(0,state.newsShown);
-  let html=feedStatusHTML();
+  let html=feedStatusHTML(winAll);
+  const hidden=state.hideDemo?winAll.filter(n=>!n.real).length:0;
+  if(hidden)html+='<div class="feed-hidden-hint">'+t('feed_hidden').replace('{n}',hidden)+'</div>';
   html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,'ovNews');
   if(total>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',total)+'</div>';
   $('#newsList').innerHTML=html;
@@ -865,8 +894,13 @@ function isGovNews(n){
    2) Government Policy (gov-sourced items + official site quick links) */
 function renderPFE(){
   const {start,end}=rngNow('ovNews');
-  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort(newsCmp);
-  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort(newsCmp);
+  const pfeAll=NEWS.filter(n=>n.t==='pfe'); /* unfiltered, pre-window */
+  const winAll=rangeFilter(pfeAll,start,end); /* one source of truth for the demo counts */
+  /* The chip counts below are derived from govAll, so the demo filter has to be
+     applied here — otherwise a chip could advertise 3 items and yield 0 rows. */
+  const keep=state.hideDemo?(n=>!!n.real):(n=>true);
+  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).filter(keep).sort(newsCmp);
+  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).filter(keep).sort(newsCmp);
   const gov=state.govSrc==='all'?govAll:govAll.filter(n=>n.src===state.govSrc); /* source-filtered gov list, most recent first */
   const indIn=rangeFilter(ind,start,end);
   const govIn=rangeFilter(gov,start,end);
@@ -900,7 +934,9 @@ function renderPFE(){
   const frNote=feedState==='live'?null:(frState==='live'?'pfe_fr_live':(frState==='cached'?'pfe_fr_cached':'pfe_fr_off'));
   html+=frNote
     ?('<div class="fr-live-note feed-src-note"><span class="fr-dot"></span>'+t(frNote)+(frLastSync?' · '+frLastSync.getFullYear()+'-'+String(frLastSync.getMonth()+1).padStart(2,'0')+'-'+String(frLastSync.getDate()).padStart(2,'0'):'')+'</div>')
-    :feedStatusHTML();
+    :feedStatusHTML(winAll);
+  const hidden=state.hideDemo?winAll.filter(n=>!n.real).length:0;
+  if(hidden)html+='<div class="feed-hidden-hint">'+t('feed_hidden').replace('{n}',hidden)+'</div>';
   html+=govIn.length?govIn.map(newsHTML).join(''):rangeEmptyHTML(gov,'ovNews');
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=indIn.length+govIn.length;
@@ -923,6 +959,17 @@ function renderPFE(){
   });
 }
 $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews();});
+/* Real-data-only toggle. Delegated on document so it survives every re-render of
+   #newsList without rebinding, and works identically in the overview and the PFE
+   view. It only ever hides rows — it never promotes a demo row to look real. */
+document.addEventListener('click',ev=>{
+  const btn=ev.target&&ev.target.closest?ev.target.closest('[data-feed-toggle]'):null;
+  if(!btn)return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  state.hideDemo=!state.hideDemo;
+  if(state.tab==='pfe')renderPFE();else renderNews();
+});
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
   const {start,end}=rngNow(key||'7d');
