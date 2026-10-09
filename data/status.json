@@ -1,26 +1,29 @@
 {
   "meta": {
-    "generated": "2026-10-09T06:39:30.871Z",
+    "generated": "2026-10-09T07:22:04.787Z",
     "counts": {
       "gov": 59,
-      "media": 89,
+      "media": 140,
       "papers": 40,
-      "total": 148,
-      "govRaw": 166,
-      "mediaRaw": 0
+      "total": 199,
+      "govRaw": 0,
+      "mediaRaw": 156
     },
     "sources": [
+      "Australia/Australian Mining",
+      "Australia/Renew Economy",
       "Australia/pv-magazine-australia.com",
-      "Australia/reneweconomy.com.au",
       "Australia/thedriven.io",
       "China/ithome.com",
       "China/leiphone.com",
       "China/tmtpost.com",
+      "France/FranceInfo",
+      "France/Les Echos",
+      "France/Usine Nouvelle",
       "France/actu-environnement.com",
       "France/connaissancedesenergies.org",
       "France/journaldunet.com",
-      "France/usinenouvelle.com",
-      "Germany/cleanenergywire.org",
+      "Germany/CleanEnergyWire",
       "Germany/golem.de",
       "Germany/pv-magazine.com",
       "Germany/pv-magazine.de",
@@ -29,21 +32,24 @@
       "Netherlands/tweakers.net",
       "South Korea/thelec.kr",
       "South Korea/yna.co.kr",
+      "Sweden/SVT Nyheter",
       "Sweden/computersweden.se",
-      "Sweden/svt.se",
       "Switzerland/moneycab.com",
-      "UK/businesscloud.co.uk",
+      "UK/BusinessCloud",
       "UK/energylivenews.com",
       "UK/news.sky.com",
       "USA/BIS",
       "USA/CBP",
+      "USA/CNBC",
       "USA/Commerce",
       "USA/DHS",
       "USA/DOE",
       "USA/FCC",
       "USA/Federal Register",
+      "USA/Light Reading",
       "USA/OFAC",
       "USA/Presidential Docs",
+      "USA/The Verge",
       "USA/USTR",
       "USA/arstechnica.com",
       "USA/content.knowledgehub.wiley.com",
@@ -68,89 +74,294 @@
   },
   "report": [
     {
-      "src": "FR presidential/executive_order",
-      "ok": true,
-      "detail": "8 docs"
+      "src": "gnews/China/lithium",
+      "ok": false,
+      "detail": "fetch failed"
     },
     {
-      "src": "FR presidential/proclamation",
-      "ok": true,
-      "detail": "8 docs"
+      "src": "gnews/China/aidc",
+      "ok": false,
+      "detail": "fetch failed"
     },
     {
-      "src": "FR presidential/memorandum",
-      "ok": true,
-      "detail": "8 docs"
+      "src": "gnews overall",
+      "ok": false,
+      "detail": "0/3 queries returned items"
     },
     {
-      "src": "FR presidential/determination",
+      "src": "feed/www.infoq.cn",
       "ok": true,
-      "detail": "8 docs"
+      "detail": "4 items -> InfoQ"
     },
     {
-      "src": "FR DHS",
+      "src": "feed/www.ithome.com",
       "ok": true,
-      "detail": "15 relevant docs from 5/5 term queries"
+      "detail": "4 items"
     },
     {
-      "src": "FR BIS",
+      "src": "feed/www.tmtpost.com",
       "ok": true,
-      "detail": "19 relevant docs from 5/5 term queries"
+      "detail": "4 items"
     },
     {
-      "src": "FR CBP",
+      "src": "feed/www.leiphone.com",
       "ok": true,
-      "detail": "5 relevant docs from 5/5 term queries"
+      "detail": "4 items"
     },
     {
-      "src": "FR OFAC",
-      "ok": true,
-      "detail": "17 relevant docs from 4/4 term queries"
+      "src": "feed/www.c114.com.cn",
+      "ok": false,
+      "detail": "HTTP 404"
     },
     {
-      "src": "FR FCC",
-      "ok": true,
-      "detail": "10 relevant docs from 5/5 term queries"
+      "src": "feed/www.yicai.com",
+      "ok": false,
+      "detail": "HTTP 404"
     },
     {
-      "src": "FR DOE",
-      "ok": true,
-      "detail": "18 relevant docs from 5/5 term queries"
+      "src": "feed/36kr.com",
+      "ok": false,
+      "detail": "0 items -> 36氪 36Kr"
     },
     {
-      "src": "FR USTR",
+      "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "13 relevant docs from 4/4 term queries"
+      "detail": "4 items"
     },
     {
-      "src": "FR Commerce",
+      "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "15 relevant docs from 5/5 term queries"
+      "detail": "4 items"
     },
     {
-      "src": "FR topic/lithium battery",
+      "src": "feed/rss.itmedia.co.jp",
       "ok": true,
-      "detail": "6 docs"
+      "detail": "4 items"
     },
     {
-      "src": "FR topic/data center energy efficiency",
-      "ok": true,
-      "detail": "6 docs"
+      "src": "feed/www.japantimes.co.jp",
+      "ok": false,
+      "detail": "fetch failed"
     },
     {
-      "src": "FR topic/semiconductor export controls",
-      "ok": true,
-      "detail": "6 docs"
+      "src": "feed/asia.nikkei.com",
+      "ok": false,
+      "detail": "fetch failed"
     },
     {
-      "src": "FR topic/telecommunications equipment",
+      "src": "feed/www.thelec.kr",
       "ok": true,
-      "detail": "3 docs"
+      "detail": "4 items"
     },
     {
-      "src": "FR topic/energy storage",
+      "src": "feed/www.yna.co.kr",
       "ok": true,
-      "detail": "1 docs"
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.koreaherald.com",
+      "ok": false,
+      "detail": "0 items -> Korea Herald"
+    },
+    {
+      "src": "feed/www.etnews.com",
+      "ok": false,
+      "detail": "0 items -> ET News"
+    },
+    {
+      "src": "feed/pulsenews.co.kr",
+      "ok": false,
+      "detail": "HTTP 404"
+    },
+    {
+      "src": "feed/rss.golem.de",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.pv-magazine.de",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.cleanenergywire.org",
+      "ok": true,
+      "detail": "4 items -> CleanEnergyWire"
+    },
+    {
+      "src": "feed/www.pv-magazine.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.handelsblatt.com",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/www.faz.net",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/www.actu-environnement.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.journaldunet.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.usinenouvelle.com",
+      "ok": true,
+      "detail": "4 items -> Usine Nouvelle"
+    },
+    {
+      "src": "feed/www.connaissancedesenergies.org",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/services.lesechos.fr",
+      "ok": true,
+      "detail": "4 items -> Les Echos"
+    },
+    {
+      "src": "feed/services.lesechos.fr",
+      "ok": true,
+      "detail": "4 items -> Les Echos"
+    },
+    {
+      "src": "feed/www.francetvinfo.fr",
+      "ok": true,
+      "detail": "4 items -> FranceInfo"
+    },
+    {
+      "src": "feed/tweakers.net",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/nltimes.nl",
+      "ok": false,
+      "detail": "0 items -> NL Times"
+    },
+    {
+      "src": "feed/www.dutchnews.nl",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/www.emerce.nl",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.svt.se",
+      "ok": true,
+      "detail": "4 items -> SVT Nyheter"
+    },
+    {
+      "src": "feed/computersweden.se",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.moneycab.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.nzz.ch",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/www.swissinfo.ch",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/www.letemps.ch",
+      "ok": false,
+      "detail": "fetch failed"
+    },
+    {
+      "src": "feed/businesscloud.co.uk",
+      "ok": true,
+      "detail": "4 items -> BusinessCloud"
+    },
+    {
+      "src": "feed/feeds.skynews.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.energylivenews.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/thedriven.io",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/reneweconomy.com.au",
+      "ok": true,
+      "detail": "4 items -> Renew Economy"
+    },
+    {
+      "src": "feed/www.pv-magazine-australia.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.australianmining.com.au",
+      "ok": true,
+      "detail": "4 items -> Australian Mining"
+    },
+    {
+      "src": "feed/electrek.co",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.utilitydive.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/spectrum.ieee.org",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.rcrwireless.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/feeds.arstechnica.com",
+      "ok": true,
+      "detail": "4 items"
+    },
+    {
+      "src": "feed/www.theverge.com",
+      "ok": true,
+      "detail": "4 items -> The Verge"
+    },
+    {
+      "src": "feed/www.lightreading.com",
+      "ok": true,
+      "detail": "4 items -> Light Reading"
+    },
+    {
+      "src": "feed/search.cnbc.com",
+      "ok": true,
+      "detail": "4 items -> CNBC"
     }
   ]
 }
