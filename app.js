@@ -18,6 +18,8 @@ const I18N = {
     pfe_fr_live:'总统文件 · 实时同步自 federalregister.gov API',pfe_fr_cached:'总统文件 · 来自 federalregister.gov 缓存',pfe_fr_off:'总统文件 · 演示数据（实时源未连接）',
     feed_live:'真实数据源 · 定时任务同步（{n}/{all} 个来源 · {m} 条真实数据 · 共 {rows} 条）',feed_off:'数据源未连接 · 当前显示演示数据',feed_demo:'示例',feed_hint:'「示例」标记的条目为演示数据，非真实抓取',
     feed_updated:'更新于',feed_show_demo:'显示示例数据（{n}）',feed_hide_demo:'仅看真实数据（隐藏 {n} 条示例）',feed_hidden:'已隐藏 {n} 条示例数据',
+    feed_pending:'待取到',feed_pending_hint:'该来源已配置抓取，本次快照未取到数据——是这一次没接通，不代表该媒体没有数据源',feed_nostream_hint:'该来源没有公开数据接口；本条仅为来源列表占位，不代表该媒体的真实报道',feed_no_link:'占位条目 · 无原文链接',
+    feed_split_pending:'{n} 个来源已配置抓取、本次未取到',feed_split_nostream:'{n} 个来源暂无公开接口',
     pa_live_note:'真实论文数据 · 来自 Crossref（{n} 篇 · 真实期刊 / 作者 / 发表日 / 被引数 / DOI 原文链接）',pa_demo_note:'演示论文数据 · 真实源未连接',
     trend_title:'新闻热度趋势',leg_lithium:'锂电池',leg_aidc:'AIDC',leg_telecom:'电信',leg_energy:'能源',
     li_title:'锂电池产业监测',li_sub:'产业链 · 价格 · 产能 · 政策 · 实时新闻',li_kpi1:'碳酸锂现货',li_kpi2:'动力电池装机',li_kpi3:'储能电池出货',li_kpi4:'产能利用率',li_mom:'月环比',li_yoy:'月同比',li_head:'头部厂商',li_chart1:'碳酸锂价格走势',li_chain:'产业链热度',li_news2:'锂电池相关新闻',
@@ -53,6 +55,8 @@ const I18N = {
     pfe_fr_live:'Presidential documents · live from the federalregister.gov API',pfe_fr_cached:'Presidential documents · cached from the federalregister.gov API',pfe_fr_off:'Presidential documents · demo data (live feed unavailable)',
     feed_live:'Live sources · synced by the scheduled job ({n}/{all} sources · {m} real items · {rows} total)',feed_off:'Feed unavailable · showing demo data',feed_demo:'SAMPLE',feed_hint:'Items marked SAMPLE are demo data, not fetched from a real source',
     feed_updated:'updated',feed_show_demo:'Show sample data ({n})',feed_hide_demo:'Real data only (hide {n} sample)',feed_hidden:'{n} sample rows hidden',
+    feed_pending:'PENDING',feed_pending_hint:'A feed is configured for this source but this snapshot did not get it — the fetch did not connect, it does not mean the outlet has no data',feed_nostream_hint:'No public data feed exists for this source; this row only holds its place in the source list and is not a report by that outlet',feed_no_link:'Placeholder · no source link',
+    feed_split_pending:'{n} sources have a feed configured but were not reached',feed_split_nostream:'{n} sources have no public feed',
     pa_live_note:'Real papers · fetched from Crossref ({n} papers · real journal, authors, publication date, citations, DOI link)',pa_demo_note:'Demo papers · live source unavailable',
     trend_title:'News Volume Trend',leg_lithium:'Lithium',leg_aidc:'AIDC',leg_telecom:'Telecom',leg_energy:'Energy',
     li_title:'Lithium Battery Monitor',li_sub:'Supply chain · Prices · Capacity · Policy · Live news',li_kpi1:'Li Carbonate Spot',li_kpi2:'EV Battery Installed',li_kpi3:'ESS Shipment',li_kpi4:'Utilization Rate',li_mom:'MoM',li_yoy:'YoY',li_head:'Top makers',li_chart1:'Li Carbonate Price Trend',li_chain:'Supply Chain Heat',li_news2:'Lithium-related News',
@@ -517,6 +521,10 @@ function applyRealDocs(docs,fromCache){
    entries, each carrying a visible 「示例」 badge. That way the page is never
    silently part-demo: every row states which it is. */
 let feedState='off',feedMeta=null,feedAt=null;
+/* Every `cn/outlet` the pipeline is configured to fetch — from the snapshot,
+   not from a list hand-maintained here (a second copy of that knowledge is
+   exactly what produced the duplicate-outlet bug). Empty when it is unknown. */
+let feedTargets=new Set();
 /* Feed rows carry no clock time, and newsHTML prints n.time verbatim — so all
    199 rows once rendered the literal string "undefined" in their meta line. The
    stamp is derived here, at the single ingestion point, rather than in whichever
@@ -572,6 +580,7 @@ function loadRealFeed(){
       const items=j.items.map(x=>Object.assign({},x,{real:true,fed:true,d:new Date(x.date),id:feedIdSeq++}));
       feedAt=j.generated?new Date(j.generated):null;
       feedMeta={n:new Set(items.map(i=>i.cn+'|'+i.src)).size,m:items.length};
+      feedTargets=new Set(j.targets||[]);
       if(!applyRealFeed(items))throw new Error('apply failed');
       feedState='live';
       return true;
@@ -580,10 +589,39 @@ function loadRealFeed(){
 }
 /* How many distinct sources are real vs still demo — drives the honest status line. */
 function feedCoverage(){
-  const real=new Set(),demo=new Set();
-  NEWS.forEach(n=>{const k=n.cn+'|'+n.src;(n.real?real:demo).add(k);});
-  return {real:real.size,demo:demo.size,live:[...real].filter(k=>!demo.has(k)).length};
+  const real=new Set(),demo=new Set(),pend=new Set(),nostream=new Set();
+  NEWS.forEach(n=>{
+    const k=n.cn+'|'+n.src;
+    if(n.real){real.add(k);return;}
+    demo.add(k);
+    const r=demoReason(n);
+    if(r==='pending')pend.add(k); else if(r==='nostream')nostream.add(k);
+  });
+  return {real:real.size,demo:demo.size,live:[...real].filter(k=>!demo.has(k)).length,
+    pending:pend.size,nostream:nostream.size};
 }
+/* WHY a row is not real. One badge covered two very different situations, so it
+   told the reader nothing actionable:
+     pending  — we have a feed configured for this outlet, we just did not get it
+                this run. Transient; the scheduled job retries and it goes live.
+     nostream — no feed for this outlet exists in our config at all. Permanent,
+                and worth saying out loud so nobody waits for rows that will never
+                arrive.
+     unknown  — the snapshot predates the target list. Say nothing rather than
+                guess, which leaves exactly the old generic badge. */
+function demoReason(n){
+  if(n.real)return 'live';
+  if(!feedTargets.size)return 'unknown';
+  return feedTargets.has(n.cn+'/'+n.src)?'pending':'nostream';
+}
+/* A hand-authored row is an illustration, not a report, and it has no article
+   behind it. Its authored `url` is a plausible path on the real publisher's
+   domain — reuters.com/technology/fcc-drafts-curbs-chinese-optical-modules-… —
+   which 404s. Rendering that as a link (and the whole card was clickable, so it
+   was reachable by a stray click anywhere on the row) asserts an article that
+   does not exist on a real news site. Demo rows therefore get NO article link at
+   all; the outlet NAME still links to the outlet's real homepage, which is true. */
+function articleHref(n){ return n.real?(n.url||'#'):'#'; }
 /* The status line states, in full and in words, how much of what you are looking
    at is actually fetched: covered sources over total sources, real rows over rows
    shown, and when the snapshot was taken. It used to end with a bare "41/87" and
@@ -606,11 +644,20 @@ function feedStatusHTML(pool){
     ?('<button type="button" class="feed-toggle'+(state.hideDemo?' on':'')+'" data-feed-toggle="1" aria-pressed="'+(state.hideDemo?'true':'false')+'">'
       +(state.hideDemo?t('feed_show_demo').replace('{n}',demoHere):t('feed_hide_demo').replace('{n}',demoHere))+'</button>')
     :'';
+  /* The uncovered half is not one thing, so it is not reported as one thing: how
+     many of those outlets we have a feed for (the scheduled job will retry them)
+     versus how many have no feed at all. Without this the line answered "how much
+     is real" but not "will the rest ever be", which is the actual question a
+     reader asks about a row that says SAMPLE. */
+  const split=[];
+  if(cov.pending)split.push(t('feed_split_pending').replace('{n}',cov.pending));
+  if(cov.nostream)split.push(t('feed_split_nostream').replace('{n}',cov.nostream));
   return '<div class="fr-live-note feed-src-note is-live"><span class="fr-dot live"></span>'
     +'<span class="feed-note-text">'
     +t('feed_live').replace('{n}',cov.live).replace('{all}',cov.live+cov.demo)
       .replace('{m}',NEWS.filter(n=>n.real).length).replace('{rows}',NEWS.length)
-    +stamp+'</span>'+toggle+'</div>';
+    +stamp+'</span>'+toggle+'</div>'
+    +(split.length?'<div class="feed-split-hint">'+split.join(' · ')+'</div>':'');
 }
 loadRealFeed().then(ok=>{
   /* repaint whatever is on screen once the feed lands */
@@ -816,7 +863,8 @@ function newsHTML(n){
   const lang=state.lang;
   const title=lang==='zh'?(n.title.zh||n.title):(n.title.en||n.title.zh||n.title);
   const sum=lang==='zh'?(n.sum.zh||n.sum):(n.sum.en||n.sum.zh||n.sum);
-  const href=n.url||'#';
+  const href=articleHref(n);
+  const hasArticle=href!=='#';
   const srcLink=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
   /* a real feed brings real outlets (theelec.kr, golem.de, …) that were never in
      the curated outlet list — point the source link at the article instead of "#" */
@@ -827,10 +875,23 @@ function newsHTML(n){
      stamped "today 09:50" — with no way to tell which was which. */
   /* the stamp is optional — a missing one must vanish, never print "undefined" */
   const when=n.time?('<span class="sep"></span>'+esc(String(n.time))):'';
+  const reason=demoReason(n);
+  /* Three states, not two: LIVE, "we have a feed for this but did not get it"
+     (transient), and "there is no feed for this" (permanent). The old single
+     SAMPLE badge left the reader unable to tell a retry from a dead end. */
   const demoBadge=n.real
     ?'<span class="tag t-live">LIVE</span>'
-    :('<span class="tag t-demo" title="'+esc(t('feed_hint'))+'">'+t('feed_demo')+'</span>');
-  return `<div class="news-item${n.real?'':' is-demo'}" data-href="${esc(href)}"><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}${when}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}<span class="sep"></span><a class="read-ext" href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${lang==='zh'?'阅读原文':'Read article'} ↗</a></div><div class="news-title"><a href="${esc(href)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+    :(reason==='pending'
+      ?'<span class="tag t-demo t-pending" title="'+esc(t('feed_pending_hint'))+'">'+t('feed_pending')+'</span>'
+      :'<span class="tag t-demo" title="'+esc(reason==='nostream'?t('feed_nostream_hint'):t('feed_hint'))+'">'+t('feed_demo')+'</span>');
+  /* A row with no article must not pretend to have one — see articleHref. */
+  const titleHTML=hasArticle
+    ?'<a href="'+esc(href)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(title)+'</a>'
+    :'<span>'+esc(title)+'</span>';
+  const readExt=hasArticle
+    ?'<span class="sep"></span><a class="read-ext" href="'+esc(href)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+(lang==='zh'?'阅读原文':'Read article')+' ↗</a>'
+    :'<span class="sep"></span><span class="no-src">'+esc(t('feed_no_link'))+'</span>';
+  return `<div class="news-item${n.real?'':' is-demo'}${hasArticle?'':' no-link'}"${hasArticle?` data-href="${esc(href)}"`:''}><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}${when}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}${readExt}</div><div class="news-title">${titleHTML}</div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
 }
 /* Strict range filtering — the window the user picked is honoured. We never silently render items
    that fall outside it (that made "近24小时" look identical to "近7天"). An empty window gets an
