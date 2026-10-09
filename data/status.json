@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "generated": "2026-10-09T06:39:30.871Z",
+    "counts": {
+      "gov": 59,
+      "media": 89,
+      "papers": 40,
+      "total": 148,
+      "govRaw": 166,
+      "mediaRaw": 0
+    },
+    "sources": [
+      "Australia/pv-magazine-australia.com",
+      "Australia/reneweconomy.com.au",
+      "Australia/thedriven.io",
+      "China/ithome.com",
+      "China/leiphone.com",
+      "China/tmtpost.com",
+      "France/actu-environnement.com",
+      "France/connaissancedesenergies.org",
+      "France/journaldunet.com",
+      "France/usinenouvelle.com",
+      "Germany/cleanenergywire.org",
+      "Germany/golem.de",
+      "Germany/pv-magazine.com",
+      "Germany/pv-magazine.de",
+      "Japan/itmedia.co.jp",
+      "Netherlands/emerce.nl",
+      "Netherlands/tweakers.net",
+      "South Korea/thelec.kr",
+      "South Korea/yna.co.kr",
+      "Sweden/computersweden.se",
+      "Sweden/svt.se",
+      "Switzerland/moneycab.com",
+      "UK/businesscloud.co.uk",
+      "UK/energylivenews.com",
+      "UK/news.sky.com",
+      "USA/BIS",
+      "USA/CBP",
+      "USA/Commerce",
+      "USA/DHS",
+      "USA/DOE",
+      "USA/FCC",
+      "USA/Federal Register",
+      "USA/OFAC",
+      "USA/Presidential Docs",
+      "USA/USTR",
+      "USA/arstechnica.com",
+      "USA/content.knowledgehub.wiley.com",
+      "USA/electrek.co",
+      "USA/rcrwireless.com",
+      "USA/spectrum.ieee.org",
+      "USA/utilitydive.com"
+    ],
+    "countries": [
+      "Australia",
+      "China",
+      "France",
+      "Germany",
+      "Japan",
+      "Netherlands",
+      "South Korea",
+      "Sweden",
+      "Switzerland",
+      "UK",
+      "USA"
+    ]
+  },
+  "report": [
+    {
+      "src": "FR presidential/executive_order",
+      "ok": true,
+      "detail": "8 docs"
+    },
+    {
+      "src": "FR presidential/proclamation",
+      "ok": true,
+      "detail": "8 docs"
+    },
+    {
+      "src": "FR presidential/memorandum",
+      "ok": true,
+      "detail": "8 docs"
+    },
+    {
+      "src": "FR presidential/determination",
+      "ok": true,
+      "detail": "8 docs"
+    },
+    {
+      "src": "FR DHS",
+      "ok": true,
+      "detail": "15 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR BIS",
+      "ok": true,
+      "detail": "19 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR CBP",
+      "ok": true,
+      "detail": "5 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR OFAC",
+      "ok": true,
+      "detail": "17 relevant docs from 4/4 term queries"
+    },
+    {
+      "src": "FR FCC",
+      "ok": true,
+      "detail": "10 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR DOE",
+      "ok": true,
+      "detail": "18 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR USTR",
+      "ok": true,
+      "detail": "13 relevant docs from 4/4 term queries"
+    },
+    {
+      "src": "FR Commerce",
+      "ok": true,
+      "detail": "15 relevant docs from 5/5 term queries"
+    },
+    {
+      "src": "FR topic/lithium battery",
+      "ok": true,
+      "detail": "6 docs"
+    },
+    {
+      "src": "FR topic/data center energy efficiency",
+      "ok": true,
+      "detail": "6 docs"
+    },
+    {
+      "src": "FR topic/semiconductor export controls",
+      "ok": true,
+      "detail": "6 docs"
+    },
+    {
+      "src": "FR topic/telecommunications equipment",
+      "ok": true,
+      "detail": "3 docs"
+    },
+    {
+      "src": "FR topic/energy storage",
+      "ok": true,
+      "detail": "1 docs"
+    }
+  ]
+}
