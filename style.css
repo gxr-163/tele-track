@@ -228,12 +228,28 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .feed-toggle:hover{color:var(--ink);border-color:var(--ink-3)}
 .feed-toggle.on{background:rgba(21,151,107,.1);border-color:rgba(21,151,107,.4);color:#15976B}
 .feed-hidden-hint{padding:6px 12px 8px;font-size:9.5px;color:var(--ink-3);letter-spacing:.2px;border-bottom:1px dashed var(--line-2)}
+/* the uncovered half, split into "will be retried" and "no feed exists" */
+.feed-split-hint{padding:2px 12px 6px 22px;font-size:9.5px;color:var(--ink-3);letter-spacing:.2px}
 /* source-provenance badges: LIVE = fetched from a real source, SAMPLE = demo data */
 .tag.t-live{background:rgba(21,151,107,.12);color:#15976B;letter-spacing:.4px;text-transform:uppercase}
 .tag.t-demo{background:rgba(183,121,31,.13);color:#B7791F;letter-spacing:.3px}
+/* 待接入: we have a feed for this outlet but did not get it this run — a different
+   situation from "there is no feed", so it gets a different, cooler tint. Same
+   amber for both would keep the reader guessing which is which. */
+.tag.t-demo.t-pending{background:rgba(74,110,175,.13);color:#4A6EAF;letter-spacing:.4px;text-transform:uppercase}
 /* demo rows are visibly toned down so the real ones stand out at a glance */
 .news-item.is-demo .news-title a{color:var(--ink-2);font-weight:500}
+.news-item.is-demo .news-title span{color:var(--ink-2);font-weight:500}
 .news-item.is-demo .news-dot{opacity:.5}
+/* A row with no article behind it must not look clickable. It was: the whole card
+   carried data-href (an authored path that 404s on the publisher's domain) and
+   .news-item sets cursor:pointer, so a stray click anywhere on the row opened a
+   dead page. */
+.news-item.no-link{cursor:default}
+.news-item.no-link:hover{background:transparent}
+.news-item.no-link .news-title:hover{color:var(--ink-2)}
+.news-item.no-link .news-title span{cursor:default}
+.news-meta .no-src{font-size:9.5px;color:var(--ink-3);font-style:italic}
 /* real papers link straight to the DOI; curated demo papers keep a plain label */
 .p-doi{color:var(--accent);text-decoration:none;font-family:var(--mono);font-size:9px;border-bottom:1px dotted var(--accent-line)}
 .p-doi:hover{border-bottom-style:solid}
