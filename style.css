@@ -218,6 +218,19 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 /* live-source status line in the PFE gov section */
 .fr-live-note{display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:10px;color:var(--ink-3);letter-spacing:.2px}
 .fr-live-note .fr-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none}
+.fr-dot.live{background:#15976B;box-shadow:0 0 0 2.5px rgba(21,151,107,.16)}
+.feed-src-note{flex-wrap:wrap}
+.feed-src-note.is-live .fr-dot{background:#15976B}
+.feed-split{margin-left:4px;padding:1px 5px;border-radius:3px;background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+/* source-provenance badges: LIVE = fetched from a real source, SAMPLE = demo data */
+.tag.t-live{background:rgba(21,151,107,.12);color:#15976B;letter-spacing:.4px;text-transform:uppercase}
+.tag.t-demo{background:rgba(183,121,31,.13);color:#B7791F;letter-spacing:.3px}
+/* demo rows are visibly toned down so the real ones stand out at a glance */
+.news-item.is-demo .news-title a{color:var(--ink-2);font-weight:500}
+.news-item.is-demo .news-dot{opacity:.5}
+/* real papers link straight to the DOI; curated demo papers keep a plain label */
+.p-doi{color:var(--accent);text-decoration:none;font-family:var(--mono);font-size:9px;border-bottom:1px dotted var(--accent-line)}
+.p-doi:hover{border-bottom-style:solid}
 /* PFE view — two-section layout (industry news / government policy) */
 .news-sec-title{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-2);padding:12px 12px 7px;border-bottom:1px solid var(--line-2)}
 .news-sec-title .bar{width:3px;height:11px;border-radius:2px;background:var(--accent);flex:none}
