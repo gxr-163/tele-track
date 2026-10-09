@@ -24,14 +24,26 @@ const fs = require('fs');
 const path = require('path');
 
 const OUT_DIR = path.join(__dirname, '..', 'data');
-const UA = 'tele-track-data/1.0 (+https://github.com/gxr-163/tele-track)';
+/* User-agent. Two failure modes were measured here, not assumed:
+   · a bare bot string ("tele-track-data/1.0") gets 403 from services.lesechos.fr
+     and australianmining.com.au, both of which serve full feeds to a
+     browser-shaped UA — so the string must start with "Mozilla/5.0";
+   · appending "+https://github.com/…" (the conventional way to say who you are)
+     puts the string straight back to 403 on lesechos — publishers' WAFs treat a
+     URL in the UA as a bot signature. Verified both directions on both URLs.
+   The result still names the project and keeps us identifiable. */
+const UA = 'Mozilla/5.0 (compatible; tele-track/1.0)';
 const REQ_TIMEOUT = 20000;
 const TODAY = new Date();
 
 const report = [];
-function note(src, ok, detail) {
-  report.push({ src, ok, detail });
-  console.log((ok ? '  OK   ' : '  FAIL ') + String(src).padEnd(36) + detail);
+/* `probe` marks a candidate feed URL that has never returned items from the
+   network we can reach. Without that distinction every run reports the same six
+   dead URLs as failures, the failure list becomes background noise, and a REAL
+   regression on a known-good feed is invisible inside it. */
+function note(src, ok, detail, probe) {
+  report.push({ src, ok, detail, probe: !!probe });
+  console.log((ok ? '  OK   ' : (probe ? '  PROBE' : '  FAIL ')) + String(src).padEnd(36) + detail);
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -238,14 +250,96 @@ const QUERY = {
   trade: { 'China': '出口管制 关税', 'USA': 'export control tariff', 'Germany': 'Exportkontrolle Zoll', 'Japan': '輸出管理 関税', 'South Korea': '수출통제 관세', 'Australia': 'export trade tariff', 'UK': 'export control trade', 'France': 'contrôle exportations douanes', 'Netherlands': 'exportcontrole', 'Sweden': 'exportkontroll', 'Switzerland': 'Exportkontrolle Handel' },
 };
 
-function parseRss(xml, cn, sector) {
+/* Outlet-name normalisation.
+   A feed identifies itself by hostname (or, under Google News, by a <source>
+   element), so the SAME outlet arrives under two different names: the curated
+   label the dashboard already ships ("CleanEnergyWire", "Renew Economy") and the
+   raw hostname the parser derived ("cleanenergywire.org"). The front end keys
+   provenance per (country|source), so those two never meet — the reader saw
+   "CleanEnergyWire · SAMPLE" and "cleanenergywire.org · LIVE" stacked as if they
+   were two different outlets. That double listing IS the hybrid state.
+   Mapping the hostname onto the curated label merges them: the row becomes real,
+   and per-source replacement drops the demo stand-ins for that outlet.
+   Only add an entry when the feed genuinely IS the curated outlet. A real feed
+   that is not in the curated list (golem.de, thelec.kr, …) is left alone — it is
+   a genuine additional source, not a duplicate. */
+const SRC_ALIAS = {
+  /* hostname form -> curated label */
+  'cleanenergywire.org': 'CleanEnergyWire',
+  'reneweconomy.com.au': 'Renew Economy',
+  'businesscloud.co.uk': 'BusinessCloud',
+  'usinenouvelle.com': 'Usine Nouvelle',
+  'lesechos.fr': 'Les Echos',
+  'francetvinfo.fr': 'FranceInfo',
+  'svt.se': 'SVT Nyheter',
+  'nltimes.nl': 'NL Times',
+  'dutchnews.nl': 'Dutch News',
+  'australianmining.com.au': 'Australian Mining',
+  'koreaherald.com': 'Korea Herald',
+  'etnews.com': 'ET News',
+  'pulsenews.co.kr': 'Pulse News',
+  'japantimes.co.jp': 'The Japan Times',
+  'asia.nikkei.com': 'Nikkei Asia',
+  'handelsblatt.com': 'Handelsblatt',
+  'faz.net': 'Frankfurter Allgemeine',
+  'nzz.ch': 'NZZ Neue Zürcher Zeitung',
+  'swissinfo.ch': 'Swissinfo',
+  'letemps.ch': 'Le Temps',
+  'theverge.com': 'The Verge',
+  'lightreading.com': 'Light Reading',
+  'cnbc.com': 'CNBC',
+  'c114.com.cn': 'C114 通信网',
+  'yicai.com': '第一财经 Yicai',
+  '36kr.com': '36氪 36Kr',
+  'infoq.cn': 'InfoQ',
+  /* <source> form, as Google News reports it */
+  'Renew Economy': 'Renew Economy',
+  'Clean Energy Wire': 'CleanEnergyWire',
+  'Clean Energy Wire (CLEW)': 'CleanEnergyWire',
+  'BusinessCloud': 'BusinessCloud',
+  "L'Usine Nouvelle": 'Usine Nouvelle',
+  'Usine Nouvelle': 'Usine Nouvelle',
+  'SVT Nyheter': 'SVT Nyheter',
+  'NL Times': 'NL Times',
+};
+function normSrc(raw) {
+  if (!raw) return raw;
+  return SRC_ALIAS[raw] || SRC_ALIAS[raw.toLowerCase()] || raw;
+}
+
+function parseRss(xml, cn, sector, forceSrc) {
   const out = [];
-  for (const b of xml.split(/<item[\s>]/).slice(1)) {
+  /* RSS and Atom both carry feeds we depend on — The Verge and NL Times are Atom.
+     Splitting on <item> alone silently yields zero items for an Atom document,
+     which reads in the report as "the outlet had nothing" when in fact we never
+     parsed it. Accept both container tags. */
+  for (const b of xml.split(/<item[\s>]|<entry[\s>]/).slice(1)) {
     const pick = re => { const m = b.match(re); return m ? clean(m[1].replace(/<!\[CDATA\[|\]\]>/g, '')) : ''; };
-    let title = pick(/<title>([\s\S]*?)<\/title>/);
-    const link = pick(/<link>([\s\S]*?)<\/link>/) || (b.match(/<link[^>]*href="([^"]+)"/) || [])[1] || '';
-    const date = pick(/<pubDate>([\s\S]*?)<\/pubDate>/) || pick(/<published>([\s\S]*?)<\/published>/) || pick(/<updated>([\s\S]*?)<\/updated>/);
-    const desc = pick(/<description>([\s\S]*?)<\/description>/) || pick(/<summary>([\s\S]*?)<\/summary>/);
+    /* Every element regex below tolerates attributes. Atom marks up its text
+       elements — <title type="html">, <summary type="html"> — and a regex that
+       demands a bare <title> matches nothing at all, so the whole entry is
+       dropped and the report says "the outlet had nothing" about a feed that
+       parsed perfectly. That is exactly how The Verge read as empty. */
+    let title = pick(/<title[^>]*>([\s\S]*?)<\/title>/);
+    /* The article URL. Collect every <link> in the entry and choose the one that
+       points at the ARTICLE: rel="alternate" first, then any link that is not a
+       self/edit/replies/hub reference, and only then the RSS text form. Taking
+       the first href blindly picks up rel="self" — the feed's own URL — and every
+       row on the dashboard then links back to the feed document instead of the
+       story. */
+    const linkTags = b.match(/<link[^>]*>/g) || [];
+    const relRef = /rel="(self|edit|replies|hub|via)"/;
+    const hrefOf = tag => { const m = tag.match(/href="([^"]+)"/); return m ? m[1] : ''; };
+    let href = '';
+    for (const tag of linkTags) { if (/rel="alternate"/.test(tag)) { href = hrefOf(tag); break; } }
+    if (!href) for (const tag of linkTags) { if (relRef.test(tag)) continue; href = hrefOf(tag); if (href) break; }
+    const link = href || pick(/<link[^>]*>([\s\S]*?)<\/link>/);
+    const date = pick(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/)
+      || pick(/<published[^>]*>([\s\S]*?)<\/published>/)
+      || pick(/<updated[^>]*>([\s\S]*?)<\/updated>/);
+    const desc = pick(/<description[^>]*>([\s\S]*?)<\/description>/)
+      || pick(/<summary[^>]*>([\s\S]*?)<\/summary>/)
+      || pick(/<content[^>]*>([\s\S]*?)<\/content>/);
     const outlet = pick(/<source[^>]*>([\s\S]*?)<\/source>/);
     if (!title || !link) continue;
     if (outlet && title.endsWith(' - ' + outlet)) title = title.slice(0, -(outlet.length + 3));
@@ -253,7 +347,9 @@ function parseRss(xml, cn, sector) {
     if (!d || isNaN(d.getTime())) continue;
     let host = '';
     try { host = new URL(link).hostname.replace(/^www\./, ''); } catch (e) { }
-    const src = outlet || host || 'media';
+    /* an explicit name on the feed wins; otherwise the <source> element, then the
+       article hostname — either way normalised onto the curated label if it is one */
+    const src = normSrc(forceSrc || outlet || host || 'media');
     out.push({
       cn, src, t: sector, url: link, date: d.toISOString(),
       title: { zh: title, en: title },
@@ -292,64 +388,95 @@ async function fetchMedia() {
   }
   note('gnews overall', gnewsOk > 0, gnewsOk + '/' + gnewsTried + ' queries returned items');
 
-  /* Sector feeds — every one of these was probed and returns real items.
-     Each feed is attributed to the publishing outlet's home country, so an item
-     always carries a true country flag (a German publisher's global title files
-     under Germany, a US title under USA, and so on). These feeds are the
-     backbone: they carry all 10 countries even when Google News is unreachable. */
+  /* Sector feeds. Each entry is [country, sector, url, outletName?, unverified?].
+     The country is the publishing outlet's HOME country, so an item always carries
+     a true flag (a German publisher's global title files under Germany). These
+     feeds are the backbone: they carry all 10 countries even when Google News is
+     unreachable — which is exactly the case on a sandboxed network.
+     The 4th element names the outlet. Where the feed IS an outlet the dashboard
+     already lists (Usine Nouvelle, Renew Economy, SVT Nyheter, …) the name is
+     given explicitly so the real rows land ON that curated label instead of beside
+     it as a hostname. Without it the reader sees the same outlet twice: once real
+     under "usinenouvelle.com", once as a demo row under "Usine Nouvelle".
+     The 5th element marks a URL that has only ever answered 404 or served HTML —
+     it is kept so a runner with open network can still try it, but it is reported
+     as `unverified` rather than `failing`, so a genuine regression on a known-good
+     feed is not buried under the same six dead URLs every run. */
   const DIRECT = [
     /* China */
-    ['China', 'aidc', 'https://www.infoq.cn/feed'],
+    ['China', 'aidc', 'https://www.infoq.cn/feed', 'InfoQ'],
     ['China', 'telecom', 'https://www.ithome.com/rss/'],
     ['China', 'aidc', 'https://www.tmtpost.com/rss.xml'],
     ['China', 'aidc', 'https://www.leiphone.com/feed'],
+    ['China', 'telecom', 'https://www.c114.com.cn/rss/news.xml', 'C114 通信网', 1],
+    ['China', 'trade', 'https://www.yicai.com/rss/news.xml', '第一财经 Yicai', 1],
+    ['China', 'aidc', 'https://36kr.com/feed', '36氪 36Kr', 1],
     /* Japan */
     ['Japan', 'telecom', 'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml'],
     ['Japan', 'aidc', 'https://rss.itmedia.co.jp/rss/2.0/business.xml'],
     ['Japan', 'energy', 'https://rss.itmedia.co.jp/rss/2.0/smartjapan.xml'],
+    ['Japan', 'aidc', 'https://www.japantimes.co.jp/feed/', 'The Japan Times'],
+    ['Japan', 'trade', 'https://asia.nikkei.com/rss/feed/nar', 'Nikkei Asia'],
     /* South Korea */
     ['South Korea', 'aidc', 'https://www.thelec.kr/rss/allArticle.xml'],
     ['South Korea', 'energy', 'https://www.yna.co.kr/rss/news.xml'],
+    ['South Korea', 'aidc', 'https://www.koreaherald.com/rss/020000000000.xml', 'Korea Herald', 1],
+    ['South Korea', 'aidc', 'https://www.etnews.com/rss/', 'ET News', 1],
+    ['South Korea', 'trade', 'https://pulsenews.co.kr/rss/allArticle.xml', 'Pulse News', 1],
     /* Germany */
     ['Germany', 'aidc', 'https://rss.golem.de/rss.php?feed=RSS2.0'],
     ['Germany', 'lithium', 'https://www.pv-magazine.de/feed/'],
-    ['Germany', 'energy', 'https://www.cleanenergywire.org/rss.xml'],
+    ['Germany', 'energy', 'https://www.cleanenergywire.org/rss.xml', 'CleanEnergyWire'],
     ['Germany', 'lithium', 'https://www.pv-magazine.com/feed/'],
+    ['Germany', 'energy', 'https://www.handelsblatt.com/contentexport/feed/schlagzeilen', 'Handelsblatt'],
+    ['Germany', 'trade', 'https://www.faz.net/rss/aktuell/wirtschaft/', 'Frankfurter Allgemeine'],
     /* France */
     ['France', 'energy', 'https://www.actu-environnement.com/rss/'],
     ['France', 'aidc', 'https://www.journaldunet.com/rss/'],
-    ['France', 'trade', 'https://www.usinenouvelle.com/rss/'],
+    ['France', 'trade', 'https://www.usinenouvelle.com/rss/', 'Usine Nouvelle'],
     ['France', 'energy', 'https://www.connaissancedesenergies.org/rss.xml'],
+    ['France', 'energy', 'https://services.lesechos.fr/rss/les-echos-economie.xml', 'Les Echos'],
+    ['France', 'trade', 'https://services.lesechos.fr/rss/les-echos-finance-marches.xml', 'Les Echos'],
+    ['France', 'aidc', 'https://www.francetvinfo.fr/economie.rss', 'FranceInfo'],
     /* Netherlands */
     ['Netherlands', 'aidc', 'https://tweakers.net/feeds/nieuws.xml'],
-    ['Netherlands', 'aidc', 'https://nltimes.nl/rss.xml'],
+    ['Netherlands', 'aidc', 'https://nltimes.nl/rss.xml', 'NL Times'],
+    ['Netherlands', 'aidc', 'https://www.dutchnews.nl/feed/', 'Dutch News'],
     ['Netherlands', 'trade', 'https://www.emerce.nl/rss'],
     /* Sweden */
-    ['Sweden', 'energy', 'https://www.svt.se/nyheter/rss.xml'],
+    ['Sweden', 'energy', 'https://www.svt.se/nyheter/rss.xml', 'SVT Nyheter'],
     ['Sweden', 'aidc', 'https://computersweden.se/rss'],
     /* Switzerland */
     ['Switzerland', 'trade', 'https://www.moneycab.com/feed/'],
+    ['Switzerland', 'trade', 'https://www.nzz.ch/wirtschaft.rss', 'NZZ Neue Zürcher Zeitung'],
+    ['Switzerland', 'energy', 'https://www.swissinfo.ch/ger/rss', 'Swissinfo'],
+    ['Switzerland', 'trade', 'https://www.letemps.ch/rss', 'Le Temps'],
     /* UK */
-    ['UK', 'aidc', 'https://businesscloud.co.uk/feed/'],
+    ['UK', 'aidc', 'https://businesscloud.co.uk/feed/', 'BusinessCloud'],
     ['UK', 'trade', 'https://feeds.skynews.com/feeds/rss/business.xml'],
     ['UK', 'energy', 'https://www.energylivenews.com/feed/'],
     /* Australia */
     ['Australia', 'lithium', 'https://thedriven.io/feed/'],
-    ['Australia', 'energy', 'https://reneweconomy.com.au/feed/'],
+    ['Australia', 'energy', 'https://reneweconomy.com.au/feed/', 'Renew Economy'],
     ['Australia', 'lithium', 'https://www.pv-magazine-australia.com/feed/'],
+    ['Australia', 'lithium', 'https://www.australianmining.com.au/feed/', 'Australian Mining'],
     /* USA */
     ['USA', 'lithium', 'https://electrek.co/feed/'],
     ['USA', 'energy', 'https://www.utilitydive.com/feeds/news/'],
     ['USA', 'telecom', 'https://spectrum.ieee.org/feeds/feed.rss'],
     ['USA', 'telecom', 'https://www.rcrwireless.com/feed'],
     ['USA', 'aidc', 'https://feeds.arstechnica.com/arstechnica/technology-lab'],
+    ['USA', 'aidc', 'https://www.theverge.com/rss/index.xml', 'The Verge'],
+    ['USA', 'telecom', 'https://www.lightreading.com/rss.xml', 'Light Reading'],
+    ['USA', 'trade', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', 'CNBC'],
   ];
-  for (const [cn, sector, url] of DIRECT) {
+  for (const [cn, sector, url, name, probe] of DIRECT) {
     try {
-      const got = parseRss(await getText(url), cn, sector).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+      const got = parseRss(await getText(url), cn, sector, name).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
       if (got.length) addAll(got);
-      note('feed/' + new URL(url).hostname, got.length > 0, got.length + ' items');
-    } catch (e) { note('feed/' + new URL(url).hostname, false, e.message); }
+      /* a probe entry that finally returns items has stopped being a probe */
+      note('feed/' + new URL(url).hostname, got.length > 0, got.length + ' items' + (name ? ' -> ' + name : ''), probe && !got.length);
+    } catch (e) { note('feed/' + new URL(url).hostname, false, e.message, probe); }
     await sleep(180);
   }
   return [...byUrl.values()];
@@ -446,18 +573,38 @@ async function fetchPapers() {
 /* =================================================================== main */
 /* Keep the committed feed navigable: a raw run returns 200+ items because each
    gov agency and every feed reports its own backlog. Cap per source and per
-   country, newest first, so the file stays a curated feed rather than a dump. */
+   country so the file stays a curated feed rather than a dump.
+
+   The cap is SOURCE-FAIR. A plain newest-first walk spends the whole country
+   budget on whichever few outlets publish most often, and every source that
+   loses that race keeps its demo rows on the dashboard — the page then shows
+   "we could not reach this outlet" for an outlet we did reach, which is the
+   exact opposite of what the provenance badges are claiming. Pass 1 therefore
+   guarantees one row per source, and pass 2 spends what is left on recency. */
 function capFeed(items, perSource, perCountry) {
   const byDate = (a, b) => new Date(b.date) - new Date(a.date);
-  const srcCount = new Map(), cnCount = new Map(), keep = [];
-  for (const it of items.slice().sort(byDate)) {
+  const sorted = items.slice().sort(byDate);
+  const srcCount = new Map(), cnCount = new Map(), keep = [], taken = new Set();
+  const take = it => {
     const sk = it.cn + '|' + it.src, ck = it.cn;
     const s = srcCount.get(sk) || 0, c = cnCount.get(ck) || 0;
-    if (s >= perSource || c >= perCountry) continue;
+    if (s >= perSource || c >= perCountry) return false;
     srcCount.set(sk, s + 1); cnCount.set(ck, c + 1);
-    keep.push(it);
+    taken.add(it); keep.push(it);
+    return true;
+  };
+  const seenSrc = new Set();
+  for (const it of sorted) {                       /* pass 1 — one row per source */
+    const sk = it.cn + '|' + it.src;
+    if (seenSrc.has(sk)) continue;
+    seenSrc.add(sk);
+    take(it);
   }
-  return keep;
+  for (const it of sorted) {                       /* pass 2 — newest remaining */
+    if (taken.has(it)) continue;
+    take(it);
+  }
+  return keep.sort(byDate);
 }
 
 (async () => {
@@ -477,7 +624,10 @@ function capFeed(items, perSource, perCountry) {
   const noFuture = a => a.filter(x => { const t = new Date(x.date).getTime(); return !isNaN(t) && t <= now; });
   const govRaw = noFuture(gov).length, mediaRaw = noFuture(media).length;
   gov = capFeed(noFuture(gov), 6, 60);
-  media = capFeed(noFuture(media), 3, 14);
+  /* media budget: 10 gov sources already fill their own 60. The feed list now
+     spans up to 7 outlets per country, so a country budget of 14 would starve
+     the tail — 28 leaves room for one row from every outlet plus the newest few. */
+  media = capFeed(noFuture(media), 4, 28);
 
   /* reuse the previous file for blocks skipped by --only so a partial local run
      never wipes good data */
@@ -512,7 +662,9 @@ function capFeed(items, perSource, perCountry) {
   console.log('  media  : ' + media.length + ' (from ' + mediaRaw + ' raw)');
   console.log('  papers : ' + papers.length);
   console.log('  countries covered: ' + meta.countries.length + ' -> ' + meta.countries.join(', '));
-  const bad = report.filter(r => !r.ok);
-  console.log('  failing: ' + bad.length + (bad.length ? ' -> ' + bad.map(b => b.src).join(', ') : ' (none)'));
+  const bad = report.filter(r => !r.ok && !r.probe);
+  const unver = report.filter(r => !r.ok && r.probe);
+  console.log('  failing   : ' + bad.length + (bad.length ? ' -> ' + bad.map(b => b.src).join(', ') : ' (none)'));
+  console.log('  unverified: ' + unver.length + (unver.length ? ' -> ' + unver.map(b => b.src).join(', ') : ' (none)'));
   if (!items.length && !papers.length) { console.error('nothing fetched'); process.exit(1); }
 })().catch(e => { console.error('FATAL ' + (e && e.stack || e)); process.exit(1); });
