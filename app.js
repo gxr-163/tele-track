@@ -351,6 +351,11 @@ function demoStamp(time,offsetDays,now){
   const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offsetDays,hh,mm);
   return d>now?new Date(d.getTime()-864e5):d;
 }
+/* Normalise d to a Date. A few hand-authored rows carry raw epoch milliseconds (d: Date.now()-N*864e5).
+   The renderer happens to tolerate that — range comparisons coerce the Date operand to its ms value — so
+   it never showed as a bug, but a mixed Date/number field is a trap for anything that calls .getTime()
+   or checks instanceof. One shape everywhere. */
+NEWS.forEach(n=>{if(n.d&&!(n.d instanceof Date))n.d=new Date(n.d);});
 /* assign a full timestamp to each news item — dates are relative to today so they always appear recent;
    spread within ~6 days (capped) so every item lands inside the default 7-day window even after time-of-day;
    items that already carry an explicit d (hand-authored fresh timestamps) are left untouched */
