@@ -37,6 +37,22 @@ const REQ_TIMEOUT = 20000;
 const TODAY = new Date();
 
 const report = [];
+/* Every `cn/outlet` this pipeline is CONFIGURED to fetch, whether or not it
+   returned anything this run. The page needs that distinction: a curated outlet
+   we have a feed for but did not reach is a transient failure the scheduled job
+   will retry, whereas an outlet with no feed here will stay on demo rows forever.
+   Both used to render the same "SAMPLE" badge, which told the reader nothing.
+   Populated as feeds are attempted; the gov side comes from AGENCIES. */
+const feedTargets = [];
+/* Rows dated in the future are dropped before the file is written — the page's
+   range filter would hide them from every window anyway. But the per-feed cap
+   picks the NEWEST few BEFORE that guard runs, so a feed whose newest entries are
+   future-dated contributes nothing while still reporting success: InfoQ stamps
+   Beijing local time with a Z, so its four newest items were all "in the future",
+   all four were discarded, and the valid older ones had already been sliced away.
+   It scored 0 rows while logging "4 items -> InfoQ". Applying this BEFORE the cap
+   spends the cap on rows that can actually ship. */
+const usableNow = a => a.filter(x => { const t = new Date(x.date).getTime(); return !isNaN(t) && t <= Date.now(); });
 /* `probe` marks a candidate feed URL that has never returned items from the
    network we can reach. Without that distinction every run reports the same six
    dead URLs as failures, the failure list becomes background noise, and a REAL
@@ -369,6 +385,14 @@ async function fetchMedia() {
   const addAll = arr => arr.forEach(x => { if (x.url && !byUrl.has(x.url)) byUrl.set(x.url, x); });
   let gnewsOk = 0, gnewsTried = 0;
 
+  /* Rows dated in the future are dropped before the file is written — the page's
+     range filter would hide them from every window anyway. But the per-feed cap
+     picks the NEWEST few BEFORE that guard runs, so a feed whose newest entries are
+     future-dated contributes nothing while still reporting success: InfoQ stamps
+     Beijing local time with a Z, so its four newest items were all "in the future",
+     all four were discarded, and the valid older ones had already been sliced away.
+     It scored 0 rows while logging "4 items -> InfoQ". usableNow drops the
+     unusable head, so the cap is spent on rows that can actually ship. */
   for (const cn of Object.keys(LOCALE)) {
     const [hl, gl, ceid] = LOCALE[cn];
     for (const sector of Object.keys(QUERY)) {
@@ -378,7 +402,7 @@ async function fetchMedia() {
       gnewsTried++;
       const url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=' + hl + '&gl=' + gl + '&ceid=' + ceid;
       try {
-        const got = parseRss(await getText(url), cn, sector).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+        const got = usableNow(parseRss(await getText(url), cn, sector)).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
         if (got.length) { addAll(got); gnewsOk++; }
       } catch (e) {
         if (gnewsTried <= 2) note('gnews/' + cn + '/' + sector, false, e.message);
@@ -471,8 +495,11 @@ async function fetchMedia() {
     ['USA', 'trade', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114', 'CNBC'],
   ];
   for (const [cn, sector, url, name, probe] of DIRECT) {
+    /* record the intent BEFORE the attempt — a feed that times out is exactly the
+       case the "configured but not reached" label exists for */
+    if (name) feedTargets.push(cn + '/' + name);
     try {
-      const got = parseRss(await getText(url), cn, sector, name).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+      const got = usableNow(parseRss(await getText(url), cn, sector, name)).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
       if (got.length) addAll(got);
       /* a probe entry that finally returns items has stopped being a probe */
       note('feed/' + new URL(url).hostname, got.length > 0, got.length + ' items' + (name ? ' -> ' + name : ''), probe && !got.length);
@@ -644,16 +671,31 @@ function capFeed(items, perSource, perCountry) {
 
   const items = gov.concat(media);
   const generated = new Date().toISOString();
+  /* The full configured target list. Agency entries are constants; the media
+     entries were recorded during the fetch. A --only=gov run skips the media
+     block entirely, so carry the media targets over from the previous file
+     rather than publishing a list that is missing half of itself. */
+  let targets = [...new Set([
+    'USA/Federal Register', 'USA/Presidential Docs',
+    ...AGENCIES.map(a => 'USA/' + a.src),
+    ...feedTargets,
+  ])];
+  if (only.length && !want('media')) {
+    const pn = prev('news.json');
+    if (pn && pn.targets) targets = [...new Set([...targets, ...pn.targets])];
+  }
+  targets.sort();
   const meta = {
     generated,
     counts: {
       gov: gov.length, media: media.length, papers: papers.length, total: items.length,
       govRaw, mediaRaw,
     },
+    targets,
     sources: [...new Set(items.map(i => i.cn + '/' + i.src))].sort(),
     countries: [...new Set(items.map(i => i.cn))].sort(),
   };
-  fs.writeFileSync(path.join(OUT_DIR, 'news.json'), JSON.stringify({ generated, items }, null, 0));
+  fs.writeFileSync(path.join(OUT_DIR, 'news.json'), JSON.stringify({ generated, items, targets }, null, 0));
   fs.writeFileSync(path.join(OUT_DIR, 'papers.json'), JSON.stringify({ generated, papers }, null, 0));
   fs.writeFileSync(path.join(OUT_DIR, 'status.json'), JSON.stringify({ meta, report }, null, 2));
 
