@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-10-09T08:11:02.272Z",
+    "generated": "2026-10-12T08:41:23.588Z",
     "counts": {
       "gov": 59,
-      "media": 148,
+      "media": 256,
       "papers": 40,
-      "total": 207,
-      "govRaw": 0,
-      "mediaRaw": 164
+      "total": 315,
+      "govRaw": 155,
+      "mediaRaw": 306
     },
     "targets": [
       "Australia/Australian Mining",
@@ -49,51 +49,168 @@
       "USA/USTR"
     ],
     "sources": [
+      "Australia/Al Jazeera",
       "Australia/Australian Mining",
+      "Australia/Export Development Canada (EDC)",
+      "Australia/IndexBox",
+      "Australia/Indian Infrastructure Magazine",
+      "Australia/Law.asia",
+      "Australia/Mining.com",
       "Australia/Renew Economy",
+      "Australia/Small Caps",
+      "Australia/SolarQuarter",
+      "Australia/Telecompaper",
+      "Australia/WSJ",
+      "Australia/https://megaproject.com/",
       "Australia/pv-magazine-australia.com",
       "Australia/thedriven.io",
+      "Australia/w.media",
       "China/InfoQ",
+      "China/QQ News",
+      "China/finance.sina.com.cn",
       "China/ithome.com",
       "China/leiphone.com",
       "China/tmtpost.com",
+      "China/中国基金报",
+      "China/中国能源新闻网",
+      "China/华尔街见闻",
+      "China/搜狐",
+      "China/早晨报",
+      "China/江西新闻网",
+      "China/深潮TechFlow",
+      "China/茉莉花新闻网",
+      "China/财联社",
+      "France/Clubic",
       "France/FranceInfo",
+      "France/Frandroid",
+      "France/IndexBox",
+      "France/La Voix du Nord",
+      "France/Le Moci",
+      "France/Le Monde de l'Energie",
+      "France/Le Monde.fr",
       "France/Les Echos",
+      "France/Nouvelles d'Arménie en Ligne",
+      "France/RTBF",
       "France/Usine Nouvelle",
+      "France/Vietnam.vn",
       "France/actu-environnement.com",
       "France/connaissancedesenergies.org",
+      "France/energynews.pro",
       "France/journaldunet.com",
+      "France/rts.ch",
+      "Germany/36 Kr",
+      "Germany/AD HOC NEWS",
+      "Germany/Anwalt.de",
+      "Germany/BornCity",
       "Germany/CleanEnergyWire",
+      "Germany/Fortune Business Insights",
+      "Germany/Frankfurter Allgemeine",
+      "Germany/Germany Trade Invest (GTAI)",
+      "Germany/Handelsblatt",
+      "Germany/Industriemagazin",
+      "Germany/SWR",
+      "Germany/ad-hoc-news.de",
+      "Germany/aeroTELEGRAPH",
+      "Germany/elektroniknet",
+      "Germany/energiezukunft",
       "Germany/golem.de",
       "Germany/pv-magazine.com",
       "Germany/pv-magazine.de",
+      "Germany/stadt+werk",
+      "Germany/t3n",
+      "Japan/BigGo ファイナンス",
+      "Japan/Newscast.jp",
+      "Japan/The Japan Times",
+      "Japan/Vietnam.vn",
+      "Japan/XenoSpectrum",
+      "Japan/Yahoo!ニュース",
       "Japan/itmedia.co.jp",
+      "Japan/アットプレス",
+      "Japan/ナショナルジオグラフィック日本版",
+      "Japan/千葉テレビ放送株式会社",
+      "Japan/東京都公式アプリ",
+      "Japan/디지털투데이",
+      "Japan/조선일보",
+      "Netherlands/D66",
+      "Netherlands/De Groene Amsterdammer",
       "Netherlands/Dutch News",
+      "Netherlands/Evofenedex",
+      "Netherlands/Het Parool",
+      "Netherlands/Rockingrobots",
+      "Netherlands/Trends.be",
+      "Netherlands/bnr.nl",
       "Netherlands/emerce.nl",
+      "Netherlands/iBestuur",
       "Netherlands/tweakers.net",
+      "South Korea/IPDaily",
+      "South Korea/IndexBox",
+      "South Korea/Vietnam.vn",
       "South Korea/thelec.kr",
       "South Korea/yna.co.kr",
+      "South Korea/국제뉴스",
+      "South Korea/뉴스핌",
+      "South Korea/뉴시스",
+      "South Korea/더구루",
+      "South Korea/애드뉴스인천",
+      "South Korea/중소기업투데이",
+      "South Korea/지디넷코리아",
+      "South Korea/코리아포스트 한글판",
+      "South Korea/핀포인트뉴스",
+      "South Korea/한겨레",
+      "South Korea/한국경제",
+      "South Korea/한국세정신문",
+      "Sweden/BYGGnyheter.se",
+      "Sweden/DagensNaringsliv.se",
+      "Sweden/Mynewsdesk",
+      "Sweden/Omni – Alla nyheter. Alla perspektiv.",
       "Sweden/SVT Nyheter",
       "Sweden/computersweden.se",
+      "Sweden/nyteknik",
+      "Switzerland/Anwalt.de",
+      "Switzerland/BASIC thinking",
+      "Switzerland/Golem",
+      "Switzerland/Handelsblatt",
+      "Switzerland/Mindener Tageblatt",
+      "Switzerland/NZZ Neue Zürcher Zeitung",
+      "Switzerland/T-Online",
+      "Switzerland/Vietnam.vn",
+      "Switzerland/ad-hoc-news.de",
+      "Switzerland/ingenieur.de",
+      "Switzerland/joinmares.com",
       "Switzerland/moneycab.com",
+      "Switzerland/t3n",
+      "UK/Business Standard",
       "UK/BusinessCloud",
+      "UK/ChannelLife UK",
+      "UK/Pulse 2.0",
+      "UK/Verdict",
+      "UK/ad-hoc-news.de",
       "UK/energylivenews.com",
       "UK/news.sky.com",
+      "UK/صوت الإمارات",
       "USA/BIS",
+      "USA/BW Businessworld",
       "USA/CBP",
       "USA/CNBC",
       "USA/Commerce",
       "USA/DHS",
       "USA/DOE",
+      "USA/Data Center Frontier",
       "USA/FCC",
       "USA/Federal Register",
       "USA/Light Reading",
+      "USA/MLex",
+      "USA/Machine Maker",
+      "USA/Mercomindia.com",
       "USA/OFAC",
       "USA/Presidential Docs",
+      "USA/Simply Wall Street",
+      "USA/SolarQuarter",
+      "USA/The Express Tribune",
+      "USA/The Malaysian Reserve",
       "USA/The Verge",
       "USA/USTR",
       "USA/arstechnica.com",
-      "USA/content.knowledgehub.wiley.com",
       "USA/electrek.co",
       "USA/rcrwireless.com",
       "USA/spectrum.ieee.org",
@@ -115,21 +232,111 @@
   },
   "report": [
     {
-      "src": "gnews/China/lithium",
-      "ok": false,
-      "detail": "fetch failed",
+      "src": "FR presidential/executive_order",
+      "ok": true,
+      "detail": "8 docs",
       "probe": false
     },
     {
-      "src": "gnews/China/aidc",
-      "ok": false,
-      "detail": "fetch failed",
+      "src": "FR presidential/proclamation",
+      "ok": true,
+      "detail": "8 docs",
+      "probe": false
+    },
+    {
+      "src": "FR presidential/memorandum",
+      "ok": true,
+      "detail": "8 docs",
+      "probe": false
+    },
+    {
+      "src": "FR presidential/determination",
+      "ok": true,
+      "detail": "8 docs",
+      "probe": false
+    },
+    {
+      "src": "FR DHS",
+      "ok": true,
+      "detail": "16 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR BIS",
+      "ok": true,
+      "detail": "19 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR CBP",
+      "ok": true,
+      "detail": "5 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR OFAC",
+      "ok": true,
+      "detail": "16 relevant docs from 4/4 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR FCC",
+      "ok": true,
+      "detail": "10 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR DOE",
+      "ok": true,
+      "detail": "17 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR USTR",
+      "ok": true,
+      "detail": "13 relevant docs from 4/4 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR Commerce",
+      "ok": true,
+      "detail": "16 relevant docs from 5/5 term queries",
+      "probe": false
+    },
+    {
+      "src": "FR topic/lithium battery",
+      "ok": true,
+      "detail": "6 docs",
+      "probe": false
+    },
+    {
+      "src": "FR topic/data center energy efficiency",
+      "ok": true,
+      "detail": "6 docs",
+      "probe": false
+    },
+    {
+      "src": "FR topic/semiconductor export controls",
+      "ok": true,
+      "detail": "6 docs",
+      "probe": false
+    },
+    {
+      "src": "FR topic/telecommunications equipment",
+      "ok": true,
+      "detail": "4 docs",
+      "probe": false
+    },
+    {
+      "src": "FR topic/energy storage",
+      "ok": true,
+      "detail": "2 docs",
       "probe": false
     },
     {
       "src": "gnews overall",
-      "ok": false,
-      "detail": "0/3 queries returned items",
+      "ok": true,
+      "detail": "46/55 queries returned items",
       "probe": false
     },
     {
@@ -194,14 +401,14 @@
     },
     {
       "src": "feed/www.japantimes.co.jp",
-      "ok": false,
-      "detail": "fetch failed",
+      "ok": true,
+      "detail": "4 items -> The Japan Times",
       "probe": false
     },
     {
       "src": "feed/asia.nikkei.com",
       "ok": false,
-      "detail": "fetch failed",
+      "detail": "0 items -> Nikkei Asia",
       "probe": false
     },
     {
@@ -260,20 +467,20 @@
     },
     {
       "src": "feed/www.handelsblatt.com",
-      "ok": false,
-      "detail": "fetch failed",
+      "ok": true,
+      "detail": "4 items -> Handelsblatt",
       "probe": false
     },
     {
       "src": "feed/www.faz.net",
-      "ok": false,
-      "detail": "fetch failed",
+      "ok": true,
+      "detail": "4 items -> Frankfurter Allgemeine",
       "probe": false
     },
     {
       "src": "feed/www.actu-environnement.com",
       "ok": true,
-      "detail": "4 items",
+      "detail": "2 items",
       "probe": false
     },
     {
@@ -356,20 +563,20 @@
     },
     {
       "src": "feed/www.nzz.ch",
-      "ok": false,
-      "detail": "fetch failed",
+      "ok": true,
+      "detail": "4 items -> NZZ Neue Zürcher Zeitung",
       "probe": false
     },
     {
       "src": "feed/www.swissinfo.ch",
       "ok": false,
-      "detail": "fetch failed",
+      "detail": "HTTP 410",
       "probe": false
     },
     {
       "src": "feed/www.letemps.ch",
       "ok": false,
-      "detail": "fetch failed",
+      "detail": "0 items -> Le Temps",
       "probe": false
     },
     {
@@ -460,6 +667,90 @@
       "src": "feed/search.cnbc.com",
       "ok": true,
       "detail": "4 items -> CNBC",
+      "probe": false
+    },
+    {
+      "src": "crossref/Nature Energy",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Nature Sustainability",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Science",
+      "ok": true,
+      "detail": "3 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Nature Communications",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Joule",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Energy Storage Materials",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Cell Reports Physical Science",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Advanced Materials",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Advanced Energy Materials",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Applied Energy",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/Nano Energy",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/IEEE Trans. Power Systems",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/IEEE Trans. Smart Grid",
+      "ok": true,
+      "detail": "6 on-topic papers",
+      "probe": false
+    },
+    {
+      "src": "crossref/IEEE Trans. Industrial Informatics",
+      "ok": true,
+      "detail": "6 on-topic papers",
       "probe": false
     }
   ]
