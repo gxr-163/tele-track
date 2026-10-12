@@ -17,7 +17,8 @@ const I18N = {
     news_range_empty:'所选时段（{range}）内暂无新闻',news_range_avail:'其他时段可用：',news_shown_of:'已显示最新 {shown} / {total} 条，点击下方加载更多',
     pfe_fr_live:'总统文件 · 实时同步自 federalregister.gov API',pfe_fr_cached:'总统文件 · 来自 federalregister.gov 缓存',pfe_fr_off:'总统文件 · 演示数据（实时源未连接）',
     feed_live:'真实数据源 · 定时任务同步（{n}/{all} 个来源 · {m} 条真实数据 · 共 {rows} 条）',feed_off:'数据源未连接 · 当前显示演示数据',feed_demo:'示例',feed_hint:'「示例」标记的条目为演示数据，非真实抓取',
-    feed_updated:'更新于',feed_show_demo:'显示示例数据（{n}）',feed_hide_demo:'仅看真实数据（隐藏 {n} 条示例）',feed_hidden:'已隐藏 {n} 条示例数据',
+    feed_updated:'更新于',feed_show_demo:'显示示例数据（{n}）',feed_hide_demo:'仅看真实数据（隐藏 {n} 条示例）',
+    news_only_demo:'示例数据已按「仅看真实数据」隐藏',
     feed_pending:'待取到',feed_pending_hint:'该来源已配置抓取，本次快照未取到数据——是这一次没接通，不代表该媒体没有数据源',feed_nostream_hint:'该来源没有公开数据接口；本条仅为来源列表占位，不代表该媒体的真实报道',feed_no_link:'占位条目 · 无原文链接',
     feed_split_pending:'{n} 个来源已配置抓取、本次未取到',feed_split_nostream:'{n} 个来源暂无公开接口',
     pa_live_note:'真实论文数据 · 来自 Crossref（{n} 篇 · 真实期刊 / 作者 / 发表日 / 被引数 / DOI 原文链接）',pa_demo_note:'演示论文数据 · 真实源未连接',
@@ -36,7 +37,11 @@ const I18N = {
     th_country:'国家',th_li:'碳酸锂',th_lfp:'LFP正极',th_gr:'石墨负极',th_hy:'氢氧化锂',
     grp_lithium:'锂电池原材料',grp_aidc:'AIDC 核心 (公司重点)',
     region_e:'华东',region_n:'华北',region_s:'华南',region_w:'西部枢纽',th_region:'区域',th_cap:'算力',th_yoy:'同比',th_pue:'PUE',
-    chain_upstream:'上游锂矿',chain_cathode:'正极材料',chain_anode:'负极材料',chain_electrolyte:'电解液',chain_sep:'隔膜',chain_cell:'电芯',chain_recycle:'回收'
+    chain_upstream:'上游锂矿',chain_cathode:'正极材料',chain_anode:'负极材料',chain_electrolyte:'电解液',chain_sep:'隔膜',chain_cell:'电芯',chain_recycle:'回收',
+    /* Was hard-coded in index.html and therefore never translated. Kept as keys
+       so the language switch has exactly one place to look. */
+    li_kpi1_sub:'SMM 均价',d_flat:'— 持平',tr_kpi3_sub:'— 2026全面',se_ver:'当前版本 v2.5.0 · 订阅至 2027-03-01',
+    deploy_online:'已部署 · 公网访问:',btn_copy:'复制'
   },
   en:{
     app_title:'TELE·TRACK — Industry Intelligence',search_ph:'Search news, papers, companies…  ( / )',
@@ -54,7 +59,8 @@ const I18N = {
     news_range_empty:'No news in the selected range ({range})',news_range_avail:'Available in other ranges: ',news_shown_of:'Showing latest {shown} of {total} — click below to load more',
     pfe_fr_live:'Presidential documents · live from the federalregister.gov API',pfe_fr_cached:'Presidential documents · cached from the federalregister.gov API',pfe_fr_off:'Presidential documents · demo data (live feed unavailable)',
     feed_live:'Live sources · synced by the scheduled job ({n}/{all} sources · {m} real items · {rows} total)',feed_off:'Feed unavailable · showing demo data',feed_demo:'SAMPLE',feed_hint:'Items marked SAMPLE are demo data, not fetched from a real source',
-    feed_updated:'updated',feed_show_demo:'Show sample data ({n})',feed_hide_demo:'Real data only (hide {n} sample)',feed_hidden:'{n} sample rows hidden',
+    feed_updated:'updated',feed_show_demo:'Show sample data ({n})',feed_hide_demo:'Real data only (hide {n} sample)',
+    news_only_demo:'Sample rows are held back by "real data only"',
     feed_pending:'PENDING',feed_pending_hint:'A feed is configured for this source but this snapshot did not get it — the fetch did not connect, it does not mean the outlet has no data',feed_nostream_hint:'No public data feed exists for this source; this row only holds its place in the source list and is not a report by that outlet',feed_no_link:'Placeholder · no source link',
     feed_split_pending:'{n} sources have a feed configured but were not reached',feed_split_nostream:'{n} sources have no public feed',
     pa_live_note:'Real papers · fetched from Crossref ({n} papers · real journal, authors, publication date, citations, DOI link)',pa_demo_note:'Demo papers · live source unavailable',
@@ -72,10 +78,52 @@ const I18N = {
     th_product:'Product',th_market:'Market',th_rate:'Rate',th_note:'Note',th_effective:'Effective',
     th_country:'Country',th_li:'Li Carbonate',th_lfp:'LFP Cathode',th_gr:'Graphite Anode',th_hy:'Li Hydroxide',
     grp_lithium:'Lithium Materials',grp_aidc:'AIDC Core (Company Priority)',
-    region_e:'East China',region_n:'North China',region_s:'South China',region_w:'West Hub',th_region:'Region',th_cap:'Capacity',th_pue:'PUE',
-    chain_upstream:'Li Ore',chain_cathode:'Cathode',chain_anode:'Anode',chain_electrolyte:'Electrolyte',chain_sep:'Separator',chain_cell:'Cell',chain_recycle:'Recycling'
+    region_e:'East China',region_n:'North China',region_s:'South China',region_w:'West Hub',th_region:'Region',th_cap:'Capacity',th_yoy:'YoY',th_pue:'PUE',
+    chain_upstream:'Li Ore',chain_cathode:'Cathode',chain_anode:'Anode',chain_electrolyte:'Electrolyte',chain_sep:'Separator',chain_cell:'Cell',chain_recycle:'Recycling',
+    li_kpi1_sub:'SMM avg',d_flat:'— flat',tr_kpi3_sub:'— full year 2026',se_ver:'Current version v2.5.0 · subscribed until 2027-03-01',
+    deploy_online:'Deployed · public URL:',btn_copy:'Copy'
   }
 };
+/* Chinese proper nouns that appear in the fixture data: news keywords, Chinese
+   procurement agencies and the official tender platforms. They were printed
+   verbatim, so an English reader met 「关税」 next to "Tariff" in the same row and
+   「工信部」 in the middle of an English tender list. Anything not listed passes
+   through untouched — inventing a translation would be worse than leaving the
+   token as the source published it. */
+const TERM_EN = {
+  /* news keywords */
+  '关税':'Tariff','反制':'Countermeasures','组件穿透':'Component pass-through',
+  '锂价':'Li price','锂矿':'Lithium ore','关键矿产':'Critical minerals',
+  '固态电池':'Solid-state','储能':'Storage','光伏':'Solar PV','绿电':'Green power',
+  '回收':'Recycling','市场':'Market','用电量':'Power demand','智算':'Smart compute',
+  '光模块':'Optical Module',
+  /* procurement agencies */
+  '中国移动':'China Mobile','国家电网':'State Grid','工信部':'MIIT','中国铁塔':'China Tower',
+  /* official tender platforms (rendered as both the portal label and the row source) */
+  '中国政府采购网':'China Gov. Procurement',
+  '招标投标公共服务平台':'China Tendering & Bidding Service',
+  '政府調達 (PPI)':'Japan Government Procurement (PPI)',
+  '나라장터':'Korea G2B (Narajangteo)',
+  'Upphandling':'Upphandling (Sweden)',
+  'simap.ch':'SIMAP (Switzerland)'
+};
+function termLabel(x){return state.lang==='en'?(TERM_EN[x]||x):x;}
+/* Fixture budgets carry Chinese scale words (¥386亿). Re-expressing them as
+   38.6 B keeps the figure honest; stripping the 亿 would turn ¥386亿 into ¥386,
+   which is a different number by a factor of 10^8. */
+function budgetLabel(b){
+  if(state.lang!=='en')return b;
+  const m=/^(.*?)(\d+(?:\.\d+)?)亿$/.exec(b);
+  return m?(m[1]+Number((Number(m[2])/10).toFixed(2))+'B'):b;
+}
+/* Demo paper affiliations are authored as the institution plus its Chinese name
+   ("Tsinghua University · 清华大学"). The pair is right in Chinese; in English the
+   Chinese half is noise, so it is dropped — the Latin half is untouched. */
+function orgLabel(o){
+  if(state.lang!=='en')return o;
+  const m=/^(.*?)\s*·\s*([\u3400-\u9fff].*)$/.exec(o);
+  return m?m[1]:o;
+}
 
 /* ============ COUNTRIES ============ */
 const FLAGS = {China:'🇨🇳',USA:'🇺🇸',Germany:'🇩🇪',Japan:'🇯🇵','South Korea':'🇰🇷',Australia:'🇦🇺','UK':'🇬🇧',France:'🇫🇷',Netherlands:'🇳🇱',Sweden:'🇸🇪',Switzerland:'🇨🇭'};
@@ -108,29 +156,29 @@ const TARIFFS = [
     {m:'USA',r:'25%+25%',n:{zh:'301条款 + 2026新增',en:'Sec.301 + 2026 add'},s:'up',e:'2026-01'},
     {m:'EU',r:'20.5%~35.3%',n:{zh:'反补贴终裁 + 10%基础',en:'Anti-subsidy final'},s:'up',e:'2025-07'},
     {m:'India',r:'25%',n:{zh:'PLI 配套关税',en:'PLI-linked'},s:'flat',e:'2024-04'},
-    {m:'Brazil',r:'18%',n:{zh:'南共市对外关税',en:'Mercosur'},s:'flat',e:'长期'}
+    {m:'Brazil',r:'18%',n:{zh:'南共市对外关税',en:'Mercosur'},s:'flat',e:{zh:'长期',en:'Long-term'}}
   ]},
   {p:{zh:'储能电池 / ESS Battery',en:'ESS Battery'},markets:[
     {m:'USA',r:'25%',n:{zh:'2026 非车用',en:'2026 non-EV'},s:'up',e:'2026-07'},
-    {m:'EU',r:'0%~10%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'},
-    {m:'Australia',r:'5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'}
+    {m:'EU',r:'0%~10%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:{zh:'长期',en:'Long-term'}},
+    {m:'Australia',r:'5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:{zh:'长期',en:'Long-term'}}
   ]},
   {p:{zh:'LFP 正极材料',en:'LFP Cathode'},markets:[
     {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'up',e:'2026-01'},
-    {m:'EU',r:'调查中',n:{zh:'反倾销立案',en:'AD investigation'},s:'new',e:'2026-06'}
+    {m:'EU',r:{zh:'调查中',en:'Under review'},n:{zh:'反倾销立案',en:'AD investigation'},s:'new',e:'2026-06'}
   ]},
   {p:{zh:'天然石墨负极',en:'Graphite Anode'},markets:[
     {m:'USA',r:'25%',n:{zh:'2026 生效',en:'2026 effect'},s:'up',e:'2026-01'},
     {m:'EU',r:'10%~20%',n:{zh:'反倾销复审',en:'AD review'},s:'flat',e:'2025-12'}
   ]},
   {p:{zh:'AI 服务器 / GPU',en:'AI Server / GPU'},markets:[
-    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:'长期'},
-    {m:'EU',r:'0%',n:{zh:'MFN 免税',en:'MFN duty-free'},s:'flat',e:'长期'},
-    {m:'Netherlands',r:'管制',n:{zh:'出口管制 (EUV/先进制程)',en:'Export control'},s:'new',e:'持续'}
+    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:{zh:'长期',en:'Long-term'}},
+    {m:'EU',r:'0%',n:{zh:'MFN 免税',en:'MFN duty-free'},s:'flat',e:{zh:'长期',en:'Long-term'}},
+    {m:'Netherlands',r:{zh:'管制',en:'Export control'},n:{zh:'出口管制 (EUV/先进制程)',en:'Export control'},s:'new',e:{zh:'持续',en:'Ongoing'}}
   ]},
   {p:{zh:'800G 光模块',en:'800G Optical Module'},markets:[
-    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:'长期'},
-    {m:'EU',r:'0%~5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:'长期'}
+    {m:'USA',r:'25%',n:{zh:'301条款',en:'Sec.301'},s:'flat',e:{zh:'长期',en:'Long-term'}},
+    {m:'EU',r:'0%~5%',n:{zh:'基础关税',en:'MFN base'},s:'flat',e:{zh:'长期',en:'Long-term'}}
   ]}
 ];
 
@@ -751,7 +799,10 @@ const TENDERS=[
 /* ============ STATE ============ */
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',govSrc:'all',hideDemo:false};
+/* hideDemo defaults to ON. The page must not present hand-authored rows as a
+   feed unless the reader asks for them; `tl_showdemo` records an explicit opt-in
+   (and the toggle below is how it is set), so the default is "real data only". */
+const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'all',paperQuery:'',live:true,lang:lsGet('tl_lang')||'zh',tenderSector:'all',tenderStatus:'all',tenderQ:'',govSrc:'all',hideDemo:lsGet('tl_showdemo')!=='1'};
 
 /* ============ HELPERS ============ */
 const $ = s => document.querySelector(s);
@@ -762,12 +813,37 @@ function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('sh
 function go(page){$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$('#main').scrollTop=0;renderAll();}
 
 /* ============ LANG ============ */
+/* Unit-bearing KPI figures. The Chinese figures are expressed in 万 / 亿 / 万亿,
+   which an English reader cannot parse, and the numeral has to move with the unit
+   (425.6 万 = 4.26 M) — so this cannot be a plain string swap. The values are
+   scaled, not rounded away: 4,256,000 base stations is 4.26 M. */
+const KPI_UNITS={
+  ai4:{zh:['86.4','万'],      en:['864','K']},       /* 864,000 racks          */
+  tc1:{zh:['425.6','万'],     en:['4.26','M']},      /* 4,256,000 base station */
+  tc2:{zh:['10.9','亿'],      en:['1.09','B']},      /* 1,090,000,000 users    */
+  eg1:{zh:['9.36','万亿kWh'], en:['9.36','T kWh']}   /* 9.36 TWh               */
+};
+/* A field that is either a plain string (a date, a percentage) or a {zh,en} pair. */
+function istr(v,lang){return typeof v==='string'?v:(v?(v[lang]||v.zh||''):'');}
 function applyLang(){
   document.documentElement.lang = state.lang==='zh'?'zh-CN':'en';
   document.title = t('app_title');
+  /* textContent is correct here only because these elements hold text and nothing
+     else: an element with children would have those children deleted. That is
+     exactly how the six page subtitles used to lose their country locator, so
+     index.html now keeps the locator as a sibling and the smoke test asserts no
+     data-i18n element has element children. */
   $$('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
   $$('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh);});
+  $$('[data-kpi]').forEach(el=>{
+    const u=KPI_UNITS[el.dataset.kpi];if(!u)return;
+    const pair=u[state.lang]||u.zh;
+    el.innerHTML=pair[0]+'<span class="unit">'+pair[1]+'</span>';
+  });
   $('#langLabel').textContent = state.lang==='zh'?'EN':'中文';
+  /* #dateRangeLabel is otherwise only written by setDateRange, so it kept the
+     language it was initialised in while the rest of the page switched. */
+  $('#dateRangeLabel').textContent = rngLabel('ovNews');
   renderAll();
 }
 function setLang(l){state.lang=l;lsSet('tl_lang',l);applyLang();toast(l==='zh'?'已切换为中文':'Switched to English');}
@@ -891,7 +967,7 @@ function newsHTML(n){
   const readExt=hasArticle
     ?'<span class="sep"></span><a class="read-ext" href="'+esc(href)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+(lang==='zh'?'阅读原文':'Read article')+' ↗</a>'
     :'<span class="sep"></span><span class="no-src">'+esc(t('feed_no_link'))+'</span>';
-  return `<div class="news-item${n.real?'':' is-demo'}${hasArticle?'':' no-link'}"${hasArticle?` data-href="${esc(href)}"`:''}><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}${when}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}${readExt}</div><div class="news-title">${titleHTML}</div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(x)}</span>`).join('')}</div></div></div>`;
+  return `<div class="news-item${n.real?'':' is-demo'}${hasArticle?'':' no-link'}"${hasArticle?` data-href="${esc(href)}"`:''}><div class="news-rail"><span class="news-dot ${ti[1]}"></span><span class="line"></span></div><div class="news-body"><div class="news-meta"><a class="src" href="${esc(srcUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(n.src)}</a>${isGov?'<span class="tag t-gov">GOV</span>':''}${demoBadge}${when}<span class="sep"></span>${FLAGS[n.cn]||''} ${n.cn}${readExt}</div><div class="news-title">${titleHTML}</div><div class="news-summary">${esc(sum)}</div><div class="news-tags"><span class="tag ${ti[1]}">${t(ti[0])}</span>${n.tags.map(x=>`<span class="tag t-country">${esc(termLabel(x))}</span>`).join('')}</div></div></div>`;
 }
 /* Strict range filtering — the window the user picked is honoured. We never silently render items
    that fall outside it (that made "近24小时" look identical to "近7天"). An empty window gets an
@@ -921,6 +997,22 @@ function rangeEmptyHTML(pool,key){
     +(alts.length?'<div class="nre-actions">'+alts.map(a=>'<button class="btn ghost nre-btn" type="button" data-widen="'+a.k+'">'+t('rp_'+a.k)+'</button>').join('')+'</div>':'')
     +'</div>';
 }
+/* An empty panel has two causes and must not report one as the other: sample rows
+   being held back by the filter (say that, and offer the reveal) versus genuinely
+   nothing in the range (offer the widen buttons). When both are true the reader
+   gets both — the widen hints are computed from the real pool, so they never
+   advertise a sample row. */
+function demoHiddenHTML(n){
+  return '<div class="empty news-range-empty demo-hidden-note">'+t('news_only_demo')
+    +'<div class="nre-actions"><button class="btn ghost" type="button" data-show-demo="1">'
+    +t('feed_show_demo').replace('{n}',n)+'</button></div></div>';
+}
+function listOrEmpty(list,winDemo,poolDemo,pool,key){
+  if(list.length)return list.map(newsHTML).join('');
+  if(state.hideDemo&&winDemo)return demoHiddenHTML(winDemo);
+  return rangeEmptyHTML(pool,key)+((state.hideDemo&&poolDemo)?demoHiddenHTML(poolDemo):'');
+}
+function countDemo(list){return list.filter(n=>!n.real).length;}
 /* Widen buttons: switch this panel's preset and re-render it (picker label follows along) */
 function bindWiden(rootSel,key,rerender){
   $$(rootSel+' .nre-btn').forEach(b=>b.addEventListener('click',e=>{
@@ -940,15 +1032,14 @@ function renderNews(){
      the pre-window pool instead and it advertises "hide 8 sample rows" while only
      3 of them are in the window, so clicking appears to do nothing. */
   const winAll=rangeFilter(poolAll,start,end);
+  /* counted before the demo filter — this is what the reveal button would bring back */
   if(state.hideDemo)list=list.filter(n=>n.real);
   const pool=list; /* country (+ sector) pool, used for the "available in other ranges" hints */
   const inWindow=rangeFilter(list,start,end).sort(newsCmp);
   const total=inWindow.length; /* items inside the selected range — shown in the badge so the range choice is visible even when the feed caps at newsShown */
   list=inWindow.slice(0,state.newsShown);
   let html=feedStatusHTML(winAll);
-  const hidden=state.hideDemo?winAll.filter(n=>!n.real).length:0;
-  if(hidden)html+='<div class="feed-hidden-hint">'+t('feed_hidden').replace('{n}',hidden)+'</div>';
-  html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,'ovNews');
+  html+=listOrEmpty(list,countDemo(winAll),countDemo(poolAll),pool,'ovNews');
   if(total>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',total)+'</div>';
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=total;
@@ -975,18 +1066,23 @@ function renderPFE(){
   const {start,end}=rngNow('ovNews');
   const pfeAll=NEWS.filter(n=>n.t==='pfe'); /* unfiltered, pre-window */
   const winAll=rangeFilter(pfeAll,start,end); /* one source of truth for the demo counts */
+  /* The demo counts are taken from the UNFILTERED pools, so the "reveal" wording
+     on the industry / government empty states names what is really hidden there. */
+  const indPool=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).sort(newsCmp);
+  const govPool=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).sort(newsCmp);
+  const govPoolS=state.govSrc==='all'?govPool:govPool.filter(n=>n.src===state.govSrc);
   /* The chip counts below are derived from govAll, so the demo filter has to be
      applied here — otherwise a chip could advertise 3 items and yield 0 rows. */
   const keep=state.hideDemo?(n=>!!n.real):(n=>true);
-  const govAll=NEWS.filter(n=>n.t==='pfe'&&isGovNews(n)).filter(keep).sort(newsCmp);
-  const ind=NEWS.filter(n=>n.t==='pfe'&&!isGovNews(n)).filter(keep).sort(newsCmp);
-  const gov=state.govSrc==='all'?govAll:govAll.filter(n=>n.src===state.govSrc); /* source-filtered gov list, most recent first */
+  const govAll=govPool.filter(keep);
+  const ind=indPool.filter(keep);
+  const gov=govPoolS.filter(keep); /* source-filtered gov list, most recent first */
   const indIn=rangeFilter(ind,start,end);
   const govIn=rangeFilter(gov,start,end);
   let html='';
   /* Section 1 — industry news */
   html+='<div class="news-sec-title"><span class="bar"></span>'+t('pfe_industry')+'<span class="cnt">'+indIn.length+'</span></div>';
-  html+=indIn.length?indIn.map(newsHTML).join(''):rangeEmptyHTML(ind,'ovNews');
+  html+=listOrEmpty(indIn,countDemo(rangeFilter(indPool,start,end)),countDemo(indPool),ind,'ovNews');
   /* Section 2 — government policy + source filter chips
      Chip body = filter the gov list in-place; the ↗ sub-button = direct link to the official site */
   html+='<div class="news-sec-title gov"><span class="bar"></span>'+t('pfe_gov')+'<span class="cnt">'+govIn.length+'</span></div>';
@@ -1014,9 +1110,10 @@ function renderPFE(){
   html+=frNote
     ?('<div class="fr-live-note feed-src-note"><span class="fr-dot"></span>'+t(frNote)+(frLastSync?' · '+frLastSync.getFullYear()+'-'+String(frLastSync.getMonth()+1).padStart(2,'0')+'-'+String(frLastSync.getDate()).padStart(2,'0'):'')+'</div>')
     :feedStatusHTML(winAll);
-  const hidden=state.hideDemo?winAll.filter(n=>!n.real).length:0;
-  if(hidden)html+='<div class="feed-hidden-hint">'+t('feed_hidden').replace('{n}',hidden)+'</div>';
-  html+=govIn.length?govIn.map(newsHTML).join(''):rangeEmptyHTML(gov,'ovNews');
+  /* Each section reports its own "all sample / nothing here" state — the section
+     count above it is per-section, so one shared empty state would contradict one
+     of the two. */
+  html+=listOrEmpty(govIn,countDemo(rangeFilter(govPoolS,start,end)),countDemo(govPoolS),gov,'ovNews');
   $('#newsList').innerHTML=html;
   $('#newsCount').textContent=indIn.length+govIn.length;
   if($('#ovNewsTitle'))$('#ovNewsTitle').textContent=t('pfe_title');
@@ -1038,29 +1135,40 @@ function renderPFE(){
   });
 }
 $('#loadMoreNews').addEventListener('click',()=>{state.newsShown+=5;renderNews();});
-/* Real-data-only toggle. Delegated on document so it survives every re-render of
-   #newsList without rebinding, and works identically in the overview and the PFE
-   view. It only ever hides rows — it never promotes a demo row to look real. */
+/* Real-data-only is the default, not an opt-in. Switching it re-renders every
+   news surface in one place, so the overview feed, the PFE view and all six
+   sector panels agree; nothing is deleted, the sample rows are one click away. */
+function setHideDemo(v){
+  state.hideDemo=!!v;
+  lsSet('tl_showdemo',state.hideDemo?'0':'1');
+  if(state.tab==='pfe')renderPFE();else renderNews();
+  renderSectorNews('#liNewsList','lithium','liNews',5);
+  renderSectorNews('#aiNewsList','aidc','aiNews',5);
+  renderSectorNews('#tcNewsList','telecom','tcNews',5);
+  renderSectorNews('#egNewsList','energy','egNews',5);
+  renderSectorNews('#tradeNewsList','trade','tradeNews',6);
+  renderSectorNews('#tcNewsMini','telecom','tcMini',4);
+}
 document.addEventListener('click',ev=>{
-  const btn=ev.target&&ev.target.closest?ev.target.closest('[data-feed-toggle]'):null;
-  if(!btn)return;
+  const tgt=ev.target&&ev.target.closest?ev.target.closest('[data-feed-toggle],[data-show-demo]'):null;
+  if(!tgt)return;
   ev.preventDefault();
   ev.stopPropagation();
-  state.hideDemo=!state.hideDemo;
-  if(state.tab==='pfe')renderPFE();else renderNews();
+  setHideDemo(tgt.hasAttribute('data-show-demo')?false:!state.hideDemo);
 });
 $$('#ovTabs .tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#ovTabs .tab').forEach(x=>x.classList.toggle('active',x===tab));state.tab=tab.dataset.f;renderNews();}));
 function renderSectorNews(id,type,key,count){
-  const {start,end}=rngNow(key||'7d');
+  const k=key||'7d';
+  const {start,end}=rngNow(k);
   const own=NEWS.filter(n=>n.t===type&&n.cn===state.country); /* own-country news first */
-  const pool=own.length?own:NEWS.filter(n=>n.t===type);      /* global fallback only when the country has none */
+  const poolAll=own.length?own:NEWS.filter(n=>n.t===type);   /* global fallback only when the country has none */
+  const pool=state.hideDemo?poolAll.filter(n=>n.real):poolAll;
   const inWindow=rangeFilter(pool,start,end).sort(newsCmp);
   const list=inWindow.slice(0,count||5);
-  let html='';
-  html+=list.length?list.map(newsHTML).join(''):rangeEmptyHTML(pool,key||'7d');
+  let html=listOrEmpty(list,countDemo(rangeFilter(poolAll,start,end)),countDemo(poolAll),pool,k);
   if(inWindow.length>list.length)html+='<div class="feed-shown-hint">'+t('news_shown_of').replace('{shown}',list.length).replace('{total}',inWindow.length)+'</div>';
   $(id).innerHTML=html;
-  bindWiden(id,key||'7d',()=>renderSectorNews(id,type,key,count));
+  bindWiden(id,k,()=>renderSectorNews(id,type,key,count));
   // Attach click-to-open
   $$(id+' .news-item').forEach(item=>{
     item.addEventListener('click',()=>{
@@ -1076,7 +1184,7 @@ function renderTenderPortals(){
   const el=$('#tenderPortals');if(!el)return;
   const rank=cn=>{const i=COUNTRIES.indexOf(cn);return i<0?99:i;};
   const ordered=[...TENDER_PORTALS].sort((a,b)=>rank(a.cn)-rank(b.cn));
-  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===state.country?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(p.name)} ↗</a>`).join('');
+  el.innerHTML=ordered.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener" class="${p.cn===state.country?'cur':''}"><span class="pf">${FLAGS[p.cn]||''}</span>${esc(termLabel(p.name))} ↗</a>`).join('');
 }
 function tenderHTML(x){
   const ti=tagInfo(x.t),zh=state.lang==='zh',now=Date.now();
@@ -1084,7 +1192,7 @@ function tenderHTML(x){
   const open=x.ddl>=now,days=Math.ceil((x.ddl-now)/864e5);
   const ddlTxt=open?(days<=0?t('tn_today'):t('tn_days').replace('{n}',days)):t('tn_closed');
   const ddlCls=open?(days<=7?'due':'open'):'closed';
-  return `<div class="tender-item" data-href="${esc(x.url)}"><div class="tender-left"><div class="tender-top"><span class="tag ${ti[1]}">${t(ti[0])}</span><span class="tag t-status t-${ddlCls}">${open?t('tn_open'):t('tn_closed')}</span></div><div class="tender-title"><a href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="tender-meta"><span class="tend-agency">${esc(x.agency)}</span><span class="sep"></span><span>${FLAGS[x.cn]||''} ${x.cn}</span><span class="sep"></span><span>📅 ${fmtDate(new Date(x.d))}</span><span class="sep"></span><span class="tend-src">${esc(x.src)}</span></div></div><div class="tender-right"><div class="tender-budget">${esc(x.budget)}</div><div class="tender-ddl ${ddlCls}">${ddlTxt}</div><a class="btn ghost tender-go" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t('tn_view')} ↗</a></div></div>`;
+  return `<div class="tender-item" data-href="${esc(x.url)}"><div class="tender-left"><div class="tender-top"><span class="tag ${ti[1]}">${t(ti[0])}</span><span class="tag t-status t-${ddlCls}">${open?t('tn_open'):t('tn_closed')}</span></div><div class="tender-title"><a href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="tender-meta"><span class="tend-agency">${esc(termLabel(x.agency))}</span><span class="sep"></span><span>${FLAGS[x.cn]||''} ${x.cn}</span><span class="sep"></span><span>📅 ${fmtDate(new Date(x.d))}</span><span class="sep"></span><span class="tend-src">${esc(termLabel(x.src))}</span></div></div><div class="tender-right"><div class="tender-budget">${esc(budgetLabel(x.budget))}</div><div class="tender-ddl ${ddlCls}">${ddlTxt}</div><a class="btn ghost tender-go" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t('tn_view')} ↗</a></div></div>`;
 }
 function renderTenders(){
   const now=Date.now(),zh=state.lang==='zh';
@@ -1141,7 +1249,7 @@ function renderTariffs(){
       const src=TARIFF_SRC[m.m];
       html+=`<tr${i===0?'':' style="border-top:1px solid var(--line-2)"'}>`;
       if(i===0)html+=`<td class="name" rowspan="${row.markets.length}"><b>${row.p[lang]}</b></td>`;
-      html+=`<td class="name">${FLAGS[m.m]||''} ${m.m}${src?tblSrcCell(src,lang):''}</td><td><span class="tariff-badge ${m.s}">${m.r}</span></td><td style="font-family:var(--sans)">${m.n[lang]}</td><td style="font-size:10.5px;color:var(--ink-3)">${m.e}</td></tr>`;
+      html+=`<td class="name">${FLAGS[m.m]||''} ${m.m}${src?tblSrcCell(src,lang):''}</td><td><span class="tariff-badge ${m.s}">${esc(istr(m.r,lang))}</span></td><td style="font-family:var(--sans)">${m.n[lang]}</td><td style="font-size:10.5px;color:var(--ink-3)">${esc(istr(m.e,lang))}</td></tr>`;
     });
   });
   html+='</tbody>';
@@ -1167,7 +1275,7 @@ function paperHTML(p){
   const doiLink=p.url
     ?('<a class="p-doi" href="'+esc(p.url)+'" target="_blank" rel="noopener" title="'+esc(p.doi||'DOI')+'">'+(p.doi?esc(p.doi):'DOI')+' ↗</a>')
     :('<span>DOI</span>');
-  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]||'#4A5A6A'}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(p.org)}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span>${doiLink}</span></div></div>`;
+  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]||'#4A5A6A'}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(orgLabel(p.org))}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span>${doiLink}</span></div></div>`;
 }
 function renderPapers(){
   const {start,end}=rngNow('papers');
@@ -1348,8 +1456,7 @@ $('#globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.v
 function showDeployBanner(url){
   if(!url)return;
   $('#deployBanner').style.display='flex';
-  const d=state.lang==='zh'?'已部署 · 公网访问:':'Deployed · Public URL:';
-  $('#deployText').textContent=d;
+  $('#deployText').textContent=t('deploy_online');  /* data-i18n covers it too, but the banner can appear before a repaint */
   $('#deployLink').textContent=url.replace(/^https?:\/\//,'');
   $('#deployLink').href=url;
   $('#deployCopy').onclick=()=>{navigator.clipboard.writeText(url).then(()=>toast(state.lang==='zh'?'链接已复制':'Link copied'));};
