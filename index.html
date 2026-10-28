@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TELE·TRACK — Industry Intelligence</title>
-<link rel="stylesheet" href="style.css?v=20261012a">
+<link rel="stylesheet" href="style.css?v=20261028a">
 </head>
 <body>
 <div class="app">
@@ -85,8 +85,8 @@
 
         <!-- Price table (LFP + AIDC focus) -->
         <div class="panel">
-          <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="pt_title">核心商品价格 · Spot Prices</span></div><div style="display:flex;gap:12px;align-items:center"><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink-3)" id="priceStamp">UTC+8 09:41</span><span class="chip" style="cursor:default" id="priceCountryChip">🇨🇳 China</span></div></div>
-          <div class="panel-body" style="padding:0 8px"><table class="tbl" id="priceTable"></table></div>
+          <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="pt_title">核心商品价格 · Spot Prices</span></div><div style="display:flex;gap:12px;align-items:center"><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink-3)" id="priceStamp" data-i18n="pt_stamp">示例数据 · 非实时</span><span class="chip" style="cursor:default" id="priceCountryChip">🇨🇳 China</span></div></div>
+          <div class="panel-body" style="padding:0 8px"><table class="tbl" id="priceTable"></table><div class="price-note" style="padding:8px 10px 10px;font-size:10.5px;color:var(--ink-3)" data-i18n="pt_note">表中价格与涨跌幅为静态示例数据，用于版面示意，不代表任何交易所或报价机构的实时行情。新闻与政策条目为真实抓取。</div></div>
         </div>
       </section>
 
@@ -173,7 +173,7 @@
           <!-- Raw material prices by country -->
           <div class="panel">
             <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--amber)"></span> <span data-i18n="tr_mat_tbl">各国原材料实时价格</span></div></div>
-            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="matPriceTable"></table><div class="tbl-src-hint" data-i18n="tr_src_hint">来源标注于各行 · 点击来源名跳转官方页面</div></div>
+            <div class="panel-body" style="padding:0 8px"><table class="tbl" id="matPriceTable"></table><div class="tbl-src-hint" data-i18n="tr_src_hint">来源标注于各行 · 点击来源名跳转官方页面</div><div class="price-note" style="padding:4px 10px 10px;font-size:10.5px;color:var(--ink-3)" data-i18n="tr_price_note">表中数字为静态示例数据，用于版面示意；来源列仅指示该品种的公开行情参考机构，不代表当前从其获取了报价。</div></div>
           </div>
         </div>
 
@@ -233,6 +233,6 @@
 <div class="modal-mask" id="dateModal"><div class="modal"><h3 data-i18n="dm_title">自定义日期范围</h3><div class="m-sub" data-i18n="dm_sub">选择新闻抓取的起止日期</div><div class="m-field"><label>START</label><input type="date" id="dStart" value="2026-08-01"></div><div class="m-field"><label>END</label><input type="date" id="dEnd" value="2026-08-21"></div><div class="m-field"><label>START TIME</label><input type="time" id="dStartT" value="00:00"></div><div class="m-field"><label>END TIME</label><input type="time" id="dEndT" value="23:59"></div><div class="m-actions"><button class="btn" id="dCancel" data-i18n="dm_cancel">取消</button><button class="btn primary" id="dApply" data-i18n="dm_apply">应用</button></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=20261012a"></script>
+<script src="app.js?v=20261028a"></script>
 </body>
 </html>
