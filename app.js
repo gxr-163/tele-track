@@ -41,6 +41,9 @@ const I18N = {
     /* Was hard-coded in index.html and therefore never translated. Kept as keys
        so the language switch has exactly one place to look. */
     li_kpi1_sub:'SMM 均价',d_flat:'— 持平',tr_kpi3_sub:'— 2026全面',se_ver:'当前版本 v2.5.0 · 订阅至 2027-03-01',
+    pt_stamp:'示例数据 · 非实时',
+    pt_note:'表中价格与涨跌幅为静态示例数据，用于版面示意，不代表任何交易所或报价机构的实时行情。新闻与政策条目为真实抓取。',
+    tr_price_note:'表中数字为静态示例数据，用于版面示意；来源列仅指示该品种的公开行情参考机构，不代表当前从其获取了报价。',
     deploy_online:'已部署 · 公网访问:',btn_copy:'复制'
   },
   en:{
@@ -81,6 +84,9 @@ const I18N = {
     region_e:'East China',region_n:'North China',region_s:'South China',region_w:'West Hub',th_region:'Region',th_cap:'Capacity',th_yoy:'YoY',th_pue:'PUE',
     chain_upstream:'Li Ore',chain_cathode:'Cathode',chain_anode:'Anode',chain_electrolyte:'Electrolyte',chain_sep:'Separator',chain_cell:'Cell',chain_recycle:'Recycling',
     li_kpi1_sub:'SMM avg',d_flat:'— flat',tr_kpi3_sub:'— full year 2026',se_ver:'Current version v2.5.0 · subscribed until 2027-03-01',
+    pt_stamp:'Indicative · not live',
+    pt_note:'Prices and changes in this table are static sample figures for layout purposes only — they do not represent live quotes from any exchange or pricing agency. News and policy items are really fetched.',
+    tr_price_note:'Figures are static samples for layout purposes; the source column indicates the public reference agency for each commodity, not that a live quote was obtained.',
     deploy_online:'Deployed · public URL:',btn_copy:'Copy'
   }
 };
@@ -1429,18 +1435,14 @@ function renderEgDonut(){
 }
 
 /* ============ LIVE TICKER ============ */
+/* Only the wall clock (ovTime) ticks here. The price panel must NOT: its figures
+   are static samples, and stamping them with a moving clock made them read as
+   live quotes. priceStamp is a fixed i18n label now ("示例数据 · 非实时"). */
 function tickLive(){
   if(!state.live)return;
   const now=new Date();
   const hh=String(now.getHours()).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');
   $('#ovTime').textContent=`${hh}:${mm}:${ss}`;
-  $('#priceStamp').textContent=`UTC+8 ${hh}:${mm}`;
-  const k=$('#kpiLiIndex'),delta=(Math.random()*.8-.2).toFixed(2);
-  k.textContent=(4287.6+parseFloat(delta)*10).toFixed(1);
-  const dEl=$('#kpiLiDelta');
-  dEl.className='kpi-delta '+(delta>=0?'up':'down');
-  dEl.textContent=`${delta>=0?'▲':'▼'} ${Math.abs(delta)}%`;
-  const n=$('#kpiNews');n.textContent=Math.round(247+(Math.random()*6-3));
 }
 
 /* ============ NAV & EVENTS ============ */
