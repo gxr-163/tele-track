@@ -299,15 +299,18 @@ const SRC_ALIAS = {
   'handelsblatt.com': 'Handelsblatt',
   'faz.net': 'Frankfurter Allgemeine',
   'nzz.ch': 'NZZ Neue Zürcher Zeitung',
-  'swissinfo.ch': 'Swissinfo',
-  'letemps.ch': 'Le Temps',
   'theverge.com': 'The Verge',
   'lightreading.com': 'Light Reading',
   'cnbc.com': 'CNBC',
   'c114.com.cn': 'C114 通信网',
-  'yicai.com': '第一财经 Yicai',
   '36kr.com': '36氪 36Kr',
   'infoq.cn': 'InfoQ',
+  'geekpark.net': '极客公园 GeekPark',
+  'chosun.com': 'The Chosun Daily',
+  'en.yna.co.kr': 'Yonhap News EN',
+  'yna.co.kr': 'Yonhap News',
+  'koreatimes.co.kr': 'The Korea Times',
+  'nu.nl': 'NU.nl',
   /* <source> form, as Google News reports it */
   'Renew Economy': 'Renew Economy',
   'Clean Energy Wire': 'CleanEnergyWire',
@@ -320,7 +323,36 @@ const SRC_ALIAS = {
 };
 function normSrc(raw) {
   if (!raw) return raw;
+  /* an upstream feed once leaked a whole URL into <source>; anything shaped like
+     one is reduced to its hostname before aliasing, so the dashboard never shows
+     "https://www.notebookcheck.se/..." as a source label */
+  if (/^[a-z]+:\/\//i.test(raw)) {
+    try { raw = new URL(raw).hostname.replace(/^www\./, ''); } catch (e) { return 'media'; }
+  }
   return SRC_ALIAS[raw] || SRC_ALIAS[raw.toLowerCase()] || raw;
+}
+
+/* Outlets that pass a topical keyword filter but do not belong on an industry
+   dashboard: press-release wires, consumer-electronics review sites, and
+   out-of-scope geographies surfaced by Google News. Matched against BOTH the
+   article hostname and the outlet label, lowercase, substring. */
+const NOISE_DOMAINS = [
+  'mynewsdesk',            /* press-release wire (SE/NO) */
+  'allas.fi',              /* Finnish women's magazine */
+  'speedme.ru',            /* Russian consumer auto */
+  'gefledagblad',          /* Swedish local paper */
+  'ulkoministerio',        /* Finnish MFA press releases */
+  'notebookcheck',         /* laptop review site (SE/DE editions) */
+  'notebookitalia',
+  'minhembio',             /* Swedish HTPC forum */
+  'pressreader',
+];
+
+function isNoise(src, link) {
+  let host = '';
+  try { host = new URL(link).hostname.toLowerCase(); } catch (e) {}
+  const hay = (host + ' ' + String(src || '').toLowerCase());
+  return NOISE_DOMAINS.some(d => hay.includes(d));
 }
 
 function parseRss(xml, cn, sector, forceSrc) {
@@ -382,7 +414,19 @@ function parseRss(xml, cn, sector, forceSrc) {
 
 async function fetchMedia() {
   const byUrl = new Map();
-  const addAll = arr => arr.forEach(x => { if (x.url && !byUrl.has(x.url)) byUrl.set(x.url, x); });
+  /* Google News pads thin result sets with months-old items (a Swedish query with
+     two fresh hits returns eight from 2025). The page hides them behind every
+     range window, but they still consume per-country budget and pollute the
+     source list. MEDIA_MAX_AGE days is generous: even the slowest sector, gov
+     consultations, moves faster than that. Gov policy documents (Federal
+     Register) are exempt — they are references, not news. */
+  const MEDIA_MAX_AGE_MS = 90 * 864e5;
+  const addAll = arr => arr.forEach(x => {
+    if (!x.url || byUrl.has(x.url)) return;
+    if (isNoise(x.src, x.url)) return;
+    if (x.origin === 'rss' && Date.now() - new Date(x.date).getTime() > MEDIA_MAX_AGE_MS) return;
+    byUrl.set(x.url, x);
+  });
   let gnewsOk = 0, gnewsTried = 0;
 
   /* Rows dated in the future are dropped before the file is written — the page's
@@ -433,20 +477,22 @@ async function fetchMedia() {
     ['China', 'aidc', 'https://www.tmtpost.com/rss.xml'],
     ['China', 'aidc', 'https://www.leiphone.com/feed'],
     ['China', 'telecom', 'https://www.c114.com.cn/rss/news.xml', 'C114 通信网', 1],
-    ['China', 'trade', 'https://www.yicai.com/rss/news.xml', '第一财经 Yicai', 1],
-    ['China', 'aidc', 'https://36kr.com/feed', '36氪 36Kr', 1],
+    ['China', 'trade', 'https://www.36kr.com/feed', '36氪 36Kr', 1],
+    ['China', 'aidc', 'https://www.geekpark.net/rss', '极客公园 GeekPark'],
     /* Japan */
     ['Japan', 'telecom', 'https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml'],
     ['Japan', 'aidc', 'https://rss.itmedia.co.jp/rss/2.0/business.xml'],
     ['Japan', 'energy', 'https://rss.itmedia.co.jp/rss/2.0/smartjapan.xml'],
     ['Japan', 'aidc', 'https://www.japantimes.co.jp/feed/', 'The Japan Times'],
-    ['Japan', 'trade', 'https://asia.nikkei.com/rss/feed/nar', 'Nikkei Asia'],
-    /* South Korea */
+    /* asia.nikkei.com RSS endpoints died (connect timeout from the runner too,
+       verified 2026-10-28). The Japan Times + 3 ITmedia feeds keep JP covered. */
+    /* South Korea — koreaherald/etnews/pulsenews RSS all retired (404/empty,
+       verified 2026-10-28); replaced by the three that still publish feeds. */
     ['South Korea', 'aidc', 'https://www.thelec.kr/rss/allArticle.xml'],
-    ['South Korea', 'energy', 'https://www.yna.co.kr/rss/news.xml'],
-    ['South Korea', 'aidc', 'https://www.koreaherald.com/rss/020000000000.xml', 'Korea Herald', 1],
-    ['South Korea', 'aidc', 'https://www.etnews.com/rss/', 'ET News', 1],
-    ['South Korea', 'trade', 'https://pulsenews.co.kr/rss/allArticle.xml', 'Pulse News', 1],
+    ['South Korea', 'energy', 'https://www.yna.co.kr/rss/news.xml', 'Yonhap News'],
+    ['South Korea', 'trade', 'https://en.yna.co.kr/RSS/news.xml', 'Yonhap News EN'],
+    ['South Korea', 'trade', 'https://www.chosun.com/arc/outboundfeeds/rss/?outputType=xml', 'The Chosun Daily'],
+    ['South Korea', 'aidc', 'https://www.koreatimes.co.kr/www/rss/rss.xml', 'The Korea Times'],
     /* Germany */
     ['Germany', 'aidc', 'https://rss.golem.de/rss.php?feed=RSS2.0'],
     ['Germany', 'lithium', 'https://www.pv-magazine.de/feed/'],
@@ -466,15 +512,15 @@ async function fetchMedia() {
     ['Netherlands', 'aidc', 'https://tweakers.net/feeds/nieuws.xml'],
     ['Netherlands', 'aidc', 'https://nltimes.nl/rss.xml', 'NL Times'],
     ['Netherlands', 'aidc', 'https://www.dutchnews.nl/feed/', 'Dutch News'],
-    ['Netherlands', 'trade', 'https://www.emerce.nl/rss'],
+    ['Netherlands', 'aidc', 'https://www.nu.nl/rss', 'NU.nl'],
+    /* emerce.nl RSS retired (returns 200 with an empty body — verified 2026-10-28) */
     /* Sweden */
     ['Sweden', 'energy', 'https://www.svt.se/nyheter/rss.xml', 'SVT Nyheter'],
     ['Sweden', 'aidc', 'https://computersweden.se/rss'],
-    /* Switzerland */
+    /* Switzerland — swissinfo/letemps kill their RSS (410/timeouts, verified
+       2026-10-28). The two surviving feeds keep CH covered. */
     ['Switzerland', 'trade', 'https://www.moneycab.com/feed/'],
     ['Switzerland', 'trade', 'https://www.nzz.ch/wirtschaft.rss', 'NZZ Neue Zürcher Zeitung'],
-    ['Switzerland', 'energy', 'https://www.swissinfo.ch/ger/rss', 'Swissinfo'],
-    ['Switzerland', 'trade', 'https://www.letemps.ch/rss', 'Le Temps'],
     /* UK */
     ['UK', 'aidc', 'https://businesscloud.co.uk/feed/', 'BusinessCloud'],
     ['UK', 'trade', 'https://feeds.skynews.com/feeds/rss/business.xml'],
