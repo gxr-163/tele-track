@@ -137,6 +137,28 @@ const FLAGS = {China:'🇨🇳',USA:'🇺🇸',Germany:'🇩🇪',Japan:'🇯�
 const COUNTRIES = ['USA','China','Germany','Japan','South Korea','Australia','UK','France','Netherlands','Sweden','Switzerland'];
 
 /* ============ PRICE DATA (per country) ============ */
+/* Reference agencies behind each price group's figures. These are the public
+   desks a reader can check the commodity class against — the figures themselves
+   are static samples (see the price-note), and the link says "compare here",
+   never "quote from here". */
+const GROUP_SRC = {
+  lithium:{name:{zh:'SMM 上海有色网',en:'SMM (Shanghai Metals Market)'},url:'https://www.smm.cn/en/'},
+  aidc:{name:{zh:'TrendForce 集邦咨询',en:'TrendForce'},url:'https://www.trendforce.com/'},
+};
+/* Journal homepages — the demo paper cards carry no DOI, so the journal name is
+   the one honest outbound link a reader can check the venue against. */
+const JOURNAL_HOME = {
+  nature:'https://www.nature.com/',
+  science:'https://www.science.org/',
+  natcom:'https://www.nature.com/ncomms/',
+  joule:'https://www.cell.com/joule/home',
+  ees:'https://www.sciencedirect.com/journal/energy-storage-materials',
+  advmat:'https://onlinelibrary.wiley.com/journal/16146832',
+  applied:'https://www.sciencedirect.com/journal/applied-energy',
+  ieee:'https://ieeexplore.ieee.org/',
+  arxiv:'https://arxiv.org/',
+};
+
 const PRICE_GROUPS = [
   {id:'lithium',cls:'lithium-group',i18n:'grp_lithium',rows:[
     {hot:true,i18n_label:{zh:'磷酸铁锂正极 LFP ★',en:'LFP Cathode ★'},unit:{zh:'¥/t',en:'¥/t'},v:{China:'¥48,600',USA:'$6,850',Germany:'€6,300',Japan:'¥1.02M','South Korea':'₩1.35M',Australia:'A$10.4K',UK:'£5,200',France:'€6,100',Netherlands:'€6,150',Sweden:'kr72K',Switzerland:'CHF6,050'},c24:'up',c24v:'+0.8%',c7:'up',c7v:'+2.1%',c30:'up',c30v:'+4.5%'},
@@ -1198,7 +1220,7 @@ function tenderHTML(x){
   const open=x.ddl>=now,days=Math.ceil((x.ddl-now)/864e5);
   const ddlTxt=open?(days<=0?t('tn_today'):t('tn_days').replace('{n}',days)):t('tn_closed');
   const ddlCls=open?(days<=7?'due':'open'):'closed';
-  return `<div class="tender-item" data-href="${esc(x.url)}"><div class="tender-left"><div class="tender-top"><span class="tag ${ti[1]}">${t(ti[0])}</span><span class="tag t-status t-${ddlCls}">${open?t('tn_open'):t('tn_closed')}</span></div><div class="tender-title"><a href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="tender-meta"><span class="tend-agency">${esc(termLabel(x.agency))}</span><span class="sep"></span><span>${FLAGS[x.cn]||''} ${x.cn}</span><span class="sep"></span><span>📅 ${fmtDate(new Date(x.d))}</span><span class="sep"></span><span class="tend-src">${esc(termLabel(x.src))}</span></div></div><div class="tender-right"><div class="tender-budget">${esc(budgetLabel(x.budget))}</div><div class="tender-ddl ${ddlCls}">${ddlTxt}</div><a class="btn ghost tender-go" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t('tn_view')} ↗</a></div></div>`;
+  return `<div class="tender-item" data-href="${esc(x.url)}"><div class="tender-left"><div class="tender-top"><span class="tag ${ti[1]}">${t(ti[0])}</span><span class="tag t-status t-${ddlCls}">${open?t('tn_open'):t('tn_closed')}</span></div><div class="tender-title"><a href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(title)}</a></div><div class="tender-meta"><span class="tend-agency">${esc(termLabel(x.agency))}</span><span class="sep"></span><span>${FLAGS[x.cn]||''} ${x.cn}</span><span class="sep"></span><span>📅 ${fmtDate(new Date(x.d))}</span><span class="sep"></span><a class="tend-src" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="${esc(t('tn_view'))}">${esc(termLabel(x.src))} ↗</a></div></div><div class="tender-right"><div class="tender-budget">${esc(budgetLabel(x.budget))}</div><div class="tender-ddl ${ddlCls}">${ddlTxt}</div><a class="btn ghost tender-go" href="${esc(x.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t('tn_view')} ↗</a></div></div>`;
 }
 function renderTenders(){
   const now=Date.now(),zh=state.lang==='zh';
@@ -1223,10 +1245,12 @@ function renderTenders(){
 
 /* ============ PRICE TABLE ============ */
 function renderPrices(){
-  const cn=state.country;
+  const cn=state.country,zh=state.lang==='zh',gs=GROUP_SRC;
   let html='<thead><tr><th>'+t('th_commodity')+'</th><th>'+t('th_spot')+'</th><th>'+t('th_24h')+'</th><th>'+t('th_7d')+'</th><th>'+t('th_30d')+'</th></tr></thead><tbody>';
   PRICE_GROUPS.forEach(g=>{
-    html+=`<tr class="price-group ${g.cls}"><th colspan="5">${g.rows.some(r=>r.hot)?'<span class="star">★</span>':''}${t(g.i18n)}</th></tr>`;
+    const src=gs[g.id];
+    const srcCell=src?'<a class="t-src" href="'+esc(src.url)+'" target="_blank" rel="noopener" title="'+esc(zh?'参考行情机构，点击访问':'reference pricing desk — click to open')+'">'+esc(zh?src.name.zh:src.name.en)+' ↗</a>':'';
+    html+=`<tr class="price-group ${g.cls}"><th colspan="5"><span class="grp-head">${g.rows.some(r=>r.hot)?'<span class="star">★</span>':''}${t(g.i18n)}</span>${srcCell}</th></tr>`;
     g.rows.forEach(r=>{
       const price=(r.v[cn]||r.v['China'])+(r.unit?('<span style="color:var(--ink-3);font-size:10px"> '+(r.unit[state.lang]||r.unit.zh)+'</span>'):'');
       const c24cls=r.c24==='up'?'chg-up':(r.c24==='down'?'chg-down':'');
@@ -1277,11 +1301,17 @@ function paperHTML(p){
   const zh=state.lang==='zh';
   const title=zh?(p.title.zh||p.title.en||p.title):(p.title.en||p.title.zh||p.title);
   /* real papers carry a DOI — make it open the paper. The curated demo entries
-     have no DOI, so they keep the decorative label instead of a dead link. */
+     have no DOI, so the journal NAME becomes the outbound link (its homepage,
+     a true statement) and the DOI slot keeps the decorative label instead of a
+     dead link. Every paper card therefore has at least one clickable source. */
   const doiLink=p.url
     ?('<a class="p-doi" href="'+esc(p.url)+'" target="_blank" rel="noopener" title="'+esc(p.doi||'DOI')+'">'+(p.doi?esc(p.doi):'DOI')+' ↗</a>')
     :('<span>DOI</span>');
-  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]||'#4A5A6A'}">${p.jname[0]}</span>${p.jname}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(orgLabel(p.org))}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span>${doiLink}</span></div></div>`;
+  const jhome=JOURNAL_HOME[p.j];
+  const jnameHTML=jhome
+    ?('<a class="p-journal-link" href="'+esc(jhome)+'" target="_blank" rel="noopener" title="'+esc(p.jname)+' · '+(zh?'期刊官网':'journal home')+'">'+esc(p.jname)+' ↗</a>')
+    :esc(p.jname);
+  return `<div class="paper"><div class="p-journal"><span class="j-ico" style="background:${JOURNAL_COLORS[p.j]||'#4A5A6A'}">${p.jname[0]}</span>${jnameHTML}<span class="sep" style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block;margin:0 2px"></span>${p.date}${p.hot?'<span style="color:var(--up)">'+t('pa_hot')+'</span>':''}</div><div class="p-title">${esc(title)}</div><div class="p-authors">${esc(p.auth)} · ${esc(orgLabel(p.org))}</div><div class="p-foot"><span class="cites">${t('pa_cites')} <b>${p.cites}</b></span><span class="p-doistyle"><span>${t(tm[0])}</span>${doiLink}</span></div></div>`;
 }
 function renderPapers(){
   const {start,end}=rngNow('papers');
