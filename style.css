@@ -142,6 +142,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .paper{border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin:9px 0;transition:border .12s}
 .paper:hover{border-color:var(--accent-line)}
 .paper .p-journal{display:flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);color:var(--ink-3);letter-spacing:.5px;text-transform:uppercase}
+.paper .p-journal .p-journal-link{color:inherit;text-decoration:none;border-bottom:1px dotted transparent}
+.paper .p-journal .p-journal-link:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .paper .p-journal .j-ico{width:14px;height:14px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff}
 .paper .p-title{font-size:12.5px;font-weight:600;margin-top:4px;line-height:1.5;cursor:pointer}
 .paper .p-title:hover{color:var(--accent)}
@@ -286,6 +288,12 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tbl td.name .t-src{display:block;margin-top:3px;font-family:var(--sans);font-weight:400;font-size:9px;letter-spacing:.2px;line-height:1.45}
 .tbl .t-src a{color:var(--teal);text-decoration:none;border-bottom:1px dotted transparent}
 .tbl .t-src a:hover{color:var(--teal);border-bottom-color:var(--teal)}
+/* price-group header row: group label left, reference-source link right */
+.price-group th{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.price-group .grp-head{white-space:nowrap}
+.price-group .t-src{font-size:9px;font-weight:400;font-family:var(--sans);letter-spacing:.2px;white-space:nowrap}
+.price-group .t-src a{color:var(--teal);text-decoration:none;border-bottom:1px dotted transparent}
+.price-group .t-src a:hover{border-bottom-color:var(--teal)}
 .tbl-src-hint{font-size:9px;color:var(--ink-3);padding:6px 10px 5px;letter-spacing:.3px;line-height:1.5}
 .deploy-banner{background:var(--ink);color:#fff;padding:8px 20px;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
 .deploy-banner a{color:#7DC4FF;text-decoration:none;font-family:var(--mono)}
@@ -342,6 +350,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tender-meta .sep{width:3px;height:3px;border-radius:50%;background:var(--line);flex-shrink:0}
 .tender-meta .tend-agency{font-weight:500;color:var(--ink-2)}
 .tender-meta .tend-src{font-weight:600;color:var(--accent)}
+.tender-meta a.tend-src{text-decoration:none;border-bottom:1px dotted transparent}
+.tender-meta a.tend-src:hover{border-bottom-color:var(--accent)}
 .tender-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;min-width:112px}
 .tender-budget{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
 .tender-ddl{font-size:10.5px;font-family:var(--mono);padding:1.5px 9px;border-radius:10px}
