@@ -745,6 +745,17 @@ const state = {country:'USA',tab:'all',newsShown:7,papersShown:6,paperJournal:'a
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* Render-time sanitiser for feed-supplied text. The pipeline cleans summaries,
+   but data already in the wild (news.json written by an older runner) can still
+   carry double-escaped markup like 'a href="https://…"' — strip it here too so
+   a stale file can never print code into the feed or blow out the layout. */
+const plainText = s => String(s == null ? '' : s)
+  .replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&quot;/gi,'"')
+  .replace(/&#0*39;|&apos;/gi,"'").replace(/&nbsp;/gi,' ')
+  .replace(/<[^>]*>/g,' ')
+  .replace(/&amp;/gi,'&')
+  .replace(/&[a-z]+;/gi,' ')
+  .replace(/\s+/g,' ').trim();
 const t = k => (I18N[state.lang]||I18N.zh)[k] || k;
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._h);el._h=setTimeout(()=>el.classList.remove('show'),2200);}
 function go(page){$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$('#main').scrollTop=0;renderAll();}
@@ -874,8 +885,8 @@ function tagInfo(type){const m={lithium:['tag_lithium','t-lithium'],aidc:['tag_a
 function newsHTML(n){
   const ti=tagInfo(n.t);
   const lang=state.lang;
-  const title=lang==='zh'?(n.title.zh||n.title):(n.title.en||n.title.zh||n.title);
-  const sum=lang==='zh'?(n.sum.zh||n.sum):(n.sum.en||n.sum.zh||n.sum);
+  const title=plainText(lang==='zh'?(n.title.zh||n.title):(n.title.en||n.title.zh||n.title));
+  const sum=plainText(lang==='zh'?(n.sum.zh||n.sum):(n.sum.en||n.sum.zh||n.sum));
   const href=articleHref(n);
   const hasArticle=href!=='#';
   const srcLink=NEWS_MEDIA[n.cn]&&NEWS_MEDIA[n.cn].find(m=>m.name===n.src);
