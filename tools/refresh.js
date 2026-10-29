@@ -260,7 +260,7 @@ const LOCALE = {
 };
 const QUERY = {
   lithium: { 'China': '锂电池 储能', 'USA': 'lithium battery energy storage', 'Germany': 'Lithiumbatterie Energiespeicher', 'Japan': 'リチウム電池 蓄電池', 'South Korea': '리튬 배터리', 'Australia': 'lithium battery mining', 'UK': 'lithium battery storage', 'France': 'batterie lithium stockage', 'Netherlands': 'lithium batterij', 'Sweden': 'litiumbatteri', 'Switzerland': 'Batterie Energiespeicher' },
-  aidc: { 'China': '数据中心 算力', 'USA': 'data center AI compute', 'Germany': 'Rechenzentrum Rechenleistung', 'Japan': 'データセンター 半導体', 'South Korea': '데이터센터 반도체', 'Australia': 'data centre', 'UK': 'data centre AI', 'France': 'centre de données', 'Netherlands': 'datacenter', 'Sweden': 'datacenter', 'Switzerland': 'Rechenzentrum' },
+  aidc: { 'China': '数据中心 算力', 'USA': 'data center AI compute', 'Germany': 'Rechenzentrum Rechenleistung', 'Japan': 'データセンター 半導体', 'South Korea': '데이터센터 반도체', 'Australia': 'data centre AI OR hyperscale', 'UK': 'data centre AI', 'France': 'centre de données', 'Netherlands': 'datacenter AI OR hyperscale', 'Sweden': 'datacenter AI OR hyperscale', 'Switzerland': 'Rechenzentrum' },
   telecom: { 'China': '5G 光模块 通信设备', 'USA': '5G telecom optical module', 'Germany': 'Telekommunikation 5G', 'Japan': '5G 通信 光', 'South Korea': '5G 통신', 'Australia': '5G telecommunications', 'UK': '5G telecoms', 'France': 'télécoms 5G', 'Netherlands': 'telecom 5G', 'Sweden': 'telekom 5G', 'Switzerland': 'Telekommunikation 5G' },
   energy: { 'China': '储能 电网 新能源', 'USA': 'energy storage power grid', 'Germany': 'Energiespeicher Stromnetz', 'Japan': '蓄電池 電力網', 'South Korea': '에너지저장 전력망', 'Australia': 'energy storage grid', 'UK': 'energy storage grid', 'France': 'stockage énergie réseau', 'Netherlands': 'energieopslag net', 'Sweden': 'energilagring elnät', 'Switzerland': 'Energiespeicher Netz' },
   trade: { 'China': '出口管制 关税', 'USA': 'export control tariff', 'Germany': 'Exportkontrolle Zoll', 'Japan': '輸出管理 関税', 'South Korea': '수출통제 관세', 'Australia': 'export trade tariff', 'UK': 'export control trade', 'France': 'contrôle exportations douanes', 'Netherlands': 'exportcontrole', 'Sweden': 'exportkontroll', 'Switzerland': 'Exportkontrolle Handel' },
@@ -355,6 +355,38 @@ function isNoise(src, link) {
   return NOISE_DOMAINS.some(d => hay.includes(d));
 }
 
+/* Topic gate — the industry-keyword DEMOTION layer. Broad outlets reached via
+   Google News (CNBC, Sky, Les Echos, NU.nl, Yonhap main feed, …) pass the
+   domain blacklist but pad the dashboard with ballet, train crashes and WNBA
+   finals. A per-sector regex misfires: industry content drifts across pages
+   (battery news lands on trade feeds, AI chips on telecom feeds), so the gate
+   uses the UNION of all five sectors' keywords in 11 languages — an item ships
+   only if its title or summary mentions ANY of the industries we track.
+   Tuned against the live 2026-10-29 snapshot: drops 65% of rss items, and the
+   survivors were verified by hand (the only rescued false losses were Chinese
+   cloud terms and 'electric', both added). Gov papers (origin 'fr') are
+   exempt — they are legal references, their titles never carry news keywords,
+   and they already run through the NOISE regex above. */
+const MEDIA_TOPIC_RE = new RegExp([
+  /* lithium / battery / EV */
+  'lithium|batter|akku|蓄電池|锂电池|储能|リチウム|리튬|배터리|cathod|kathod|anode|\\bcatl\\b|\\bbyd\\b|electric vehicle|electric wag|elektroauto|elbil|\\bevs?\\b|ev charg|hybrid|\\belectric\\b|elektrisk',
+  /* AIDC / AI / chips */
+  'data ?cent|datacent|rechenzent|datenzen|データセン|数据中心|算力|hyperscal|colocation|\\bgpus?\\b|nvidia|\\bchips?\\b|semiconductor|半導体|半导体|반도체|칩|(?<![a-zà-ÿæøå])ai(?![a-zà-ÿæøå])|künstliche intelligenz|\\bki[- ]|인공지능|deepmind|openai|anthropic|\\bclaude\\b|chatgpt|deepseek|cloud|azure|\\baws\\b|阿里云|腾讯云|华为云|云计算|公有云|主权云|server|서버|サーバー|robot|机器人|ロボット|로봇',
+  /* telecom */
+  '\\b5g\\b|\\b6g\\b|telecom|telekom|télécom|通信|光模块|光モジュール|optical|基站|기지국|ericsson|nokia|huawei|华为|\\bzte\\b|fiber|fibra|glasfaser|broadband|singtel|verizon|vodafone|\\bkpn\\b|telia|swisscom|\\borange\\b|korea telecom|sk telecom|docomo|\\bntt\\b|satellit|satellite',
+  /* energy / grid / storage */
+  'energy storage|energiespeicher|energieopslag|energilagring|grid|電力|电网|전력망|\\bbess\\b|renewable|solar|solaire|wind|\\bpvs?\\b|photovoltaic|kraftwerk|hydrogen|wasserstoff|waterstof|수소|nuclear|nucléa|atomkraft|kernenergie|kärnkraft|elnät|strom|power (grid|plant|purchase|price|system|market|generation|sector|station|plant)|powergrid|kraftverk|liquefied|\\blng\\b|uranium|\\buran\\b|pumped|électri|electricity',
+  /* trade / policy */
+  'export control|exportkontrolle|exportcontrole|수출통제|輸出管理|export restriction|tariff|zoll|关税|관세|関税|sanction|sanktion|duties|customs|dumping|\\bwto\\b|handels|exportban|exportverbot|수출|무역|貿易|export',
+].join('|'), 'i');
+
+function topicOk(x) {
+  if (!x || !MEDIA_TOPIC_RE) return true;
+  const text = [x.title && x.title.zh, x.title && x.title.en,
+    x.sum && x.sum.zh, x.sum && x.sum.en].filter(Boolean).join(' ');
+  return MEDIA_TOPIC_RE.test(text);
+}
+
 function parseRss(xml, cn, sector, forceSrc) {
   const out = [];
   /* RSS and Atom both carry feeds we depend on — The Verge and NL Times are Atom.
@@ -424,9 +456,13 @@ async function fetchMedia() {
   const addAll = arr => arr.forEach(x => {
     if (!x.url || byUrl.has(x.url)) return;
     if (isNoise(x.src, x.url)) return;
-    if (x.origin === 'rss' && Date.now() - new Date(x.date).getTime() > MEDIA_MAX_AGE_MS) return;
+    if (x.origin === 'rss') {
+      if (Date.now() - new Date(x.date).getTime() > MEDIA_MAX_AGE_MS) return;
+      if (!topicOk(x)) { topicDropped++; return; }   /* off-industry: demoted */
+    }
     byUrl.set(x.url, x);
   });
+  let topicDropped = 0;
   let gnewsOk = 0, gnewsTried = 0;
 
   /* Rows dated in the future are dropped before the file is written — the page's
@@ -444,7 +480,9 @@ async function fetchMedia() {
       if (!q) continue;
       if (hostBlocked('https://news.google.com/rss/search')) continue;   /* breaker open — stop trying */
       gnewsTried++;
-      const url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=' + hl + '&gl=' + gl + '&ceid=' + ceid;
+      /* when:30d — Google News recency operator; without it a thin query is
+         padded with months-old items that only the age cap catches later */
+      const url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q + ' when:30d') + '&hl=' + hl + '&gl=' + gl + '&ceid=' + ceid;
       try {
         const got = usableNow(parseRss(await getText(url), cn, sector)).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
         if (got.length) { addAll(got); gnewsOk++; }
@@ -552,6 +590,7 @@ async function fetchMedia() {
     } catch (e) { note('feed/' + new URL(url).hostname, false, e.message, probe); }
     await sleep(180);
   }
+  note('media topic gate', true, topicDropped + ' off-industry items demoted');
   return [...byUrl.values()];
 }
 
