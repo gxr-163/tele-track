@@ -35,8 +35,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .live-badge{display:flex;align-items:center;gap:7px;height:26px;padding:0 10px;border:1px solid var(--line);border-radius:20px;font-size:11px;color:var(--ink-2);font-family:var(--mono);background:var(--panel)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--up);position:relative}
 .live-dot.ok{background:var(--down)}
-.back-btn{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);cursor:pointer;font-size:11.5px;color:var(--ink-2);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .12s}
+.back-btn{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);cursor:pointer;font-size:11.5px;color:var(--ink-2);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .12s;font-family:var(--sans)}
 .back-btn:hover{border-color:var(--accent-line);color:var(--accent)}
+.back-btn svg{width:13px;height:13px}
 /* ---------- tabs ---------- */
 .tabs{display:flex;gap:4px;background:var(--panel);border-bottom:1px solid var(--line);padding:8px 20px 0;position:sticky;top:58px;z-index:25}
 .tab{border:none;background:none;cursor:pointer;font-size:12.8px;color:var(--ink-2);padding:9px 14px;border-radius:8px 8px 0 0;font-family:var(--sans);transition:all .12s;display:flex;align-items:center;gap:7px}
@@ -79,6 +80,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .st-won{background:#E7F3EE;color:var(--down)}
 .st-lost{background:#FBEAEA;color:var(--up)}
 .empty{padding:28px 16px;text-align:center;color:var(--ink-3);font-size:12px;border:1px dashed var(--line);border-radius:10px;background:var(--bg)}
+.due{font-family:var(--mono);font-size:10.8px;color:var(--ink-3)}
+.due.overdue{color:var(--up);font-weight:700}
+.due.today{color:var(--amber);font-weight:700}
 /* ---------- funnel ---------- */
 .funnel{display:flex;flex-direction:column;gap:6px;margin-top:4px}
 .funnel-row{display:flex;align-items:center;gap:8px;font-size:11.5px}
@@ -126,6 +130,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .sig-op{background:#E7F3EE;color:var(--down)}
 .sig-th{background:#FBEAEA;color:var(--up)}
 .sig-cm{background:var(--purple-soft);color:var(--purple)}
+/* ---------- competitor signal stream ---------- */
+.csig-item{border-bottom:1px solid var(--line-2);padding:8px 2px;font-size:11.8px;line-height:1.5}
+.csig-item:last-child{border-bottom:none}
+.csig-item a{color:var(--ink);text-decoration:none;font-weight:600}
+.csig-item a:hover{color:var(--accent)}
+.csig-item .m{font-size:10.5px;color:var(--ink-3);font-family:var(--mono)}
 /* ---------- swot ---------- */
 .swot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:720px){.swot{grid-template-columns:1fr}}
@@ -153,15 +163,16 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
       </div>
     </div>
     <div class="top-spacer"></div>
-    <div class="live-badge" id="feedBadge"><span class="live-dot" id="feedDot"></span><span id="feedText">数据加载中…</span></div>
-    <a class="back-btn" href="./index.html">← 返回行情看板</a>
+    <div class="live-badge" id="feedBadge"><span class="live-dot" id="feedDot"></span><span id="feedText" data-i18n="feed_loading">数据加载中…</span></div>
+    <button class="back-btn" id="langBtn" title="Language"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"/></svg><span id="langLabel">EN</span></button>
+    <a class="back-btn" href="./index.html" data-i18n="back">← 返回行情看板</a>
   </header>
 
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-view="intel">市场情报 <span class="cnt" id="cIntel">–</span></button>
-    <button class="tab" data-view="leads">商机管道 <span class="cnt" id="cLeads">0</span></button>
-    <button class="tab" data-view="mkt">营销分析 <span class="cnt" id="cMkt">0</span></button>
-    <button class="tab" data-view="strategy">战略框架</button>
+    <button class="tab active" data-view="intel"><span data-i18n="tab_intel">市场情报</span> <span class="cnt" id="cIntel">–</span></button>
+    <button class="tab" data-view="leads"><span data-i18n="tab_leads">商机管道</span> <span class="cnt" id="cLeads">0</span></button>
+    <button class="tab" data-view="mkt"><span data-i18n="tab_mkt">营销分析</span> <span class="cnt" id="cMkt">0</span></button>
+    <button class="tab" data-view="strategy" data-i18n="tab_strategy">战略框架</button>
   </nav>
 
   <main class="page">
@@ -173,14 +184,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
         <div>
           <div class="card" style="margin-bottom:14px">
             <div class="filters">
-              <div><label>国家 / 地区</label><select id="fCn"><option value="">全部</option></select></div>
-              <div><label>领域</label><select id="fT">
-                <option value="">全部</option><option value="lithium">锂电 Lithium</option>
-                <option value="aidc">智算 AIDC</option><option value="telecom">通信 Telecom</option>
-                <option value="energy">储能能源 Energy</option><option value="trade">贸易政策 Trade</option>
-                <option value="pfe">政策监管 Policy</option></select></div>
-              <div style="grid-column:span 2"><label>关键词</label><input id="fQ" placeholder="标题 / 摘要 / 来源 / 标签"></div>
-              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="fGo" style="width:100%;justify-content:center">筛选</button></div>
+              <div><label data-i18n="f_country">国家 / 地区</label><select id="fCn"><option value="">&nbsp;</option></select></div>
+              <div><label data-i18n="f_sector">领域</label><select id="fT">
+                <option value="" data-i18n="s_all">全部</option>
+                <option value="lithium" data-i18n="s_lithium">锂电 Lithium</option>
+                <option value="aidc" data-i18n="s_aidc">智算 AIDC</option>
+                <option value="telecom" data-i18n="s_telecom">通信 Telecom</option>
+                <option value="energy" data-i18n="s_energy">储能能源 Energy</option>
+                <option value="trade" data-i18n="s_trade">贸易政策 Trade</option>
+                <option value="pfe" data-i18n="s_pfe">政策监管 Policy</option></select></div>
+              <div style="grid-column:span 2"><label data-i18n="f_kw">关键词</label><input id="fQ" data-i18n-ph="f_kw_ph" placeholder="标题 / 摘要 / 来源 / 标签"></div>
+              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="fGo" style="width:100%;justify-content:center" data-i18n="f_go">筛选</button></div>
             </div>
           </div>
           <div id="newsList"><div class="empty">加载中…</div></div>
@@ -188,20 +202,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
         </div>
         <div>
           <div class="card">
-            <h2>信号标记</h2>
-            <div class="sub">读到有价值的信息时打标，标记保存在本浏览器</div>
+            <h2 data-i18n="sig_h">信号标记</h2>
+            <div class="sub" data-i18n="sig_sub">读到有价值的信息时打标，标记保存在本浏览器</div>
             <div class="bars" id="sigSummary"></div>
-            <div style="margin-top:12px"><button class="btn sm" id="sigClear">清除全部标记</button></div>
+            <div style="margin-top:12px"><button class="btn sm" id="sigClear" data-i18n="sig_clear">清除全部标记</button></div>
           </div>
           <div class="card" style="margin-top:14px">
-            <h2>怎么用</h2>
-            <div class="sub" style="margin-bottom:6px">Marketing & BD 的每日动线</div>
-            <div style="font-size:12px;color:var(--ink-2);line-height:1.8">
-              ① 早间扫一遍<b>市场情报</b>，把客户所在国的政策/需求变化标记为机会或威胁；<br>
-              ② 新线索随时进<b>商机管道</b>，阶段推进即漏斗；<br>
-              ③ 每周把各渠道花费与产出记进<b>营销分析</b>，看 CAC / ROAS 决定预算分配；<br>
-              ④ 季度复盘在<b>战略框架</b>里更新 SWOT 与竞品矩阵。
-            </div>
+            <h2 data-i18n="how_h">怎么用</h2>
+            <div class="sub" style="margin-bottom:6px" data-i18n="how_sub">Marketing & BD 的每日动线</div>
+            <div style="font-size:12px;color:var(--ink-2);line-height:1.8" data-i18n-html="how_body">① 早间扫一遍<b>市场情报</b>，把客户所在国的政策/需求变化标记为机会或威胁；<br>② 新线索随时进<b>商机管道</b>，阶段推进即漏斗；<br>③ 每周把各渠道花费与产出记进<b>营销分析</b>，看 CAC / ROAS 决定预算分配；<br>④ 季度复盘在<b>战略框架</b>里更新 SWOT 与竞品矩阵。</div>
           </div>
         </div>
       </div>
@@ -209,44 +218,46 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 
     <!-- ============ 2. 商机管道 ============ -->
     <section class="view" id="v-leads">
-      <div class="hint"><b>数据存在哪？</b>仅保存在<b>本浏览器</b>（localStorage），不会上传任何服务器；换电脑或清浏览器缓存前请先「导出备份」。</div>
+      <div class="hint" data-i18n-html="hint_leads"><b>数据存在哪？</b>仅保存在<b>本浏览器</b>（localStorage），不会上传任何服务器；换电脑或清浏览器缓存前请先「导出备份」。</div>
       <div class="grid2">
         <div>
           <div class="card" style="margin-bottom:14px">
-            <h2>新增商机</h2>
+            <h2 data-i18n="lead_h">新增商机</h2>
             <div class="frm" style="margin-top:10px">
-              <div style="grid-column:span 2"><label>公司 / 客户 *</label><input id="lCompany" placeholder="例：Alstrom Grid AB"></div>
-              <div><label>国家 / 地区</label><input id="lCountry" placeholder="例：Sweden"></div>
-              <div><label>领域</label><select id="lSector">
-                <option>锂电</option><option>智算/AIDC</option><option>通信</option>
-                <option>储能/能源</option><option>其他</option></select></div>
-              <div><label>阶段</label><select id="lStage">
-                <option value="lead">潜客</option><option value="qual">已合格</option>
-                <option value="prop">方案报价</option><option value="won">已成交</option>
-                <option value="lost">已流失</option></select></div>
-              <div><label>预估金额（万 $）</label><input id="lValue" type="number" min="0" step="0.1" placeholder="0"></div>
-              <div style="grid-column:span 2"><label>下一步行动</label><input id="lNext" placeholder="例：发送样本方案，跟进人 CTO"></div>
-              <div style="grid-column:span 4"><label>备注</label><input id="lNote" placeholder="决策链、竞争者、时间窗…"></div>
-              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="lAdd" style="width:100%;justify-content:center">＋ 添加</button></div>
+              <div style="grid-column:span 2"><label data-i18n="l_company">公司 / 客户 *</label><input id="lCompany" data-i18n-ph="l_company_ph" placeholder="例：Alstrom Grid AB"></div>
+              <div><label data-i18n="l_country">国家 / 地区</label><select id="lCountry"><option value="">&nbsp;</option></select></div>
+              <div><label data-i18n="l_sector">领域</label><select id="lSector">
+                <option data-i18n="l_s_lithium">锂电</option><option data-i18n="l_s_aidc">智算/AIDC</option>
+                <option data-i18n="l_s_telecom">通信</option><option data-i18n="l_s_energy">储能/能源</option>
+                <option data-i18n="l_s_other">其他</option></select></div>
+              <div><label data-i18n="l_stage">阶段</label><select id="lStage">
+                <option value="lead" data-i18n="st_lead">潜客</option><option value="qual" data-i18n="st_qual">已合格</option>
+                <option value="prop" data-i18n="st_prop">方案报价</option><option value="won" data-i18n="st_won">已成交</option>
+                <option value="lost" data-i18n="st_lost">已流失</option></select></div>
+              <div><label data-i18n="l_value">预估金额（万 $）</label><input id="lValue" type="number" min="0" step="0.1" placeholder="0"></div>
+              <div><label data-i18n="l_due">跟进日期</label><input id="lDue" type="date"></div>
+              <div style="grid-column:span 2"><label data-i18n="l_next">下一步行动</label><input id="lNext" data-i18n-ph="l_next_ph" placeholder="例：发送样本方案，跟进人 CTO"></div>
+              <div style="grid-column:span 4"><label data-i18n="l_note">备注</label><input id="lNote" data-i18n-ph="l_note_ph" placeholder="决策链、竞争者、时间窗…"></div>
+              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="lAdd" style="width:100%;justify-content:center" data-i18n="l_add">＋ 添加</button></div>
             </div>
           </div>
           <div class="card">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <h2 style="margin:0">商机列表</h2><span style="flex:1"></span>
-              <button class="btn sm" id="lCsv">导出 CSV</button>
+              <h2 style="margin:0" data-i18n="lead_list">商机列表</h2><span style="flex:1"></span>
+              <button class="btn sm" id="lCsv" data-i18n="csv_btn">导出 CSV</button>
             </div>
             <div id="leadsWrap"></div>
           </div>
         </div>
         <div>
           <div class="card">
-            <h2>管道漏斗</h2>
-            <div class="sub">按阶段统计数量与金额（万 $）</div>
+            <h2 data-i18n="funnel_h">管道漏斗</h2>
+            <div class="sub" data-i18n="funnel_sub">按阶段统计数量与金额（万 $）</div>
             <div class="funnel" id="funnel"></div>
           </div>
           <div class="card" style="margin-top:14px">
-            <h2>管道健康度</h2>
-            <div class="sub">基于当前录入的商机</div>
+            <h2 data-i18n="health_h">管道健康度</h2>
+            <div class="sub" data-i18n="health_sub">基于当前录入的商机</div>
             <div class="kpis" style="grid-template-columns:1fr 1fr" id="leadKpis"></div>
           </div>
         </div>
@@ -255,40 +266,49 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 
     <!-- ============ 3. 营销分析 ============ -->
     <section class="view" id="v-mkt">
-      <div class="hint"><b>怎么记？</b>每个渠道每个周期记一行：花费、线索、转化、收入 → 自动算 <b>CAC</b>（单个线索成本）、<b>转化率</b>、<b>ROAS</b>（每 1 元花费带来多少收入）。数据同样只存在本浏览器。</div>
+      <div class="hint" data-i18n-html="hint_mkt"><b>怎么记？</b>每个渠道每个周期记一行：花费、线索、转化、收入 → 自动算 <b>CAC</b>（单个线索成本）、<b>转化率</b>、<b>ROAS</b>（每 1 元花费带来多少收入）。数据同样只存在本浏览器。</div>
       <div class="kpis" id="mktKpis"></div>
       <div class="grid2">
         <div>
           <div class="card" style="margin-bottom:14px">
-            <h2>录入渠道数据</h2>
+            <h2 data-i18n="m_h">录入渠道数据</h2>
             <div class="frm" style="margin-top:10px">
-              <div><label>渠道 *</label><input id="mChannel" placeholder="例：LinkedIn 广告"></div>
-              <div><label>周期</label><input id="mPeriod" placeholder="例：2026-10"></div>
-              <div><label>花费（¥）*</label><input id="mSpend" type="number" min="0" step="1"></div>
-              <div><label>线索数</label><input id="mLeads" type="number" min="0" step="1"></div>
-              <div><label>转化数</label><input id="mConv" type="number" min="0" step="1"></div>
-              <div><label>收入（¥）</label><input id="mRev" type="number" min="0" step="1"></div>
-              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="mAdd" style="width:100%;justify-content:center">＋ 记录</button></div>
+              <div><label data-i18n="m_channel">渠道 *</label><input id="mChannel" data-i18n-ph="m_channel_ph" placeholder="例：LinkedIn 广告"></div>
+              <div><label data-i18n="m_period">周期</label><input id="mPeriod" data-i18n-ph="m_period_ph" placeholder="例：2026-10"></div>
+              <div><label data-i18n="m_spend">花费（¥）*</label><input id="mSpend" type="number" min="0" step="1"></div>
+              <div><label data-i18n="m_leads">线索数</label><input id="mLeads" type="number" min="0" step="1"></div>
+              <div><label data-i18n="m_conv">转化数</label><input id="mConv" type="number" min="0" step="1"></div>
+              <div><label data-i18n="m_rev">收入（¥）</label><input id="mRev" type="number" min="0" step="1"></div>
+              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="mAdd" style="width:100%;justify-content:center" data-i18n="m_add">＋ 记录</button></div>
             </div>
           </div>
           <div class="card">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <h2 style="margin:0">渠道明细</h2><span style="flex:1"></span>
-              <button class="btn sm" id="mCsv">导出 CSV</button>
+              <h2 style="margin:0" data-i18n="m_list">渠道明细</h2><span style="flex:1"></span>
+              <button class="btn sm" id="mCsv" data-i18n="csv_btn2">导出 CSV</button>
             </div>
             <div id="mktWrap"></div>
           </div>
         </div>
         <div>
           <div class="card">
-            <h2>预算分布</h2>
-            <div class="sub">各渠道花费占比</div>
+            <h2 data-i18n="budget_h">预算分布</h2>
+            <div class="sub" data-i18n="budget_sub">各渠道花费占比</div>
             <div class="bars" id="budgetBars"></div>
           </div>
           <div class="card" style="margin-top:14px">
-            <h2>效率对比</h2>
-            <div class="sub">ROAS（投入产出比）排序</div>
+            <h2 data-i18n="roas_h">效率对比</h2>
+            <div class="sub" data-i18n="roas_sub">ROAS（投入产出比）排序</div>
             <div class="bars" id="roasBars"></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h2 data-i18n="goals_h">本月目标</h2>
+            <div class="sub" data-i18n="goals_sub">设定当月目标，KPI 卡自动显示达成率</div>
+            <div class="frm" style="grid-template-columns:1fr 1fr">
+              <div><label data-i18n="g_leads">线索目标</label><input id="gLeads" type="number" min="0" step="1"></div>
+              <div><label data-i18n="g_rev">收入目标（¥）</label><input id="gRev" type="number" min="0" step="100"></div>
+            </div>
+            <div style="font-size:10.5px;color:var(--ink-3)" data-i18n="goals_note">按渠道记录里的「周期」自动汇总当月（YYYY-MM）实际值。</div>
           </div>
         </div>
       </div>
@@ -296,65 +316,67 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 
     <!-- ============ 4. 战略框架 ============ -->
     <section class="view" id="v-strategy">
-      <div class="hint">SWOT 与竞品矩阵即时保存在本浏览器；<b>导出 Markdown</b> 可直接贴进周报或方案。</div>
+      <div class="hint" data-i18n-html="hint_str">SWOT 与竞品矩阵即时保存在本浏览器；<b>导出 Markdown</b> 可直接贴进周报或方案。</div>
       <div class="grid2">
         <div>
           <div class="card">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
               <h2 style="margin:0">SWOT</h2><span style="flex:1"></span>
-              <button class="btn sm" id="swotSave">保存</button>
-              <button class="btn sm" id="swotMd">导出 Markdown</button>
+              <button class="btn sm" id="swotSave" data-i18n="swot_save">保存</button>
+              <button class="btn sm" id="swotMd" data-i18n="swot_md">导出 Markdown</button>
             </div>
             <div class="swot">
-              <div class="cell s"><h3>S · Strengths 优势</h3><textarea id="swS" placeholder="每行一条，例：本地化服务响应 24h 内"></textarea></div>
-              <div class="cell w"><h3>W · Weaknesses 劣势</h3><textarea id="swW" placeholder="每行一条，例：品牌在当地认知度低"></textarea></div>
-              <div class="cell o"><h3>O · Opportunities 机会</h3><textarea id="swO" placeholder="每行一条，例：美国储能 232 调查利好非中国供应链"></textarea></div>
-              <div class="cell t"><h3>T · Threats 威胁</h3><textarea id="swT" placeholder="每行一条，例：关税上调压缩出口毛利 8-12%"></textarea></div>
+              <div class="cell s"><h3 data-i18n="sw_s">S · Strengths 优势</h3><textarea id="swS" data-i18n-ph="sw_s_ph" placeholder="每行一条，例：本地化服务响应 24h 内"></textarea></div>
+              <div class="cell w"><h3 data-i18n="sw_w">W · Weaknesses 劣势</h3><textarea id="swW" data-i18n-ph="sw_w_ph" placeholder="每行一条，例：品牌在当地认知度低"></textarea></div>
+              <div class="cell o"><h3 data-i18n="sw_o">O · Opportunities 机会</h3><textarea id="swO" data-i18n-ph="sw_o_ph" placeholder="每行一条，例：美国储能 232 调查利好非中国供应链"></textarea></div>
+              <div class="cell t"><h3 data-i18n="sw_t">T · Threats 威胁</h3><textarea id="swT" data-i18n-ph="sw_t_ph" placeholder="每行一条，例：关税上调压缩出口毛利 8-12%"></textarea></div>
             </div>
           </div>
           <div class="card" style="margin-top:14px">
-            <h2>竞品矩阵</h2>
-            <div class="sub">威胁度 1（可忽略）– 5（正面强敌），按威胁度排序</div>
+            <h2 data-i18n="comp_h">竞品矩阵</h2>
+            <div class="sub" data-i18n="comp_sub">威胁度 1（可忽略）– 5（正面强敌），按威胁度排序</div>
             <div class="frm" style="margin-top:10px">
-              <div><label>竞品 *</label><input id="cpName" placeholder="公司名"></div>
-              <div><label>国家 / 地区</label><input id="cpCn" placeholder="例：China"></div>
-              <div style="grid-column:span 2"><label>定位一句话</label><input id="cpPos" placeholder="例：800G 光模块价格屠夫，主攻北美 hyperscaler"></div>
-              <div><label>威胁度</label><select id="cpThreat"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
-              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="cpAdd" style="width:100%;justify-content:center">＋ 添加</button></div>
-              <div style="grid-column:span 5"><label>备注</label><input id="cpNote" placeholder="产品线、价格带、打法…"></div>
+              <div><label data-i18n="cp_name">竞品 *</label><input id="cpName" data-i18n-ph="cp_name_ph" placeholder="公司名"></div>
+              <div><label data-i18n="cp_cn">国家 / 地区</label><select id="cpCn"><option value="">&nbsp;</option></select></div>
+              <div style="grid-column:span 2"><label data-i18n="cp_pos">定位一句话</label><input id="cpPos" data-i18n-ph="cp_pos_ph" placeholder="例：800G 光模块价格屠夫，主攻北美 hyperscaler"></div>
+              <div><label data-i18n="cp_threat">威胁度</label><select id="cpThreat"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+              <div style="display:flex;align-items:flex-end"><button class="btn primary" id="cpAdd" style="width:100%;justify-content:center" data-i18n="cp_add">＋ 添加</button></div>
+              <div style="grid-column:span 5"><label data-i18n="cp_note">备注</label><input id="cpNote" data-i18n-ph="cp_note_ph" placeholder="产品线、价格带、打法…"></div>
             </div>
             <div id="compWrap"></div>
           </div>
         </div>
         <div>
           <div class="card">
-            <h2>备份与迁移</h2>
-            <div class="sub">商机 / 渠道 / SWOT / 竞品 / 信号，一键打包</div>
-            <div style="display:flex;flex-direction:column;gap:8px;align-items:stretch">
-              <button class="btn" id="bkExport">⬇ 导出全部数据（JSON）</button>
-              <label class="btn" style="justify-content:center;cursor:pointer">⬆ 导入备份（JSON）<input type="file" id="bkImport" accept=".json,application/json" style="display:none"></label>
-            </div>
-            <div class="sub" style="margin-top:12px">上次修改：<span id="lastSaved">–</span></div>
+            <h2 data-i18n="csig_h">竞品信号流</h2>
+            <div class="sub" data-i18n="csig_sub">你在市场情报里标记为「竞品」的条目会自动汇总到这里</div>
+            <div id="compSignals"></div>
           </div>
           <div class="card" style="margin-top:14px">
-            <h2>定价速算</h2>
-            <div class="sub">毛利结构速查：目标毛利率 → 最低报价</div>
+            <h2 data-i18n="bk_h">备份与迁移</h2>
+            <div class="sub" data-i18n="bk_sub">商机 / 渠道 / SWOT / 竞品 / 信号，一键打包</div>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:stretch">
+              <button class="btn" id="bkExport" data-i18n="bk_export">⬇ 导出全部数据（JSON）</button>
+              <label class="btn" style="justify-content:center;cursor:pointer"><span data-i18n="bk_import">⬆ 导入备份（JSON）</span><input type="file" id="bkImport" accept=".json,application/json" style="display:none"></label>
+            </div>
+            <div class="sub" style="margin-top:12px"><span data-i18n="bk_last">上次修改：</span><span id="lastSaved">–</span></div>
+          </div>
+          <div class="card" style="margin-top:14px">
+            <h2 data-i18n="p_h">定价速算</h2>
+            <div class="sub" data-i18n="p_sub">毛利结构速查：目标毛利率 → 最低报价</div>
             <div class="frm">
-              <div><label>成本（¥）</label><input id="pCost" type="number" min="0" step="0.01"></div>
-              <div><label>目标毛利率 %</label><input id="pMargin" type="number" min="0" max="95" step="1" placeholder="30"></div>
+              <div><label data-i18n="p_cost">成本（¥）</label><input id="pCost" type="number" min="0" step="0.01"></div>
+              <div><label data-i18n="p_margin">目标毛利率 %</label><input id="pMargin" type="number" min="0" max="95" step="1" placeholder="30"></div>
             </div>
             <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="pOut">—</div>
-            <div style="font-size:10.5px;color:var(--ink-3);margin-top:3px">最低报价 = 成本 ÷（1 − 毛利率）· 加价率口径为 成本 ×(1+markup)，别混用</div>
+            <div style="font-size:10.5px;color:var(--ink-3);margin-top:3px" data-i18n="p_note">最低报价 = 成本 ÷（1 − 毛利率）· 加价率口径为 成本 ×(1+markup)，别混用</div>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    市场情报来自 TELE·TRACK 同一公开数据管线（定时任务聚合 11 国公开新闻源，页面内每条信息附可点击来源链接）；
-    商机、渠道 KPI、SWOT、竞品为你的私有业务数据，<b>只保存在本浏览器 localStorage，不上传任何服务器</b>。换设备前请先导出备份。
-  </footer>
+  <footer class="footer" data-i18n-html="footer">市场情报来自 TELE·TRACK 同一公开数据管线（定时任务聚合 11 国公开新闻源，页面内每条信息附可点击来源链接）；商机、渠道 KPI、SWOT、竞品为你的私有业务数据，<b>只保存在本浏览器 localStorage，不上传任何服务器</b>。换设备前请先导出备份。</footer>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -372,12 +394,153 @@ function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function stamp(){var d=new Date();return today()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
 function dl(name,text,mime){var b=new Blob(['\ufeff'+text],{type:mime||'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},300)}
+/* ================= language (shared with the dashboard: tl_lang) ================= */
+/* [zh, en] — the dashboard persists its toggle at the same key, so the two
+   pages always open in the language the visitor last chose */
+var LANG='zh';
+try{if(localStorage.getItem('tl_lang')==='en')LANG='en'}catch(e){}
+var I18N={
+  feed_loading:['数据加载中…','Loading feed…'],
+  back:['← 返回行情看板','← Back to Dashboard'],
+  tab_intel:['市场情报','Market Intel'],tab_leads:['商机管道','Pipeline'],
+  tab_mkt:['营销分析','Marketing'],tab_strategy:['战略框架','Strategy'],
+  f_country:['国家 / 地区','Country / region'],f_sector:['领域','Sector'],f_kw:['关键词','Keyword'],
+  f_kw_ph:['标题 / 摘要 / 来源 / 标签','title / summary / source / tag'],f_go:['筛选','Apply'],f_all:['全部','All'],
+  s_lithium:['锂电 Lithium','Lithium battery'],s_aidc:['智算 AIDC','AIDC / AI data centers'],
+  s_telecom:['通信 Telecom','Telecom'],s_energy:['储能能源 Energy','Energy storage'],
+  s_trade:['贸易政策 Trade','Trade policy'],s_pfe:['政策监管 Policy','Policy & regulation'],
+  sig_h:['信号标记','Signal marks'],sig_sub:['读到有价值的信息时打标，标记保存在本浏览器','Mark valuable items — marks are kept in this browser'],
+  sig_clear:['清除全部标记','Clear all marks'],
+  sig_op:['机会','Opportunity'],sig_th:['威胁','Threat'],sig_cm:['竞品','Competitor'],
+  sig_none:['暂无标记 —— 读到有价值的信息就在条目上打标','No marks yet — tag items as you read them'],
+  how_h:['怎么用','How to use'],how_sub:['Marketing & BD 的每日动线','The daily Marketing & BD routine'],
+  how_body:['① 早间扫一遍<b>市场情报</b>，把客户所在国的政策/需求变化标记为机会或威胁；<br>② 新线索随时进<b>商机管道</b>，阶段推进即漏斗；<br>③ 每周把各渠道花费与产出记进<b>营销分析</b>，看 CAC / ROAS 决定预算分配；<br>④ 季度复盘在<b>战略框架</b>里更新 SWOT 与竞品矩阵。',
+    '① Scan <b>Market Intel</b> each morning; tag policy/demand shifts in your client countries as opportunities or threats.<br>② Drop new leads into the <b>Pipeline</b> — stage moves build the funnel.<br>③ Log weekly channel spend and returns under <b>Marketing</b>; CAC / ROAS drives budget.<br>④ Quarterly, refresh the SWOT and competitor matrix under <b>Strategy</b>.'],
+  news_empty:['没有符合条件的信息 —— 换个关键词或放宽国家/领域试试。','No matching items — try another keyword or widen the country/sector filters.'],
+  news_loading:['加载中…','Loading…'],
+  news_offline:['无法加载 data/news.json —— 请从行情看板同目录访问本页，或稍后重试。','Cannot load data/news.json — open this page from the dashboard directory, or retry later.'],
+  hint_leads:['<b>数据存在哪？</b>仅保存在<b>本浏览器</b>（localStorage），不会上传任何服务器；换电脑或清浏览器缓存前请先「导出备份」。',
+    '<b>Where is the data?</b> Kept only in <b>this browser</b> (localStorage) — nothing is uploaded. Export a backup before switching devices or clearing the cache.'],
+  lead_h:['新增商机','New opportunity'],l_company:['公司 / 客户 *','Company / client *'],
+  l_company_ph:['例：Alstrom Grid AB','e.g. Alstrom Grid AB'],l_country:['国家 / 地区','Country / region'],
+  l_other:['其他','Other'],l_sector:['领域','Sector'],
+  l_s_lithium:['锂电','Lithium'],l_s_aidc:['智算/AIDC','AIDC'],l_s_telecom:['通信','Telecom'],
+  l_s_energy:['储能/能源','Energy'],l_s_other:['其他','Other'],
+  l_stage:['阶段','Stage'],st_lead:['潜客','Prospect'],st_qual:['已合格','Qualified'],
+  st_prop:['方案报价','Proposal'],st_won:['已成交','Won'],st_lost:['已流失','Lost'],
+  l_value:['预估金额（万 $）','Est. value ($10k)'],l_due:['跟进日期','Follow-up due'],
+  l_next:['下一步行动','Next action'],l_next_ph:['例：发送样本方案，跟进人 CTO','e.g. send sample proposal, follow up with CTO'],
+  l_note:['备注','Notes'],l_note_ph:['决策链、竞争者、时间窗…','decision chain, competitors, timing…'],
+  l_add:['＋ 添加','＋ Add'],lead_list:['商机列表','Pipeline'],csv_btn:['导出 CSV','Export CSV'],csv_btn2:['导出 CSV','Export CSV'],
+  funnel_h:['管道漏斗','Funnel'],funnel_sub:['按阶段统计数量与金额（万 $）','Count and value per stage ($10k)'],
+  health_h:['管道健康度','Pipeline health'],health_sub:['基于当前录入的商机','Based on the deals you logged'],
+  k_open:['在途商机','Open deals'],k_pipe:['在途金额','Open value'],k_won:['已成交','Won'],
+  k_winrate:['赢单率','Win rate'],k_follow:['待跟进','Due follow-ups'],
+  k_follow_d:['跟进日期已到、尚未成交/流失','follow-up date reached, deal still open'],
+  hint_mkt:['<b>怎么记？</b>每个渠道每个周期记一行：花费、线索、转化、收入 → 自动算 <b>CAC</b>（单个线索成本）、<b>转化率</b>、<b>ROAS</b>（每 1 元花费带来多少收入）。数据同样只存在本浏览器。',
+    '<b>How to log:</b> one row per channel per period — spend, leads, conversions, revenue → <b>CAC</b>, conversion rate and <b>ROAS</b> compute automatically. Data stays in this browser.'],
+  m_h:['录入渠道数据','Log channel data'],m_channel:['渠道 *','Channel *'],m_channel_ph:['例：LinkedIn 广告','e.g. LinkedIn ads'],
+  m_period:['周期','Period'],m_period_ph:['例：2026-10','e.g. 2026-10'],
+  m_spend:['花费（¥）*','Spend (¥)*'],m_leads:['线索数','Leads'],m_conv:['转化数','Conversions'],
+  m_rev:['收入（¥）','Revenue (¥)'],m_add:['＋ 记录','＋ Log'],m_list:['渠道明细','Channel detail'],
+  budget_h:['预算分布','Budget split'],budget_sub:['各渠道花费占比','Spend share by channel'],
+  roas_h:['效率对比','Efficiency'],roas_sub:['ROAS（投入产出比）排序','Sorted by ROAS'],
+  goals_h:['本月目标','Monthly goals'],goals_sub:['设定当月目标，KPI 卡自动显示达成率','Set this month\'s targets — the KPI cards show attainment'],
+  g_leads:['线索目标','Lead goal'],g_rev:['收入目标（¥）','Revenue goal (¥)'],
+  goals_note:['按渠道记录里的「周期」自动汇总当月（YYYY-MM）实际值。','Actuals aggregate the rows whose period matches the current month (YYYY-MM).'],
+  k_spend:['总花费','Total spend'],k_leads:['总线索','Total leads'],k_rev:['总收入','Total revenue'],
+  k_roas:['整体 ROAS','Blended ROAS'],roas_pos:['投入产出为正','Return is positive'],
+  roas_neg:['低于 1 · 渠道待优化','Below 1 — channels need work'],
+  k_mleads:['本月线索','Leads MTD'],k_mrev:['本月收入','Rev MTD'],
+  th_client:['客户','Client'],th_sector:['领域','Sector'],th_stage:['阶段','Stage'],
+  th_value:['金额(万$)','Value'],th_next:['下一步','Next'],th_added:['录入','Added'],
+  th_channel:['渠道','Channel'],th_spend:['花费¥','Spend ¥'],th_leads:['线索','Leads'],
+  th_conv:['转化','Conv'],th_revenue:['收入¥','Rev ¥'],th_cac:['CAC¥','CAC ¥'],
+  th_cvr:['转化率','CVR'],th_roas:['ROAS','ROAS'],th_name:['竞品','Competitor'],th_region:['地区','Region'],
+  th_pos:['定位','Positioning'],th_threat:['威胁','Threat'],th_note:['备注','Notes'],
+  total:['合计','Total'],del:['删','✕'],
+  empty_leads:['还没有商机 —— 从上面录入第一条，或从市场情报里发现机会后过来建线。','No opportunities yet — add the first one above, or come back after spotting a signal in Market Intel.'],
+  empty_mkt:['还没有渠道数据 —— 录入后这里自动算 CAC / 转化率 / ROAS。','No channel data yet — CAC / CVR / ROAS compute automatically once you log rows.'],
+  empty_comp:['还没有竞品记录','No competitors recorded'],
+  hint_str:['SWOT 与竞品矩阵即时保存在本浏览器；<b>导出 Markdown</b> 可直接贴进周报或方案。',
+    'SWOT and the competitor matrix save instantly in this browser; <b>Export Markdown</b> pastes straight into weekly reports.'],
+  swot_save:['保存','Save'],swot_md:['导出 Markdown','Export Markdown'],
+  sw_s:['S · Strengths 优势','S · Strengths'],sw_w:['W · Weaknesses 劣势','W · Weaknesses'],
+  sw_o:['O · Opportunities 机会','O · Opportunities'],sw_t:['T · Threats 威胁','T · Threats'],
+  sw_s_ph:['每行一条，例：本地化服务响应 24h 内','one per line, e.g. 24h local service response'],
+  sw_w_ph:['每行一条，例：品牌在当地认知度低','one per line, e.g. low brand awareness locally'],
+  sw_o_ph:['每行一条，例：美国储能 232 调查利好非中国供应链','one per line, e.g. US 232 probe favors non-China supply'],
+  sw_t_ph:['每行一条，例：关税上调压缩出口毛利 8-12%','one per line, e.g. tariff hike compresses margin 8-12%'],
+  comp_h:['竞品矩阵','Competitor matrix'],
+  comp_sub:['威胁度 1（可忽略）– 5（正面强敌），按威胁度排序','Threat 1 (negligible) – 5 (head-on rival), sorted by threat'],
+  cp_name:['竞品 *','Competitor *'],cp_name_ph:['公司名','Company'],cp_cn:['国家 / 地区','Country / region'],
+  cp_pos:['定位一句话','Positioning in one line'],cp_pos_ph:['例：800G 光模块价格屠夫，主攻北美 hyperscaler','e.g. 800G optics price fighter, chasing NA hyperscalers'],
+  cp_threat:['威胁度','Threat'],cp_add:['＋ 添加','＋ Add'],cp_note:['备注','Notes'],cp_note_ph:['产品线、价格带、打法…','product lines, price band, play…'],
+  csig_h:['竞品信号流','Competitor signals'],csig_sub:['你在市场情报里标记为「竞品」的条目会自动汇总到这里','Items you tag "Competitor" in Market Intel aggregate here automatically'],
+  csig_empty:['暂无竞品标记 —— 到市场情报里给竞品动态打标，这里会自动汇总','No competitor marks yet — tag items in Market Intel and they gather here'],
+  bk_h:['备份与迁移','Backup & migrate'],bk_sub:['商机 / 渠道 / SWOT / 竞品 / 信号，一键打包','Pipeline / channels / SWOT / competitors / marks in one file'],
+  bk_export:['⬇ 导出全部数据（JSON）','⬇ Export all data (JSON)'],bk_import:['⬆ 导入备份（JSON）','⬆ Import backup (JSON)'],
+  bk_last:['上次修改：','Last saved: '],
+  p_h:['定价速算','Pricing quick-math'],p_sub:['毛利结构速查：目标毛利率 → 最低报价','Margin check: target gross margin → floor price'],
+  p_cost:['成本（¥）','Cost (¥)'],p_margin:['目标毛利率 %','Target margin %'],
+  p_note:['最低报价 = 成本 ÷（1 − 毛利率）· 加价率口径为 成本 ×(1+markup)，别混用','Floor price = cost ÷ (1 − margin) · markup is cost ×(1+markup) — don\'t mix the two'],
+  footer:['市场情报来自 TELE·TRACK 同一公开数据管线（定时任务聚合 11 国公开新闻源，页面内每条信息附可点击来源链接）；商机、渠道 KPI、SWOT、竞品为你的私有业务数据，<b>只保存在本浏览器 localStorage，不上传任何服务器</b>。换设备前请先导出备份。',
+    'Market intel comes from the same TELE·TRACK public pipeline (a scheduled job aggregates public news from 11 countries; every row links to its source). Opportunities, channel KPIs, SWOT and competitors are your private business data — <b>kept only in this browser\'s localStorage, never uploaded</b>. Export a backup before switching devices.'],
+  t_feed_online:['管线在线','pipeline online'],t_src:['源','sources'],t_updated:['更新','updated'],
+  t_pipeline_note:['同一数据管线','Same data pipeline'],t_live_items:['条真实信息','live items'],
+  t_every_src:['每条附可点击来源','every row links to its source'],t_code:['管线代码 ↗','pipeline code ↗'],
+  t_offline:['数据源未连接 · 稍后重试','Feed offline · retrying later'],
+  t_more:['显示更多（还剩 ','Show more ('],
+  t_more2:[' 条）',' left)'],t_none_src:['源','sources'],
+  t_swot_saved:['SWOT 已保存','SWOT saved'],t_lead_added:['商机已录入','Opportunity added'],
+  t_need_company:['请填写公司 / 客户名','Enter a company / client name'],t_lead_del:['已删除','Deleted'],
+  t_mkt_added:['渠道数据已记录','Channel row logged'],t_need_channel:['请填写渠道与花费','Enter a channel and spend'],
+  t_no_export:['没有数据可导出','Nothing to export'],t_comp_added:['竞品已记录','Competitor recorded'],
+  t_need_comp:['请填写竞品名','Enter a competitor name'],t_cleared:['已清除全部信号标记','All signal marks cleared'],
+  t_bk_done:['备份已导出','Backup exported'],t_bk_fail:['导入失败：','Import failed: '],
+  t_bk_bad:['格式不对','bad format'],
+  t_bk_ok:function(a,b){return LANG==='en'?('Imported: '+a+' opportunities · '+b+' channel rows'):('导入成功：'+a+' 条商机 · '+b+' 条渠道数据')},
+  csv_leads_head:[['公司','国家','领域','阶段','金额万$','跟进日期','下一步','备注','录入日'],['Company','Country','Sector','Stage','Value ($10k)','Due','Next','Notes','Added']],
+  csv_mkt_head:[['渠道','周期','花费¥','线索','转化','收入¥','CAC¥','转化率%','ROAS'],['Channel','Period','Spend ¥','Leads','Conv','Rev ¥','CAC ¥','CVR %','ROAS']],
+  csv_sig:['信号标记','Signal marks'],
+};
+function t(k){
+  var e=I18N[k];if(!e)return k;
+  if(typeof e==='function')return e();
+  return LANG==='en'?e[1]:e[0];
+}
+function applyLang(){
+  document.documentElement.lang=LANG==='en'?'en':'zh-CN';
+  $('#langLabel').textContent=LANG==='en'?'中':'EN';
+  $$('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');var e=I18N[k];if(e)el.textContent=t(k)});
+  $$('[data-i18n-html]').forEach(function(el){var k=el.getAttribute('data-i18n-html');var e=I18N[k];if(e)el.innerHTML=t(k)});
+  $$('[data-i18n-ph]').forEach(function(el){var k=el.getAttribute('data-i18n-ph');var e=I18N[k];if(e)el.placeholder=t(k)});
+  if(intelLoaded){
+    /* the feed badge and the intel note are composed from live data — re-express
+       them in the new language instead of leaving stale text after a toggle */
+    if(STATUS){
+      var meta=(STATUS&&STATUS.meta)||{};
+      var gen=meta.generated?meta.generated.slice(0,16).replace('T',' '):'';
+      var nSrc=meta.sources?meta.sources.length:'';
+      $('#feedText').textContent=t('t_feed_online')+' · '+nSrc+' '+t('t_src')+' · '+t('t_updated')+' '+gen;
+      $('#intelNote').innerHTML=t('t_pipeline_note')+' · <b>'+NEWS.length+'</b> '+t('t_live_items')+' · '+t('t_every_src')+' · <a href="https://github.com/gxr-163/tele-track" target="_blank" rel="noopener">'+t('t_code')+'</a>';
+    }else{
+      $('#feedText').textContent=t('t_offline');
+    }
+  }
+  renderAll();
+}
+$('#langBtn').addEventListener('click',function(){
+  LANG=LANG==='en'?'zh':'en';
+  try{localStorage.setItem('tl_lang',LANG)}catch(e){}
+  applyLang();
+});
 /* ================= storage ================= */
 var LS='wb_v1';
-var db={leads:[],channels:[],swot:{s:'',w:'',o:'',t:''},comp:[],signals:{},saved:null};
-try{var raw=localStorage.getItem(LS);if(raw){var j=JSON.parse(raw);if(j&&typeof j==='object')db=Object.assign(db,j)}}catch(e){}
-function save(){db.saved=stamp();try{localStorage.setItem(LS,JSON.stringify(db))}catch(e){toast('保存失败：浏览器存储已满？')}$('#lastSaved').textContent=db.saved}
-function touch(){save();renderLeads();renderMkt();renderStrategy();renderCounts()}
+var db={leads:[],channels:[],swot:{s:'',w:'',o:'',t:''},comp:[],signals:{},goals:{leads:'',rev:''},saved:null};
+try{var raw=localStorage.getItem(LS);if(raw){var j=JSON.parse(raw);if(j&&typeof j==='object')db=Object.assign(db,j)}if(!db.goals)db.goals={leads:'',rev:''}}catch(e){}
+function save(){db.saved=stamp();try{localStorage.setItem(LS,JSON.stringify(db))}catch(e){toast(LANG==='en'?'Save failed — browser storage full?':'保存失败：浏览器存储已满？')}$('#lastSaved').textContent=db.saved}
+function touch(){save();renderAll()}
 /* ================= tabs ================= */
 $$('#tabs .tab').forEach(function(b){b.addEventListener('click',function(){
   $$('#tabs .tab').forEach(function(x){x.classList.remove('active')});
@@ -389,41 +552,53 @@ function renderCounts(){
   $('#cMkt').textContent=db.channels.length;
   var sig=Object.keys(db.signals).length;$('#cIntel').textContent=sig?('·'+sig):'–';
 }
+/* ================= countries (identical to the dashboard) ================= */
+/* Same 11-country universe as app.js COUNTRIES — dashboards and workbench
+   must never drift apart on what counts as a market. */
+var COUNTRIES=['USA','China','Germany','Japan','South Korea','Australia','UK','France','Netherlands','Sweden','Switzerland'];
+function fillCountrySelects(){
+  var opts='<option value="">&nbsp;</option>'+COUNTRIES.map(function(c){return '<option>'+esc(c)+'</option>'}).join('');
+  $('#lCountry').innerHTML=opts+'<option value="__other">'+t('l_other')+'</option>';
+  $('#cpCn').innerHTML=opts+'<option value="__other">'+t('l_other')+'</option>';
+  $('#fCn').innerHTML='<option value="">'+t('f_all')+'</option>'+COUNTRIES.map(function(c){return '<option>'+esc(c)+'</option>'}).join('');
+  /* preserve user selections across re-renders (language switch) */
+  ['#lCountry','#cpCn','#fCn'].forEach(function(id){var v=lastCn[id];if(v)$(id).value=v});
+}
+var lastCn={};
+['lCountry','cpCn','fCn'].forEach(function(id){
+  document.getElementById(id).addEventListener('change',function(){lastCn[id]=this.value});
+});
 /* ================= 1. market intel ================= */
-var NEWS=[],STATUS=null,shown=0;
-var SECTOR_T={lithium:'锂电',aidc:'智算',telecom:'通信',energy:'储能',trade:'贸易',pfe:'政策'};
+var NEWS=[],STATUS=null,shown=0,intelLoaded=false;
+var SECTOR_T={lithium:['锂电','Lithium'],aidc:['智算','AIDC'],telecom:['通信','Telecom'],energy:['储能','Energy'],trade:['贸易','Trade'],pfe:['政策','Policy']};
+function sectorLabel(k){var s=SECTOR_T[k];return s?(LANG==='en'?s[1]:s[0]):k}
 function loadIntel(){
-  var t=Date.now();
+  var ts=Date.now();   /* ts, not t — t() is the i18n translator used below */
   Promise.all([
-    fetch('data/news.json?t='+t,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}),
-    fetch('data/status.json?t='+t,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return null})
+    fetch('data/news.json?t='+ts,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}),
+    fetch('data/status.json?t='+ts,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return null})
   ]).then(function(res){
-    NEWS=(res[0]&&res[0].items)||[];STATUS=res[1];
-    fillCountries();
+    NEWS=(res[0]&&res[0].items)||[];STATUS=res[1];intelLoaded=true;
     var meta=(STATUS&&STATUS.meta)||{};
     var gen=meta.generated?meta.generated.slice(0,16).replace('T',' '):'';
     var nSrc=meta.sources?meta.sources.length:'';
     $('#feedDot').classList.add('ok');
-    $('#feedText').textContent=nSrc?('管线在线 · '+nSrc+' 源 · 更新 '+gen):'管线在线 · 更新 '+gen;
-    $('#intelNote').innerHTML='同一数据管线 · <b>'+NEWS.length+'</b> 条真实信息 · 每条附可点击来源 · <a href="https://github.com/gxr-163/tele-track" target="_blank" rel="noopener">管线代码 ↗</a>';
+    $('#feedText').textContent=t('t_feed_online')+' · '+nSrc+' '+t('t_src')+' · '+t('t_updated')+' '+gen;
+    $('#intelNote').innerHTML=t('t_pipeline_note')+' · <b>'+NEWS.length+'</b> '+t('t_live_items')+' · '+t('t_every_src')+' · <a href="https://github.com/gxr-163/tele-track" target="_blank" rel="noopener">'+t('t_code')+'</a>';
     $('#cIntel').textContent=Object.keys(db.signals).length?('·'+Object.keys(db.signals).length):String(NEWS.length);
     renderNews();renderSigSummary();
   }).catch(function(){
+    intelLoaded=true;
     $('#feedDot').classList.remove('ok');
-    $('#feedText').textContent='数据源未连接 · 稍后重试';
-    $('#newsList').innerHTML='<div class="empty">无法加载 data/news.json —— 请从行情看板同目录访问本页，或稍后重试。</div>';
+    $('#feedText').textContent=t('t_offline');
+    $('#newsList').innerHTML='<div class="empty">'+t('news_offline')+'</div>';
   });
 }
-function fillCountries(){
-  var cns=[];NEWS.forEach(function(n){if(cns.indexOf(n.cn)<0)cns.push(n.cn)});
-  cns.sort();
-  $('#fCn').innerHTML='<option value="">全部</option>'+cns.map(function(c){return '<option>'+esc(c)+'</option>'}).join('');
-}
 function filtered(){
-  var cn=$('#fCn').value,t=$('#fT').value,q=$('#fQ').value.trim().toLowerCase();
+  var cn=$('#fCn').value,tt=$('#fT').value,q=$('#fQ').value.trim().toLowerCase();
   return NEWS.filter(function(n){
     if(cn&&n.cn!==cn)return false;
-    if(t&&n.t!==t)return false;
+    if(tt&&n.t!==tt)return false;
     if(q){var hay=[n.title&&n.title.zh,n.title&&n.title.en,n.sum&&n.sum.zh,n.sum&&n.sum.en,n.src,(n.tags||[]).join(' ')].join(' ').toLowerCase();
       if(hay.indexOf(q)<0)return false}
     return true;
@@ -433,27 +608,28 @@ function sigOf(n){return db.signals[n.url]||null}
 function renderNews(){
   var list=filtered();shown=0;
   var html=list.slice(0,20).map(newsHTML).join('');
-  $('#newsList').innerHTML=list.length?html:'<div class="empty">没有符合条件的信息 —— 换个关键词或放宽国家/领域试试。</div>';
+  if(!intelLoaded){$('#newsList').innerHTML='<div class="empty">'+t('news_loading')+'</div>';return}
+  $('#newsList').innerHTML=list.length?html:'<div class="empty">'+t('news_empty')+'</div>';
   shown=Math.min(20,list.length);
   var more=$('#newsMore');more.style.display=list.length>20?'':'none';
-  more.textContent='显示更多（还剩 '+(list.length-shown)+' 条）';
+  more.textContent=t('t_more')+(list.length-shown)+t('t_more2');
 }
 function newsHTML(n){
   var s=sigOf(n);
   var d=(n.date||'').slice(5).replace('-','/');
   var sigBtns=
-    '<button class="sig-btn'+(s==='op'?' on-op':'')+'" data-sig="op" data-url="'+esc(n.url)+'" title="机会：需求、政策松动、扩产">机会</button>'+
-    '<button class="sig-btn'+(s==='th'?' on-th':'')+'" data-sig="th" data-url="'+esc(n.url)+'" title="威胁：关税、限制、竞争">威胁</button>'+
-    '<button class="sig-btn'+(s==='cm'?' on-cm':'')+'" data-sig="cm" data-url="'+esc(n.url)+'" title="竞品动态">竞品</button>';
+    '<button class="sig-btn'+(s==='op'?' on-op':'')+'" data-sig="op" data-url="'+esc(n.url)+'" title="'+t('sig_op')+'">'+t('sig_op')+'</button>'+
+    '<button class="sig-btn'+(s==='th'?' on-th':'')+'" data-sig="th" data-url="'+esc(n.url)+'" title="'+t('sig_th')+'">'+t('sig_th')+'</button>'+
+    '<button class="sig-btn'+(s==='cm'?' on-cm':'')+'" data-sig="cm" data-url="'+esc(n.url)+'" title="'+t('sig_cm')+'">'+t('sig_cm')+'</button>';
   return '<div class="news-item">'+
     '<div class="news-meta"><span class="tag t-country">'+esc(n.cn)+'</span>'+
-    (n.t&&SECTOR_T[n.t]?'<span class="tag">'+SECTOR_T[n.t]+'</span>':'')+
+    (n.t?'<span class="tag">'+esc(sectorLabel(n.t))+'</span>':'')+
     '<span class="src"><a href="'+esc(n.url)+'" target="_blank" rel="noopener">'+esc(n.src)+' ↗</a></span>'+
-    '<span class="date">'+esc(d)+'</span>'+(s?'<span class="sig-chip sig-'+s+'">'+(s==='op'?'机会':s==='th'?'威胁':'竞品')+'</span>':'')+
+    '<span class="date">'+esc(d)+'</span>'+(s?'<span class="sig-chip sig-'+s+'">'+t('sig_'+s)+'</span>':'')+
     '</div>'+
     '<div class="news-title"><a href="'+esc(n.url)+'" target="_blank" rel="noopener">'+esc(n.title&&(n.title.zh||n.title.en))+'</a></div>'+
     (n.sum&&(n.sum.zh||n.sum.en)?'<div class="news-sum">'+esc(n.sum.zh||n.sum.en)+'</div>':'')+
-    '<div class="news-tags">'+((n.tags||[]).slice(0,4).map(function(t){return '<span class="tag">'+esc(t)+'</span>'}).join(''))+'<span class="sig-btns">'+sigBtns+'</span></div>'+
+    '<div class="news-tags">'+((n.tags||[]).slice(0,4).map(function(tt){return '<span class="tag">'+esc(tt)+'</span>'}).join(''))+'<span class="sig-btns">'+sigBtns+'</span></div>'+
     '</div>';
 }
 $('#newsList').addEventListener('click',function(e){
@@ -468,54 +644,80 @@ $('#newsMore').addEventListener('click',function(){
   $('#newsList').insertAdjacentHTML('beforeend',next.map(newsHTML).join(''));
   shown+=next.length;
   var more=$('#newsMore');more.style.display=shown<list.length?'':'none';
-  more.textContent='显示更多（还剩 '+(list.length-shown)+' 条）';
+  more.textContent=t('t_more')+(list.length-shown)+t('t_more2');
 });
 function renderSigSummary(){
   var ops=[],ths=[],cms=[];
   NEWS.forEach(function(n){var s=sigOf(n);if(s==='op')ops.push(n);else if(s==='th')ths.push(n);else if(s==='cm')cms.push(n)});
-  var row=function(cls,label,arr){
+  var row=function(key,arr){
     if(!arr.length)return '';
-    return '<div class="bar-row"><span class="bl sig-chip sig-'+cls.slice(0,2)+'" style="width:auto">'+label+' × '+arr.length+'</span><span class="bv" style="width:auto;text-align:left">'+esc(arr.slice(-2).map(function(n){return n.cn+'·'+n.src}).join('，'))+(arr.length>2?' 等':'')+'</span></div>';
+    return '<div class="bar-row"><span class="bl sig-chip sig-'+key.slice(0,2)+'" style="width:auto">'+t('sig_'+key)+' × '+arr.length+'</span><span class="bv" style="width:auto;text-align:left">'+esc(arr.slice(-2).map(function(n){return n.cn+'·'+n.src}).join('，'))+(arr.length>2?' 等':'')+'</span></div>';
   };
-  $('#sigSummary').innerHTML=(row('op','机会',ops)+row('th','威胁',ths)+row('cm','竞品',cms))||'<div class="empty" style="padding:14px">暂无标记 —— 读到有价值的信息就在条目上打标</div>';
+  $('#sigSummary').innerHTML=(row('op',ops)+row('th',ths)+row('cm',cms))||'<div class="empty" style="padding:14px">'+t('sig_none')+'</div>';
+  renderCompSignals(cms);
 }
-$('#sigClear').addEventListener('click',function(){if(!Object.keys(db.signals).length)return;db.signals={};save();renderNews();renderSigSummary();renderCounts();toast('已清除全部信号标记')});
+/* competitor signal stream — bridges Market Intel marks into the Strategy page */
+function renderCompSignals(cms){
+  if(!cms){cms=[];NEWS.forEach(function(n){if(sigOf(n)==='cm')cms.push(n)})}
+  cms=cms.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)}).slice(0,6);
+  $('#compSignals').innerHTML=cms.length?cms.map(function(n){
+    var d=(n.date||'').slice(0,10);
+    return '<div class="csig-item"><a href="'+esc(n.url)+'" target="_blank" rel="noopener">'+esc(n.title&&(n.title.zh||n.title.en))+'</a>'+
+      '<div class="m">'+esc(n.cn+' · '+n.src+' · '+d)+'</div></div>';
+  }).join(''):'<div class="empty" style="padding:14px">'+t('csig_empty')+'</div>';
+}
+$('#sigClear').addEventListener('click',function(){if(!Object.keys(db.signals).length)return;db.signals={};save();renderNews();renderSigSummary();renderCounts();toast(t('t_cleared'))});
 $('#fGo').addEventListener('click',renderNews);
 $('#fQ').addEventListener('keydown',function(e){if(e.key==='Enter')renderNews()});
 $('#fCn').addEventListener('change',renderNews);
 $('#fT').addEventListener('change',renderNews);
 /* ================= 2. leads ================= */
-var STAGES=[['lead','潜客','st-lead'],['qual','已合格','st-qual'],['prop','方案报价','st-prop'],['won','已成交','st-won'],['lost','已流失','st-lost']];
+var STAGES=[['lead','st_lead','st-lead'],['qual','st_qual','st-qual'],['prop','st_prop','st-prop'],['won','st_won','st-won'],['lost','st_lost','st-lost']];
 function stageInfo(k){for(var i=0;i<STAGES.length;i++)if(STAGES[i][0]===k)return STAGES[i];return STAGES[0]}
+function stageLabel(s){return t(s[1])}
+/* pipeline value unit: rows are keyed in 万$ (10k$); EN displays k$/M$ */
+function valFmt(v){
+  if(LANG==='en'){var k=v*10;return k>=1000?(k/1000).toFixed(2)+' M$':fmt(k,0)+' k$'}
+  return fmt(v,0)+'万$';
+}
+function dueState(l){
+  if(!l.due||l.stage==='won'||l.stage==='lost')return '';
+  var todayS=today();
+  if(l.due<todayS)return 'overdue';
+  if(l.due===todayS)return 'today';
+  return '';
+}
 $('#lAdd').addEventListener('click',function(){
-  var c=$('#lCompany').value.trim();if(!c){toast('请填写公司 / 客户名');return}
-  db.leads.unshift({id:Date.now(),company:c,country:$('#lCountry').value.trim(),sector:$('#lSector').value,
-    stage:$('#lStage').value,value:parseFloat($('#lValue').value)||0,next:$('#lNext').value.trim(),note:$('#lNote').value.trim(),added:today()});
-  ['lCompany','lCountry','lValue','lNext','lNote'].forEach(function(id){$('#'+id).value=''});
-  touch();toast('商机已录入');
+  var c=$('#lCompany').value.trim();if(!c){toast(t('t_need_company'));return}
+  var cn=$('#lCountry').value;
+  db.leads.unshift({id:Date.now(),company:c,country:(cn&&cn!=='__other')?cn:(cn==='__other'?t('l_other'):''),sector:$('#lSector').value,
+    stage:$('#lStage').value,value:parseFloat($('#lValue').value)||0,due:$('#lDue').value||'',
+    next:$('#lNext').value.trim(),note:$('#lNote').value.trim(),added:today()});
+  ['lCompany','lValue','lNext','lNote'].forEach(function(id){$('#'+id).value=''});$('#lDue').value='';
+  touch();toast(t('t_lead_added'));
 });
 function renderLeads(){
   var wrap=$('#leadsWrap');
-  if(!db.leads.length){wrap.innerHTML='<div class="empty">还没有商机 —— 从上面录入第一条，或从市场情报里发现机会后过来建线。</div>';$('#funnel').innerHTML='';$('#leadKpis').innerHTML='';return}
+  if(!db.leads.length){wrap.innerHTML='<div class="empty">'+t('empty_leads')+'</div>';$('#funnel').innerHTML='';$('#leadKpis').innerHTML='';return}
   var rows=db.leads.map(function(l){
-    var st=stageInfo(l.stage);
+    var st=stageInfo(l.stage),ds=dueState(l);
     return '<tr data-id="'+l.id+'">'+
       '<td><b>'+esc(l.company)+'</b>'+(l.country?'<span style="color:var(--ink-3)"> · '+esc(l.country)+'</span>':'')+
         (l.note?'<div style="font-size:10.8px;color:var(--ink-3)">'+esc(l.note)+'</div>':'')+'</td>'+
       '<td>'+esc(l.sector)+'</td>'+
-      '<td><select data-act="stage">'+STAGES.map(function(s){return '<option value="'+s[0]+'"'+(s[0]===l.stage?' selected':'')+'>'+s[1]+'</option>'}).join('')+'</select> <span class="stage-chip '+st[2]+'">'+st[1]+'</span></td>'+
+      '<td><select data-act="stage">'+STAGES.map(function(s){return '<option value="'+s[0]+'"'+(s[0]===l.stage?' selected':'')+'>'+stageLabel(s)+'</option>'}).join('')+'</select> <span class="stage-chip '+st[2]+'">'+stageLabel(st)+'</span></td>'+
       '<td class="num">'+fmt(l.value,1)+'</td>'+
-      '<td style="font-size:11.5px;max-width:170px">'+esc(l.next||'—')+'</td>'+
+      '<td><span class="due '+ds+'" title="'+t('l_due')+'">'+(l.due?esc(l.due):'—')+(ds==='overdue'?' ⚠':'')+'</span>'+(l.next?'<div style="font-size:11.5px;max-width:170px">'+esc(l.next)+'</div>':'')+'</td>'+
       '<td class="num" style="color:var(--ink-3);font-size:10.8px">'+esc(l.added)+'</td>'+
-      '<td><button class="btn sm danger" data-act="del">删</button></td></tr>';
+      '<td><button class="btn sm danger" data-act="del">'+t('del')+'</button></td></tr>';
   }).join('');
-  wrap.innerHTML='<table class="tbl"><thead><tr><th>客户</th><th>领域</th><th>阶段</th><th class="num">金额(万$)</th><th>下一步</th><th>录入</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+  wrap.innerHTML='<table class="tbl"><thead><tr><th>'+t('th_client')+'</th><th>'+t('th_sector')+'</th><th>'+t('th_stage')+'</th><th class="num">'+t('th_value')+'</th><th>'+t('th_next')+'</th><th>'+t('th_added')+'</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
   /* funnel */
   var order=['lead','qual','prop','won','lost'],max=Math.max(1,db.leads.length);
   $('#funnel').innerHTML=order.map(function(k){
     var st=stageInfo(k),arr=db.leads.filter(function(l){return l.stage===k});
     var v=arr.reduce(function(a,l){return a+(+l.value||0)},0);
-    return '<div class="funnel-row"><span class="fl">'+st[1]+'</span><span class="fbar"><i style="width:'+(arr.length/max*100)+'%"></i></span><span class="fv">'+arr.length+' · '+fmt(v,0)+'万$</span></div>';
+    return '<div class="funnel-row"><span class="fl">'+stageLabel(st)+'</span><span class="fbar"><i style="width:'+(arr.length/max*100)+'%"></i></span><span class="fv">'+arr.length+' · '+valFmt(v)+'</span></div>';
   }).join('');
   /* kpis */
   var open=db.leads.filter(function(l){return l.stage!=='lost'&&l.stage!=='won'});
@@ -524,11 +726,13 @@ function renderLeads(){
   var wonV=won.reduce(function(a,l){return a+(+l.value||0)},0);
   var closed=won.length+db.leads.filter(function(l){return l.stage==='lost'}).length;
   var rate=closed?(won.length/closed*100):NaN;
+  var dueNow=open.filter(function(l){return dueState(l)}).length;
   $('#leadKpis').innerHTML=
-    kpi('在途商机',open.length+' 条')+
-    kpi('在途金额',fmt(pipeline,0)+' 万$')+
-    kpi('已成交',won.length+' 条 · '+fmt(wonV,0)+'万$')+
-    kpi('赢单率',isFinite(rate)?rate.toFixed(0)+'%':'—');
+    kpi(t('k_open'),open.length+' '+t('th_leads').toLowerCase())+
+    kpi(t('k_pipe'),valFmt(pipeline))+
+    kpi(t('k_won'),won.length+' · '+valFmt(wonV))+
+    kpi(t('k_winrate'),isFinite(rate)?rate.toFixed(0)+'%':'—')+
+    (dueNow?kpi(t('k_follow'),dueNow,t('k_follow_d')):'');
 }
 function kpi(k,v,d){return '<div class="kpi" style="padding:9px 11px"><div class="k">'+k+'</div><div class="v" style="font-size:15px">'+v+'</div>'+(d?'<div class="d">'+d+'</div>':'')+'</div>'}
 $('#leadsWrap').addEventListener('click',function(e){
@@ -542,44 +746,56 @@ $('#leadsWrap').addEventListener('change',function(e){
   db.leads.forEach(function(l){if(l.id===id)l.stage=s.value});touch();
 });
 $('#lCsv').addEventListener('click',function(){
-  if(!db.leads.length){toast('没有数据可导出');return}
-  var head=['公司','国家','领域','阶段','金额万$','下一步','备注','录入日'];
-  var lines=[head.join(',')].concat(db.leads.map(function(l){return [l.company,l.country,l.sector,stageInfo(l.stage)[1],l.value,l.next,l.note,l.added].map(csvCell).join(',')}));
+  if(!db.leads.length){toast(t('t_no_export'));return}
+  var head=t('csv_leads_head');
+  var lines=[head.join(',')].concat(db.leads.map(function(l){return [l.company,l.country,l.sector,stageLabel(stageInfo(l.stage)),l.value,l.due,l.next,l.note,l.added].map(csvCell).join(',')}));
   dl('leads-'+today()+'.csv',lines.join('\n'),'text/csv;charset=utf-8');
 });
 function csvCell(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 /* ================= 3. marketing ================= */
 $('#mAdd').addEventListener('click',function(){
   var ch=$('#mChannel').value.trim(),sp=parseFloat($('#mSpend').value);
-  if(!ch||!(sp>=0)||$('#mSpend').value===''){toast('请填写渠道与花费');return}
+  if(!ch||!(sp>=0)||$('#mSpend').value===''){toast(t('t_need_channel'));return}
   db.channels.unshift({id:Date.now(),channel:ch,period:$('#mPeriod').value.trim()||today().slice(0,7),
     spend:sp,leads:+$('#mLeads').value||0,conv:+$('#mConv').value||0,rev:+$('#mRev').value||0});
   ['mChannel','mSpend','mLeads','mConv','mRev'].forEach(function(id){$('#'+id).value=''});
-  touch();toast('渠道数据已记录');
+  touch();toast(t('t_mkt_added'));
 });
 function rowCalc(r){
   return {cac:r.leads?r.spend/r.leads:NaN,
     cvr:r.leads?r.conv/r.leads*100:NaN,
     roas:r.spend?r.rev/r.spend:NaN};
 }
+/* goal attainment: actuals = rows whose period starts with the current YYYY-MM */
+function monthActuals(){
+  var m=today().slice(0,7);
+  var a={leads:0,rev:0};
+  db.channels.forEach(function(r){if(String(r.period||'').slice(0,7)===m){a.leads+=(+r.leads||0);a.rev+=(+r.rev||0)}});
+  return a;
+}
 function renderMkt(){
   var wrap=$('#mktWrap');
-  if(!db.channels.length){wrap.innerHTML='<div class="empty">还没有渠道数据 —— 录入后这里自动算 CAC / 转化率 / ROAS。</div>';$('#budgetBars').innerHTML='';$('#roasBars').innerHTML='';$('#mktKpis').innerHTML='';return}
+  if(!db.channels.length){wrap.innerHTML='<div class="empty">'+t('empty_mkt')+'</div>';$('#budgetBars').innerHTML='';$('#roasBars').innerHTML='';$('#mktKpis').innerHTML='';return}
   var rows=db.channels.map(function(r){
     var c=rowCalc(r);
     return '<tr data-id="'+r.id+'"><td><b>'+esc(r.channel)+'</b><div style="font-size:10.8px;color:var(--ink-3);font-family:var(--mono)">'+esc(r.period)+'</div></td>'+
       '<td class="num">'+fmt(r.spend,0)+'</td><td class="num">'+fmt(r.leads,0)+'</td><td class="num">'+fmt(r.conv,0)+'</td><td class="num">'+fmt(r.rev,0)+'</td>'+
       '<td class="num">'+fmt(c.cac,0)+'</td><td class="num">'+(isFinite(c.cvr)?c.cvr.toFixed(1)+'%':'—')+'</td>'+
       '<td class="num"'+(isFinite(c.roas)&&c.roas<1?' style="color:var(--up)"':'')+'>'+(isFinite(c.roas)?c.roas.toFixed(2):'—')+'</td>'+
-      '<td><button class="btn sm danger" data-act="del">删</button></td></tr>';
+      '<td><button class="btn sm danger" data-act="del">'+t('del')+'</button></td></tr>';
   }).join('');
   var T=db.channels.reduce(function(a,r){a.s+=r.spend;a.l+=r.leads;a.c+=r.conv;a.r+=r.rev;return a},{s:0,l:0,c:0,r:0});
-  wrap.innerHTML='<table class="tbl"><thead><tr><th>渠道</th><th class="num">花费¥</th><th class="num">线索</th><th class="num">转化</th><th class="num">收入¥</th><th class="num">CAC¥</th><th class="num">转化率</th><th class="num">ROAS</th><th></th></tr></thead><tbody>'+rows+
-    '</tbody><tfoot><tr style="font-weight:700"><td>合计</td><td class="num">'+fmt(T.s,0)+'</td><td class="num">'+fmt(T.l,0)+'</td><td class="num">'+fmt(T.c,0)+'</td><td class="num">'+fmt(T.r,0)+'</td>'+
+  wrap.innerHTML='<table class="tbl"><thead><tr><th>'+t('th_channel')+'</th><th class="num">'+t('th_spend')+'</th><th class="num">'+t('th_leads')+'</th><th class="num">'+t('th_conv')+'</th><th class="num">'+t('th_revenue')+'</th><th class="num">'+t('th_cac')+'</th><th class="num">'+t('th_cvr')+'</th><th class="num">'+t('th_roas')+'</th><th></th></tr></thead><tbody>'+rows+
+    '</tbody><tfoot><tr style="font-weight:700"><td>'+t('total')+'</td><td class="num">'+fmt(T.s,0)+'</td><td class="num">'+fmt(T.l,0)+'</td><td class="num">'+fmt(T.c,0)+'</td><td class="num">'+fmt(T.r,0)+'</td>'+
     '<td class="num">'+fmt(T.l?T.s/T.l:NaN,0)+'</td><td class="num">'+(T.l?(T.c/T.l*100).toFixed(1)+'%':'—')+'</td><td class="num">'+(T.s?(T.r/T.s).toFixed(2):'—')+'</td><td></td></tr></tfoot></table>';
+  /* goal attainment */
+  var gl=parseFloat(db.goals.leads),gr=parseFloat(db.goals.rev);
+  var att=function(act,goal){return goal>0?' · <span style="color:'+(act>=goal?'var(--down)':'var(--amber)')+'">'+Math.min(999,Math.round(act/goal*100))+'%</span>':''};
   $('#mktKpis').innerHTML=
-    kpi('总花费','¥'+fmtMoney(T.s))+kpi('总线索',fmt(T.l,0))+kpi('总收入','¥'+fmtMoney(T.r))+
-    kpi('整体 ROAS',T.s?(T.r/T.s).toFixed(2):'—',T.s&&T.r/T.s>=1?'投入产出为正':'低于 1 · 渠道待优化');
+    kpi(t('k_spend'),'¥'+fmtMoney(T.s))+kpi(t('k_leads'),fmt(T.l,0))+kpi(t('k_rev'),'¥'+fmtMoney(T.r))+
+    kpi(t('k_roas'),T.s?(T.r/T.s).toFixed(2):'—',T.s&&T.r/T.s>=1?t('roas_pos'):t('roas_neg'))+
+    (gl>0?kpi(t('k_mleads'),fmt(monthActuals().leads,0)+att(monthActuals().leads,gl),''):'' )+
+    (gr>0?kpi(t('k_mrev'),'¥'+fmtMoney(monthActuals().rev)+att(monthActuals().rev,gr),''):'');
   /* budget bars */
   var by={};db.channels.forEach(function(r){by[r.channel]=(by[r.channel]||0)+r.spend});
   var arr=Object.keys(by).map(function(k){return [k,by[k]]}).sort(function(a,b){return b[1]-a[1]});
@@ -602,16 +818,23 @@ $('#mktWrap').addEventListener('click',function(e){
   db.channels=db.channels.filter(function(r){return r.id!==id});touch();
 });
 $('#mCsv').addEventListener('click',function(){
-  if(!db.channels.length){toast('没有数据可导出');return}
-  var head=['渠道','周期','花费¥','线索','转化','收入¥','CAC¥','转化率%','ROAS'];
+  if(!db.channels.length){toast(t('t_no_export'));return}
+  var head=t('csv_mkt_head');
   var lines=[head.join(',')].concat(db.channels.map(function(r){var c=rowCalc(r);
     return [r.channel,r.period,r.spend,r.leads,r.conv,r.rev,isFinite(c.cac)?c.cac.toFixed(0):'',isFinite(c.cvr)?c.cvr.toFixed(1):'',isFinite(c.roas)?c.roas.toFixed(2):''].map(csvCell).join(',')}));
   dl('marketing-'+today()+'.csv',lines.join('\n'),'text/csv;charset=utf-8');
 });
+/* goals — saved on input, no button */
+function bindGoal(id,key){
+  var el=$('#'+id);
+  el.value=db.goals[key]||'';
+  el.addEventListener('input',function(){db.goals[key]=el.value;save();renderMkt()});
+}
+bindGoal('gLeads','leads');bindGoal('gRev','rev');
 /* ================= 4. strategy ================= */
 $('#swotSave').addEventListener('click',function(){
   db.swot={s:$('#swS').value,w:$('#swW').value,o:$('#swO').value,t:$('#swT').value};
-  save();toast('SWOT 已保存');
+  save();toast(t('t_swot_saved'));
 });
 function renderStrategy(){
   if($('#swS').value!==db.swot.s)$('#swS').value=db.swot.s||'';
@@ -619,22 +842,23 @@ function renderStrategy(){
   if($('#swO').value!==db.swot.o)$('#swO').value=db.swot.o||'';
   if($('#swT').value!==db.swot.t)$('#swT').value=db.swot.t||'';
   var wrap=$('#compWrap');
-  if(!db.comp.length){wrap.innerHTML='<div class="empty" style="padding:16px">还没有竞品记录</div>';return}
+  if(!db.comp.length){wrap.innerHTML='<div class="empty" style="padding:16px">'+t('empty_comp')+'</div>';return}
   var arr=db.comp.slice().sort(function(a,b){return b.threat-a.threat});
-  wrap.innerHTML='<table class="tbl"><thead><tr><th>竞品</th><th>地区</th><th>定位</th><th>威胁</th><th>备注</th><th></th></tr></thead><tbody>'+
+  wrap.innerHTML='<table class="tbl"><thead><tr><th>'+t('th_name')+'</th><th>'+t('th_region')+'</th><th>'+t('th_pos')+'</th><th>'+t('th_threat')+'</th><th>'+t('th_note')+'</th><th></th></tr></thead><tbody>'+
     arr.map(function(c){
       return '<tr data-id="'+c.id+'"><td><b>'+esc(c.name)+'</b></td><td>'+esc(c.cn||'—')+'</td>'+
         '<td style="font-size:11.5px;max-width:220px">'+esc(c.pos||'—')+'</td>'+
         '<td class="num threat-'+c.threat+'">'+'●'.repeat(+c.threat)+'<span style="font-family:var(--mono);font-size:10.5px"> '+c.threat+'</span></td>'+
         '<td style="font-size:11.5px;max-width:200px">'+esc(c.note||'—')+'</td>'+
-        '<td><button class="btn sm danger" data-act="del">删</button></td></tr>';
+        '<td><button class="btn sm danger" data-act="del">'+t('del')+'</button></td></tr>';
     }).join('')+'</tbody></table>';
 }
 $('#cpAdd').addEventListener('click',function(){
-  var n=$('#cpName').value.trim();if(!n){toast('请填写竞品名');return}
-  db.comp.push({id:Date.now(),name:n,cn:$('#cpCn').value.trim(),pos:$('#cpPos').value.trim(),threat:+$('#cpThreat').value,note:$('#cpNote').value.trim()});
-  ['cpName','cpCn','cpPos','cpNote'].forEach(function(id){$('#'+id).value=''});
-  touch();toast('竞品已记录');
+  var n=$('#cpName').value.trim();if(!n){toast(t('t_need_comp'));return}
+  var cn=$('#cpCn').value;
+  db.comp.push({id:Date.now(),name:n,cn:(cn&&cn!=='__other')?cn:(cn==='__other'?t('l_other'):''),pos:$('#cpPos').value.trim(),threat:+$('#cpThreat').value,note:$('#cpNote').value.trim()});
+  ['cpName','cpPos','cpNote'].forEach(function(id){$('#'+id).value=''});
+  touch();toast(t('t_comp_added'));
 });
 $('#compWrap').addEventListener('click',function(e){
   var b=e.target.closest('[data-act="del"]');if(!b)return;
@@ -642,7 +866,7 @@ $('#compWrap').addEventListener('click',function(e){
   db.comp=db.comp.filter(function(c){return c.id!==id});touch();
 });
 $('#swotMd').addEventListener('click',function(){
-  var sec=function(t,key){var v=(db.swot[key]||'').split('\n').filter(Boolean).map(function(x){return '- '+x}).join('\n');return '## '+t+'\n'+(v||'（空）')};
+  var sec=function(tt,key){var v=(db.swot[key]||'').split('\n').filter(Boolean).map(function(x){return '- '+x}).join('\n');return '## '+tt+'\n'+(v||'（空）')};
   var md='# SWOT · '+today()+'\n\n'+sec('Strengths 优势','s')+'\n\n'+sec('Weaknesses 劣势','w')+'\n\n'+sec('Opportunities 机会','o')+'\n\n'+sec('Threats 威胁','t');
   if(db.comp.length){
     md+='\n\n## 竞品矩阵\n\n| 竞品 | 地区 | 定位 | 威胁度 | 备注 |\n|---|---|---|---|---|\n';
@@ -654,7 +878,7 @@ $('#swotMd').addEventListener('click',function(){
 $('#bkExport').addEventListener('click',function(){
   db.saved=stamp();localStorage.setItem(LS,JSON.stringify(db));
   dl('teletrack-workbench-backup-'+today()+'.json',JSON.stringify(db,null,2),'application/json');
-  toast('备份已导出');
+  toast(t('t_bk_done'));
 });
 $('#bkImport').addEventListener('change',function(e){
   var f=e.target.files[0];if(!f)return;
@@ -662,10 +886,12 @@ $('#bkImport').addEventListener('change',function(e){
   rd.onload=function(){
     try{
       var j=JSON.parse(rd.result);
-      if(!j||typeof j!=='object'||(!j.leads&&!j.channels))throw new Error('格式不对');
-      db=Object.assign({leads:[],channels:[],swot:{s:'',w:'',o:'',t:''},comp:[],signals:{},saved:null},j);
-      save();renderAll();toast('导入成功：'+db.leads.length+' 条商机 · '+db.channels.length+' 条渠道数据');
-    }catch(err){toast('导入失败：'+err.message)}
+      if(!j||typeof j!=='object'||(!j.leads&&!j.channels))throw new Error(t('t_bk_bad'));
+      db=Object.assign({leads:[],channels:[],swot:{s:'',w:'',o:'',t:''},comp:[],signals:{},goals:{leads:'',rev:''},saved:null},j);
+      if(!db.goals)db.goals={leads:'',rev:''};
+      save();$('#gLeads').value=db.goals.leads||'';$('#gRev').value=db.goals.rev||'';
+      renderAll();toast(t('t_bk_ok')(db.leads.length,db.channels.length));
+    }catch(err){toast(t('t_bk_fail')+err.message)}
   };
   rd.readAsText(f);e.target.value='';
 });
@@ -681,7 +907,9 @@ $('#pMargin').addEventListener('input',calcPrice);
 function renderAll(){renderNews();renderSigSummary();renderLeads();renderMkt();renderStrategy();renderCounts();
   $('#lastSaved').textContent=db.saved||'–'}
 $('#lastSaved').textContent=db.saved||'–';
+fillCountrySelects();
 renderLeads();renderMkt();renderStrategy();renderCounts();
+applyLang();
 loadIntel();
 })();
 </script>
