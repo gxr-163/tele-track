@@ -171,7 +171,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13p
 .grid-line{stroke:var(--line-2);stroke-dasharray:3 4}
 .area{opacity:.08}
 .cols-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.cols-32{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+.cols-32{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start}
 @media(max-width:1100px){.cols-32,.cols-2{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
 table.tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tbl th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-3);text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600}
