@@ -63,7 +63,19 @@ function note(src, ok, detail, probe) {
 }
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+/* Sanitise any RSS text into a plain one-line string. Decode BEFORE stripping:
+   Google News double-escapes its description markup (&lt;a href=...&gt;), so a
+   strip-first pass deletes the entities and leaves the literal text
+   'a href="https://…"' in every summary — which is both garbage content AND a
+   2000-char unbreakable string that blows the dashboard grid past the viewport. */
+const clean = s => String(s == null ? '' : s)
+  .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"')
+  .replace(/&#0*39;|&apos;/gi, "'").replace(/&nbsp;/gi, ' ')
+  .replace(/<[^>]*>/g, ' ')
+  .replace(/&amp;/gi, '&')
+  .replace(/&#(\d+);/g, (m, d) => { try { return String.fromCodePoint(+d); } catch (e) { return ' '; } })
+  .replace(/&[a-z]+;/gi, ' ')
+  .replace(/\s+/g, ' ').trim();
 
 /* Circuit breaker: after 3 consecutive connection failures to the same host,
    stop trying it for the rest of the run. A blocked/offline host then costs a
