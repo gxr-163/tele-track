@@ -1263,7 +1263,10 @@ loadRealPapers().then(ok=>{
 $('#loadMorePapers').addEventListener('click',()=>{state.papersShown+=6;renderPapers();});
 $$('#paperJournals .chip').forEach(c=>c.addEventListener('click',()=>{$$('#paperJournals .chip').forEach(x=>x.classList.toggle('active',x===c));state.paperJournal=c.dataset.j;renderPapers();}));
 $('#paperSearch').addEventListener('input',e=>{state.paperQuery=e.target.value;renderPapers();});
-function renderHomePapers(){$('#paperList').innerHTML=PAPERS.slice(0,4).map(paperHTML).join('');}
+function renderHomePapers(){/* 7 cards ≈ the 7-item news column's height (measured
+  133px/card): 4 cards left ~40% of the right panel blank once the demo rows
+  (which used to pad it) were removed; 8 overshot to 1126 vs 1020 */
+  $('#paperList').innerHTML=PAPERS.slice(0,7).map(paperHTML).join('');}
 
 /* ============ CHARTS ============ */
 function renderTrend(){
